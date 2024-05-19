@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import dbConnection from "./database/dbConnection.js";
 import cloudinary from "cloudinary";
+import { errorMiddleware } from "./middleware/error.js";
 
 // configure enviromental variable
 dotenv.config({ path: "./config/.env" });
@@ -30,6 +31,7 @@ app.use(
 );
 app.use(cookieParser());
 dbConnection();
+app.use(errorMiddleware);
 
 // Cloudinary Configurations
 cloudinary.v2.config({
@@ -37,6 +39,7 @@ cloudinary.v2.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
 app.listen(PORT, () => {
   console.log(`Server running the PORT: ${PORT} ):`);
 });
