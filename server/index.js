@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import dbConnection from "./database/dbConnection.js";
+import cloudinary from "cloudinary";
 
 // configure enviromental variable
 dotenv.config({ path: "./config/.env" });
@@ -30,6 +31,12 @@ app.use(
 app.use(cookieParser());
 dbConnection();
 
+// Cloudinary Configurations
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 app.listen(PORT, () => {
   console.log(`Server running the PORT: ${PORT} ):`);
 });
