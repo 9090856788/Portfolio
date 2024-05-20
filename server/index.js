@@ -7,6 +7,7 @@ import fileUpload from "express-fileupload";
 import dbConnection from "./database/dbConnection.js";
 import cloudinary from "cloudinary";
 import { errorMiddleware } from "./middleware/error.js";
+import messageRouter from "./router/messageRoutes.js";
 
 // configure enviromental variable
 dotenv.config({ path: "./config/.env" });
@@ -22,6 +23,10 @@ app.use(
     tempFileDir: "/temp/",
   })
 );
+
+// routes configuration
+app.use("/api/v1/message", messageRouter);
+
 app.use(
   cors({
     origin: [process.env.ADMIN_DASHBOARD_URL, process.env.PORTFOLIO_URL],
