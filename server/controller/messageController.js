@@ -18,6 +18,7 @@ export const sendMessage = catchSynchError(async(req, res, next) => {
     });
 });
 
+// get api for getting all user message from database
 export const getAllMessages = catchSynchError(async(req, res, next) => {
     const messages = await Message.find(); 
     res.status(200).json({
@@ -25,3 +26,17 @@ export const getAllMessages = catchSynchError(async(req, res, next) => {
         messages,
     });
 });
+
+// delete api for delete the user message record from the database
+export const deleteMessage = catchSynchError(async(req, res, next) => {
+    const {id} = req.param;
+    const message = await Message.findById(id);
+    if(!message){
+        return next(new ErrorHandler("Message Already Deleted!", 400));
+    }
+    await message.deleteOne();
+    res.status(200).json({
+        success: true,
+        message: "Message Deleted",
+    })
+})

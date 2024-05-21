@@ -8,6 +8,7 @@ import dbConnection from "./database/dbConnection.js";
 import cloudinary from "cloudinary";
 import { errorMiddleware } from "./middleware/error.js";
 import messageRouter from "./router/messageRoutes.js";
+import userRouter from "./router/userRoutes.js";
 
 // configure enviromental variable
 dotenv.config({ path: "./config/.env" });
@@ -26,6 +27,7 @@ app.use(
 
 // routes configuration
 app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/user", userRouter)
 
 app.use(
   cors({
