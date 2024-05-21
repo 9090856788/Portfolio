@@ -27,7 +27,7 @@ app.use(
 
 // routes configuration
 app.use("/api/v1/message", messageRouter);
-app.use("/api/v1/user", userRouter)
+app.use("/api/v1/user", userRouter);
 
 app.use(
   cors({
@@ -41,10 +41,11 @@ dbConnection();
 app.use(errorMiddleware);
 
 // Cloudinary Configurations
+
 cloudinary.v2.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 app.listen(PORT, () => {
