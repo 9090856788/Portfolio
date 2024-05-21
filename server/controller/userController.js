@@ -2,6 +2,7 @@ import catchSynchError from "../middleware/catchAsyncError.js";
 import ErrorHandler from "../middleware/error.js";
 import { User } from "../models/userSchema.js";
 import { v2 as cloudinary } from "cloudinary";
+import { generateJwtToken } from "../utils/jwtToken.js";
 
 export const register = catchSynchError(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
@@ -52,7 +53,7 @@ export const register = catchSynchError(async (req, res, next) => {
     linkedInURL,
   } = req.body;
 
-  const User = await User.create({
+  const user = await User.create({
     fullName,
     email,
     phone,
@@ -64,19 +65,15 @@ export const register = catchSynchError(async (req, res, next) => {
     facebookURL,
     twitterURL,
     linkedInURL,
-    avatar:{
-        public_id:cloudinaryResponseAvatar.public_id,
-        url: cloudinaryResponseAvatar.secure_url,
+    avatar: {
+      public_id: cloudinaryResponseAvatar.public_id,
+      url: cloudinaryResponseAvatar.secure_url,
     },
     resume: {
-        public_id:cloudinaryResponseResume.public_id,
-        url: cloudinaryResponseResume.secure_url,
+      public_id: cloudinaryResponseResume.public_id,
+      url: cloudinaryResponseResume.secure_url,
     },
   });
 
-  res.status(200).json({
-    success: true,
-    message: "User Registered ):"
-  });
-  
+  generateJwtToken(user, "User Registered!", 201, res);
 });
