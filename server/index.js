@@ -48,5 +48,5 @@ cloudinary.config({
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running the PORT: ${PORT} ):`);
+  console.log(`Server running the PORT: ${PORT} :)`);
 });

@@ -1,43 +1,40 @@
-import catchSynchError from "../middleware/catchAsyncError.js";
+import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ErrorHandler from "../middleware/error.js";
 import { User } from "../models/userSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 import { generateJwtToken } from "../utils/jwtToken.js";
 
 // post api for user registration
-export const register = catchSynchError(async (req, res, next) => {
+export const register = catchAsyncErrors(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
-    return next(new ErrorHandler("Avatar & Resume are Required!", 400));
+    return next(new ErrorHandler("Avatar Required!", 400));
   }
-
   const { avatar, resume } = req.files;
 
-  //   Avatar configuration from cloudinary
-  const cloudinaryResponseAvatar = await cloudinary.uploader.upload(
+  //POSTING AVATAR
+  const cloudinaryResponseForAvatar = await cloudinary.uploader.upload(
     avatar.tempFilePath,
-    { folder: "AVATARS" }
+    { folder: "PORTFOLIO AVATAR" }
   );
-
-  //   cloudinary error getting if don't getting any response
-  if (!cloudinaryResponseAvatar || cloudinaryResponseAvatar.error) {
-    console.log(
-      "Cloudinary Error: ",
-      cloudinaryResponseAvatar.error || "Unknown Cloudinary Error"
+  if (!cloudinaryResponseForAvatar || cloudinaryResponseForAvatar.error) {
+    console.error(
+      "Cloudinary Error:",
+      cloudinaryResponseForAvatar.error || "Unknown Cloudinary error"
     );
+    return next(new ErrorHandler("Failed to upload avatar to Cloudinary", 500));
   }
 
-  //   Resume configuration from cloudinary
-  const cloudinaryResponseResume = await cloudinary.uploader.upload(
+  //POSTING RESUME
+  const cloudinaryResponseForResume = await cloudinary.uploader.upload(
     resume.tempFilePath,
-    { folder: "RESUME" }
+    { folder: "PORTFOLIO RESUME" }
   );
-
-  //   cloudinary error getting if don't getting any response
-  if (!cloudinaryResponseResume || cloudinaryResponseResume.error) {
-    console.log(
-      "Cloudinary Error: ",
-      cloudinaryResponseResume.error || "Unknown Cloudinary Error"
+  if (!cloudinaryResponseForResume || cloudinaryResponseForResume.error) {
+    console.error(
+      "Cloudinary Error:",
+      cloudinaryResponseForResume.error || "Unknown Cloudinary error"
     );
+    return next(new ErrorHandler("Failed to upload resume to Cloudinary", 500));
   }
 
   const {
@@ -67,55 +64,51 @@ export const register = catchSynchError(async (req, res, next) => {
     twitterURL,
     linkedInURL,
     avatar: {
-      public_id: cloudinaryResponseAvatar.public_id,
-      url: cloudinaryResponseAvatar.secure_url,
+      public_id: cloudinaryResponseForAvatar.public_id,
+      url: cloudinaryResponseForAvatar.secure_url,
     },
     resume: {
-      public_id: cloudinaryResponseResume.public_id,
-      url: cloudinaryResponseResume.secure_url,
+      public_id: cloudinaryResponseForResume.public_id,
+      url: cloudinaryResponseForResume.secure_url,
     },
   });
 
   generateJwtToken(user, "User Registered!", 201, res);
 });
 
-// implement Authentication features
-
-export const login = catchSynchError(async (req, res, next) => {
-  const { email, phone, password } = req.body;
-  if (!email || !phone || !password) {
-    next(
-      new ErrorHandler("Please Enter Email/Phone number & Password Required!")
-    );
+// implement login api features
+export const login = catchAsyncErrors(async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(new ErrorHandler("Provide Email And Password!", 400));
   }
-  const user = await User.findOne({ email, phone }).select("+password");
-  console.log("User & Password is: ", user);
+  const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    return next(ErrorHandler("Invalid Email/Phone or Password"));
+    return next(new ErrorHandler("Invalid Email Or Password!", 404));
   }
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
-    return next(ErrorHandler("Invalid Email/Phone or Password"));
+    return next(new ErrorHandler("Invalid Email Or Password", 401));
   }
-  generateJwtToken(user, "Logged in", 200, res);
+  generateJwtToken(user, "Login Successfully!", 200, res);
 });
 
 // user logged out
-export const logout = catchSynchError(async (req, res, next) => {
+export const logout = catchAsyncErrors(async (req, res, next) => {
   res
     .status(200)
-    .cookie("token", "", {
-      expires: new Date(Date.now()),
+    .cookies("token", "", {
       httpOnly: true,
+      expires: new Date(Date.now()),
     })
     .json({
       success: true,
-      message: "Logged Out",
+      message: "Logged Out!",
     });
 });
 
 // get api for user profile
-export const myProfile = catchSynchError(async (req, res, next) => {
+export const myProfile = catchAsyncErrors(async (req, res, next) => {
   const userProfileDetails = await User.findById(req.user.id);
   res.status(200).json({
     success: true,
@@ -123,7 +116,7 @@ export const myProfile = catchSynchError(async (req, res, next) => {
   });
 });
 
-export const updateProfile = catchSynchError(async (req, res, next) => {
+export const updateProfile = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
     fullName: req.body.fullName,
     email: req.body.email,
@@ -182,7 +175,7 @@ export const updateProfile = catchSynchError(async (req, res, next) => {
 });
 
 // put api for update password
-export const updatePassword = catchSynchError(async (req, res, next) => {
+export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
   if (!currentPassword || !newPassword || !confirmNewPassword) {
     next(ErrorHandler("Please fill all field", 400));

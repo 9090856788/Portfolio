@@ -14,7 +14,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", isAuthenticated, logout);
-router.get("/profile", isAuthenticated, myProfile);
+router.get("/profile", myProfile);
 router.put("/update/profile", isAuthenticated, updateProfile);
 router.put("/update/password", isAuthenticated, updatePassword);
 
