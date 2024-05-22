@@ -9,9 +9,8 @@ export const register = catchSynchError(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return next(new ErrorHandler("Avatar & Resume are Required!", 400));
   }
-  const { avatar, resume } = req.files;
 
-  console.log(avatar, resume);
+  const { avatar, resume } = req.files;
 
   //   Avatar configuration from cloudinary
   const cloudinaryResponseAvatar = await cloudinary.uploader.upload(

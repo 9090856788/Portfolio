@@ -2,7 +2,7 @@ export const generateJwtToken = (user, message, statusCode, res) => {
   const token = user.generateJsonWebToken();
 
   res
-    .statusCode(statusCode)
+    .status(statusCode)
     .cookie("token", token, {
       expire: new Date(
         Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
