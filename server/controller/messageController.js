@@ -31,14 +31,24 @@ export const getAllMessages = catchAsyncErrors(async (req, res, next) => {
 
 // delete api for delete the user message record from the database
 export const deleteMessage = catchAsyncErrors(async (req, res, next) => {
-  const { id } = req.param;
-  const message = await Message.findById(id);
-  if (!message) {
-    return next(new ErrorHandler("Message Already Deleted!", 400));
+  try {
+    // Check if user is authenticated
+    if (!req.user) {
+      return next(new ErrorHandler("Unauthorized - Please login first", 401));
+    }
+
+    const message = await Message.findById(req.params.id);
+    console.log(`message is : ${message}`);
+    if (!message) {
+      return next(new ErrorHandler("Message Not Found", 404));
+    }
+
+    await message.deleteOne();
+    res.status(200).json({
+      success: true,
+      message: "Message Deleted",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
   }
-  await message.deleteOne();
-  res.status(200).json({
-    success: true,
-    message: "Message Deleted",
-  });
 });
