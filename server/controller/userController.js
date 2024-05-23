@@ -95,16 +95,10 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 
 // user logged out
 export const logout = catchAsyncErrors(async (req, res, next) => {
-  res
-    .status(200)
-    .cookies("token", "", {
-      httpOnly: true,
-      expires: new Date(Date.now()),
-    })
-    .json({
-      success: true,
-      message: "Logged Out!",
-    });
+  res.clearCookie("token").status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 });
 
 // get api for user profile

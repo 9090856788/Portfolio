@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 import fileUpload from "express-fileupload";
 import dbConnection from "./database/dbConnection.js";
 import { v2 as cloudinary } from "cloudinary";
@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cookieParser());
 app.use(
   fileUpload({
     useTempFiles: true, // Use temporary files instead of storing in memory
@@ -36,7 +36,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(cookieParser());
 dbConnection();
 app.use(errorMiddleware);
 
