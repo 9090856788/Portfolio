@@ -172,18 +172,28 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
   if (!currentPassword || !newPassword || !confirmNewPassword) {
-    next(ErrorHandler("Please fill all field", 400));
+    return next(new ErrorHandler("Please fill all fields", 400));
   }
+
   const user = await User.findById(req.user.id).select("+password");
-  const isPasswordMatched = await User.comparePassword(currentPassword);
-  if (isPasswordMatched) {
-    next(ErrorHandler("Incorrect Current Password", 400));
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
   }
+
+  const isPasswordMatched = await user.comparePassword(currentPassword); // Call on user instance
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Incorrect Current Password", 400));
+  }
+
   if (newPassword !== confirmNewPassword) {
-    next(ErrorHandler("New Password & Confirm Password do not Matched", 400));
+    return next(
+      new ErrorHandler("New Password & Confirm Password do not match", 400)
+    );
   }
+
   user.password = newPassword;
   await user.save();
+
   res.status(200).json({
     success: true,
     message: "Password Updated!",
