@@ -5,7 +5,7 @@ import { isAuthenticated } from "../middleware/auth.js";
 const router = express.Router();
 
 router.post("/addSoftwareApp", isAuthenticated, addNewApplication);
-router.get("/getAllSoftwareApp", isAuthenticated, getAllApplications);
+router.get("/getAllSoftwareApp", getAllApplications);
 router.delete("deleteSoftwareApp", isAuthenticated, deleteApplication);
 
 export default router;

@@ -27,7 +27,7 @@ export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
       "Cloudinary Error:",
       cloudinaryResponse.error || "Unknown Cloudinary error"
     );
-    return next(new ErrorHandler("Failed to upload avatar to Cloudinary", 500));
+    return next(new ErrorHandler("Failed to upload SVG/Icon to Cloudinary", 500));
   }
 
   const softwareApplication = await SoftwareApplication.create({
