@@ -9,9 +9,9 @@ import {
 
 const router = express.Router();
 
-router.post("/addNewProject", isAuthenticated, addNewProject);
-router.get("/getAllProject", getAllProjects);
-router.put("/updateProject", isAuthenticated, updateProject);
-router.delete("/deleteProject", isAuthenticated, deleteProject);
+router.post("/add", isAuthenticated, addNewProject);
+router.get("/getall", getAllProjects);
+router.put("/update/:id", isAuthenticated, updateProject);
+router.delete("/delete/:id", isAuthenticated, deleteProject);
 
 export default router;

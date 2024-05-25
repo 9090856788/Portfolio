@@ -9,9 +9,9 @@ import { isAuthenticated } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/addNewSkill", isAuthenticated, addNewSkill);
-router.get("/addNewSkill", getAllSkills);
-router.put("/addNewSkill", isAuthenticated, updateSkill);
-router.delete("/addNewSkill", isAuthenticated, deleteSkill);
+router.post("/add", isAuthenticated, addNewSkill);
+router.get("/getall", getAllSkills);
+router.put("/update/:id", isAuthenticated, updateSkill);
+router.delete("/delete/:id", isAuthenticated, deleteSkill);
 
 export default router;
