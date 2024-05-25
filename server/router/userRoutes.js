@@ -6,6 +6,7 @@ import {
   logout,
   myProfile,
   register,
+  resetPassword,
   updatePassword,
   updateProfile,
 } from "../controller/userController.js";
@@ -20,7 +21,7 @@ router.get("/profile", isAuthenticated, myProfile);
 router.put("/update/profile", isAuthenticated, updateProfile);
 router.put("/update/password", isAuthenticated, updatePassword);
 router.get("/profile/portfolio", getUserPortfolioDetails);
-router.get("/password/forgot", forgotPassword);
-// router.get("/profile/portfolio", getUserPortfolioDetails);
+router.post("/password/forgot", forgotPassword);
+router.get("/password/reset/:token", resetPassword);
 
 export default router;

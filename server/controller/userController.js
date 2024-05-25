@@ -202,19 +202,21 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 //creating a get api for getting user profile details for portfolio application
-export const getUserPortfolioDetails = catchAsyncErrors(async(req, res, next) => {
-  const id = "";
-  const user = await User.findById(id);
-  res.status(200).json({
-    success: true,
-    user
-  })
-});
+export const getUserPortfolioDetails = catchAsyncErrors(
+  async (req, res, next) => {
+    const id = "664fca4cc0e4d9b9d392545b";
+    const user = await User.findById(id);
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  }
+);
 
 // forgot password
-export const forgotPassword = catchAsyncErrors(async(req, res, next) =>{
-  const user = await User.findOne({ email: req.body.email});
-  if(!user) {
+export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
     return next(new ErrorHandler(" User not found", 400));
   }
   const resetToken = getResetPasswordToken();
@@ -225,21 +227,55 @@ export const forgotPassword = catchAsyncErrors(async(req, res, next) =>{
   const message = `Your Reset Password Token is :- \n\n ${resetPasswordUrl} \n\n If you haven't requested for
   this please ignore it.`;
 
+  // nodemailer configuration
   try {
     await sendEmail({
       email: user.email,
       subject: "Portfolio Dashboard Recovery Password",
-      message
+      message,
     });
     res.status(200).json({
       success: true,
-      message: `Email send to ${user.email} successfully`
+      message: `Email send to ${user.email} successfully`,
     });
   } catch (error) {
     user.resetPasswordExpire = undefined;
     user.getResetPasswordToken = undefined;
     await user.save();
-    return next (new ErrorHandler(error.message, 500));
+    return next(new ErrorHandler(error.message, 500));
   }
 });
 
+// reset password
+export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+  if (!user) {
+    return next(
+      new ErrorHandler(
+        "Reset Password Token is Invalid or has been expired",
+        400
+      )
+    );
+  }
+  if (req.body.password !== req.body.confirmNewPassword) {
+    return next(
+      ErrorHandler("Password & Confirm Password do not Matched", 400)
+    );
+  }
+  user.password = req.body.password;
+  user.resetPasswordExpire = undefined;
+  user.resetPasswordToken = undefined;
+  await user.save();
+  generateJwtToken(user, "Reset Password Successfully", 200, res);
+  res.status(200).json({
+    success: true,
+    message: "Password Reset Successfully",
+  });
+});
