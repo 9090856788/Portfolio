@@ -1,15 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import dbConnection from "./database/dbConnection.js";
 import { v2 as cloudinary } from "cloudinary";
 import { errorMiddleware } from "./middleware/error.js";
 import messageRouter from "./router/messageRoutes.js";
 import userRouter from "./router/userRoutes.js";
+import timelineRouter from "./router/timelineRoutes.js";
 
-// configure enviromental variable
+// configure environmental variable
 dotenv.config({ path: "./config/.env" });
 const PORT = process.env.PORT || 3000;
 
@@ -25,10 +26,6 @@ app.use(
     limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB file size limit
   })
 );
-
-// routes configuration
-app.use("/api/v1/message", messageRouter);
-app.use("/api/v1/user", userRouter);
 app.use(
   cors({
     origin: [process.env.ADMIN_DASHBOARD_URL, process.env.PORTFOLIO_URL],
@@ -38,6 +35,11 @@ app.use(
 );
 dbConnection();
 app.use(errorMiddleware);
+
+// routes configuration
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/timeline", timelineRouter);
 
 // cloudinary Configurations
 cloudinary.config({
