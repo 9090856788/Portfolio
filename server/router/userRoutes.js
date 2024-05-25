@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  forgotPassword,
+  getUserPortfolioDetails,
   login,
   logout,
   myProfile,
@@ -17,5 +19,8 @@ router.get("/logout", isAuthenticated, logout);
 router.get("/profile", isAuthenticated, myProfile);
 router.put("/update/profile", isAuthenticated, updateProfile);
 router.put("/update/password", isAuthenticated, updatePassword);
+router.get("/profile/portfolio", getUserPortfolioDetails);
+router.get("/password/forgot", forgotPassword);
+// router.get("/profile/portfolio", getUserPortfolioDetails);
 
 export default router;
