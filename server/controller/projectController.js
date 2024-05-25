@@ -132,3 +132,18 @@ export const deleteProject = catchAsyncErrors(async (req, res, next) => {
     message: "Project Deleted",
   });
 });
+
+export const getSingleProject = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const project = await Project.findById(id);
+    res.status(200).json({
+      success: true,
+      project,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error,
+    });
+  }
+});
