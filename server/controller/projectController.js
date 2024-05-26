@@ -1,6 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ErrorHandler from "../middleware/error.js";
 import { Project } from "../models/projectSchema.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const addNewProject = catchAsyncErrors(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
@@ -27,7 +28,7 @@ export const addNewProject = catchAsyncErrors(async (req, res, next) => {
     !deploy
   ) {
     return next(
-      ErrorHandler(
+      new ErrorHandler(
         "Project Title, Description, Git Repository Link, Project Link, Technology, Tech Stack, & Deploy Field is Required",
         400
       )
@@ -103,7 +104,7 @@ export const updateProject = catchAsyncErrors(async (req, res, next) => {
     newUpdateProjectData.url = cloudinaryResponse.secure_url;
   }
   const project = await Project.findByIdAndUpdate(
-    req.project.id,
+    req.params.id,
     newUpdateProjectData,
     {
       new: true,
@@ -132,6 +133,7 @@ export const deleteProject = catchAsyncErrors(async (req, res, next) => {
     message: "Project Deleted",
   });
 });
+
 
 export const getSingleProject = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;

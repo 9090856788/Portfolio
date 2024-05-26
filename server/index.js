@@ -39,20 +39,20 @@ app.use(
 dbConnection();
 app.use(errorMiddleware);
 
-// routes configuration
-app.use("/api/v1/message", messageRouter);
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/timeline", timelineRouter);
-app.use("/api/v1/softwareApp", softwareAppRouter);
-app.use("/api/v1/skill", skillRouter);
-app.use("/api/v1/project", projectRouter);
-
 // cloudinary Configurations
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+// routes configuration
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/timeline", timelineRouter);
+app.use("/api/v1/software", softwareAppRouter);
+app.use("/api/v1/skill", skillRouter);
+app.use("/api/v1/project", projectRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running the PORT: ${PORT} :)`);

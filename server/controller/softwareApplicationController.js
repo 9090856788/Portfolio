@@ -7,39 +7,35 @@ import { SoftwareApplication } from "../models/softwareApplicationSchema.js";
 export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return next(
-      new ErrorHandler("Software Application Icon/SVG Required!", 400)
+      new ErrorHandler("Software Application Icon/Image Required!", 404)
     );
   }
   const { svg } = req.files;
   const { name } = req.body;
   if (!name) {
-    return next(ErrorHandler("Software Application Name is Required", 400));
+    return next(new ErrorHandler("Please Provide Software's Name!", 400));
   }
-
-  //POSTING SVG
   const cloudinaryResponse = await cloudinary.uploader.upload(
     svg.tempFilePath,
-    { folder: "PORTFOLIO_SOFTWARE APPLICATIONS " }
+    { folder: "PORTFOLIO SOFTWARE APPLICATION IMAGES" }
   );
-
   if (!cloudinaryResponse || cloudinaryResponse.error) {
     console.error(
       "Cloudinary Error:",
       cloudinaryResponse.error || "Unknown Cloudinary error"
     );
-    return next(new ErrorHandler("Failed to upload SVG/Icon to Cloudinary", 500));
+    return next(new ErrorHandler("Failed to upload avatar to Cloudinary", 500));
   }
-
   const softwareApplication = await SoftwareApplication.create({
     name,
     svg: {
-      public_id: cloudinaryResponse.public_id,
+      public_id: cloudinaryResponse.public_id, // Set your cloudinary public_id here
+      url: cloudinaryResponse.secure_url, // Set your cloudinary secure_url here
     },
-    url: cloudinaryResponse.secure_url,
   });
   res.status(200).json({
     success: true,
-    message: "Software Application Added",
+    message: "New Software Application Added!",
     softwareApplication,
   });
 });

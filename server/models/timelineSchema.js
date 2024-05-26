@@ -11,11 +11,11 @@ const timelineSchema = new mongoose.Schema({
   },
   timeline: {
     from: {
-      type: String,
+      type: String || Number,
       required: [true, "Timeline Starting Date is Required"]
     },
     to: {
-      type: String,
+      type: String || Number,
     },
   },
 });

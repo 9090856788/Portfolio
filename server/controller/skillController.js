@@ -1,7 +1,9 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ErrorHandler from "../middleware/error.js";
 import { Skill } from "../models/skillSchema.js";
+import { v2 as cloudinary } from "cloudinary";
 
+// post api for add skill
 export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return next(new ErrorHandler("Skill Icon/SVG is Required!", 400));
@@ -10,7 +12,7 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
   const { title, proficiency } = req.body;
 
   if (!title || !proficiency) {
-    return next(ErrorHandler("Skill Title & Proficiency is Required", 400));
+    return next(new ErrorHandler("Skill Title & Proficiency is Required", 400));
   }
 
   //POSTING SVG
@@ -34,8 +36,8 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
     proficiency,
     svg: {
       public_id: cloudinaryResponse.public_id,
+      url: cloudinaryResponse.secure_url,
     },
-    url: cloudinaryResponse.secure_url,
   });
   res.status(200).json({
     success: true,
@@ -44,44 +46,35 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+// get api for gettAll Skills
 export const getAllSkills = catchAsyncErrors(async (req, res, next) => {
-  const skill = await Skill.findById();
+  const skill = await Skill.find();
   res.status(200).json({
     success: true,
     skill,
   });
 });
 
+// put api for update skill
 export const updateSkill = catchAsyncErrors(async (req, res, next) => {
-  const newUpdateSkillData = {
-    title: req.body.title,
-    proficiency: req.body.proficiency,
-  };
-
-  if (req.files && req.files.svg) {
-    const svg = req.files.svg;
-    const skill = await User.findById(req.skill.id);
-    const skillImageId = skill.svg.public_id;
-    await cloudinary.uploader.destroy(skillImageId);
-    const cloudinaryResponse = await cloudinary.uploader.upload(
-      svg.tempFilePath,
-      { folder: "PORTFOLIO_SKILL" }
-    );
-    newUpdateSkillData.svg = {
-      public_id: cloudinaryResponse.public_id,
-      url: cloudinaryResponse.secure_url,
-    };
-    newUpdateSkillData.url = cloudinaryResponse.secure_url;
+  const { id } = req.params;
+  let skill = await Skill.findById(id);
+  if (!skill) {
+    return next(new ErrorHandler("Skill not found!", 404));
   }
-
-  const skill = await Skill.findByIdAndUpdate(req.skill.id, newUpdateSkillData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
+  const { title, proficiency } = req.body;
+  skill = await Skill.findByIdAndUpdate(
+    id,
+    { title, proficiency },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
   res.status(200).json({
     success: true,
-    message: "Skill Updated",
+    message: "Skill Updated!",
     skill,
   });
 });
