@@ -1,23 +1,57 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 import loginImage from "/6310507.jpg";
-import provideLoginDetailsForUser from "@/redux/Login/dispatchActionProvider";
-import { RootState } from "@/redux/store";
-import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  // state
-  const loginDetailsForUserState = useSelector((state) => state.loginDetailsForUserState);
-  const { email, password } = loginDetailsForUserState;
+  const navigate = useNavigate();
 
-  // // actions
+  const handleLogin = async () => {
+    try {
+      let loginApiData = JSON.stringify({
+        email: email,
+        password: password,
+      });
 
-  const { setEmail, setPassword }= provideLoginDetailsForUser();
+      let config = {
+        method: "post",
+        url: `http://localhost:3000/api/v1/user/login`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: loginApiData,
+      };
+      let response = await axios(config);
+      if (response.status === 2000) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", response.data.user);
+        localStorage.setItem("isAuthenticated", response.data.isAuthenticated);
+        localStorage.setItem("message", response.data.message);
+        localStorage.setItem("error", response.data.error);
+        localStorage.setItem("isUpdated", response.data.isUpdated);
+        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("password", response.data.password);
+        localStorage.setItem("fullName", response.data.fullName);
+        localStorage.setItem("email", response.data.email);
+      }
+      navigate("/");
+      console.log(response);
+    } catch (error) {
+      setError("Invalid email or password");
+    }
+  };
 
+  console.log("email is :", email);
+  console.log("password is :", password);
   return (
     <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
       <div className="min-h-[100vh] flex items-center justify-center py-12">
@@ -34,6 +68,10 @@ const Login = () => {
               <Input
                 id="email"
                 type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
                 placeholder="something@example.com"
                 required
               />
@@ -51,6 +89,10 @@ const Login = () => {
               <Input
                 id="password"
                 type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 placeholder="Password"
                 required
               />
@@ -58,6 +100,7 @@ const Login = () => {
             <Button
               type="submit"
               className="w-full text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+              onClick={handleLogin}
             >
               Login
             </Button>
@@ -75,6 +118,7 @@ const Login = () => {
               Sign in with Google
             </Button>
           </div>
+          {error && <p>{error}</p>}
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="#" className="underline">

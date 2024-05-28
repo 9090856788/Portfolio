@@ -29,13 +29,19 @@ app.use(
     limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB file size limit
   })
 );
-app.use(
-  cors({
-    origin: [process.env.ADMIN_DASHBOARD_URL, process.env.PORTFOLIO_URL],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: [process.env.ADMIN_DASHBOARD_URL, process.env.PORTFOLIO_URL],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 dbConnection();
 app.use(errorMiddleware);
 
