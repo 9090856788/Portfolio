@@ -8,4 +8,5 @@ export const UserLoginDetails = {
   message: null,
   isUpdated: false,
   token: null,
+  user: {},
 };

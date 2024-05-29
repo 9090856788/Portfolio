@@ -27,6 +27,7 @@ const Login = () => {
     message,
     isUpdated,
     token,
+    user,
   } = loginDetailsForUserState;
 
   // actions
@@ -39,6 +40,7 @@ const Login = () => {
     setMessage,
     setIsUpdated,
     setToken,
+    setUser,
   } = provideLoginDetailsForUser();
 
   const handleLogin = async () => {
@@ -65,16 +67,23 @@ const Login = () => {
         data: loginApiData,
       };
       let response = await axios(config);
+      let updateReduxData = response.data;
       console.log("Response is :", response.data);
       // const { token, message } = response.data;
 
       // Dispatch actions to update Redux store
-      dispatch(setToken(token));
-      dispatch(setIsAuthenticated(true));
-      dispatch(setMessage(message));
-      dispatch(setIsUpdated(true));
 
+      dispatch(setEmail(updateReduxData.email));
+      dispatch(setPassword(updateReduxData.password));
+      dispatch(setIsAuthenticated(isAuthenticated));
+      dispatch(setLoading(loading));
+      dispatch(setError(error));
+      dispatch(setMessage(updateReduxData.message));
+      dispatch(setIsUpdated(true));
+      dispatch(setToken(updateReduxData.token));
+      dispatch(setUser(updateReduxData.user));
       navigate("/");
+      
     } catch (error) {
       console.log(error);
       setError("Invalid email or password");

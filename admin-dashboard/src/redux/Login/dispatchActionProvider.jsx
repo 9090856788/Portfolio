@@ -9,6 +9,7 @@ import {
   setMessage,
   setIsUpdated,
   setToken,
+  setUser,
 } from "./reducers.jsx";
 
 const provideLoginDetailsForUser = () => {
@@ -23,6 +24,7 @@ const provideLoginDetailsForUser = () => {
     setMessage: (message) => dispatch(setMessage(message)),
     setIsUpdated: (isUpdated) => dispatch(setIsUpdated(isUpdated)),
     setToken: (token) => dispatch(setToken(token)),
+    setUser: (user) => dispatch(setUser(user)),
   };
 };
 

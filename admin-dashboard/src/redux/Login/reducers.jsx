@@ -30,6 +30,9 @@ export const loginDetailsForUserSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
     },
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
   },
 });
 
@@ -42,6 +45,7 @@ export const {
   setMessage,
   setIsUpdated,
   setToken,
+  setUser,
 } = loginDetailsForUserSlice.actions;
 
 export default loginDetailsForUserSlice.reducer;
