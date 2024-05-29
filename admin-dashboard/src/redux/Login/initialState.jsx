@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 export const UserLoginDetails = {
-  loading: false,
-  user: {},
+  email: "",
+  password: "",
   isAuthenticated: false,
+  loading: false,
   error: null,
   message: null,
   isUpdated: false,
-  email: "",
-  password: "",
+  token: null,
 };

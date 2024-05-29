@@ -4,23 +4,57 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import axios from "axios";
 import loginImage from "/6310507.jpg";
+import { useDispatch, useSelector } from "react-redux";
+import provideLoginDetailsForUser from "../redux/Login/dispatchActionProvider";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const loginDetailsForUserState = useSelector(
+    (RootState) => RootState.loginDetailsForUserState
+  );
+
+  // state
+  const {
+    email,
+    password,
+    isAuthenticated,
+    loading,
+    error,
+    message,
+    isUpdated,
+    token,
+  } = loginDetailsForUserState;
+
+  // actions
+  const {
+    setEmail,
+    setPassword,
+    setIsAuthenticated,
+    setLoading,
+    setError,
+    setMessage,
+    setIsUpdated,
+    setToken,
+  } = provideLoginDetailsForUser();
 
   const handleLogin = async () => {
     try {
-      let loginApiData = JSON.stringify({
-        email: email,
-        password: password,
-      });
+      if (email.length === 0) {
+        setError("Email is required");
+        return;
+      } else if (password.length === 0) {
+        setError("Password is required");
+        return;
+      }
+      setLoading(true);
+      const loginApiData = {
+        email: loginDetailsForUserState.email,
+        password: loginDetailsForUserState.password,
+      };
 
       let config = {
         method: "post",
@@ -31,27 +65,24 @@ const Login = () => {
         data: loginApiData,
       };
       let response = await axios(config);
-      if (response.status === 2000) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", response.data.user);
-        localStorage.setItem("isAuthenticated", response.data.isAuthenticated);
-        localStorage.setItem("message", response.data.message);
-        localStorage.setItem("error", response.data.error);
-        localStorage.setItem("isUpdated", response.data.isUpdated);
-        localStorage.setItem("email", response.data.email);
-        localStorage.setItem("password", response.data.password);
-        localStorage.setItem("fullName", response.data.fullName);
-        localStorage.setItem("email", response.data.email);
-      }
+      console.log("Response is :", response.data);
+      // const { token, message } = response.data;
+
+      // Dispatch actions to update Redux store
+      dispatch(setToken(token));
+      dispatch(setIsAuthenticated(true));
+      dispatch(setMessage(message));
+      dispatch(setIsUpdated(true));
+
       navigate("/");
-      console.log(response);
     } catch (error) {
+      console.log(error);
       setError("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
-  console.log("email is :", email);
-  console.log("password is :", password);
   return (
     <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
       <div className="min-h-[100vh] flex items-center justify-center py-12">

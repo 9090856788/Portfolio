@@ -6,14 +6,17 @@ export const loginDetailsForUserSlice = createSlice({
   name: "LoginDetailsForUserSlice",
   initialState: UserLoginDetails,
   reducers: {
-    setLoading: (state, action) => {
-      state.loading = action.payload;
+    setEmail: (state, action) => {
+      state.email = action.payload;
     },
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setPassword: (state, action) => {
+      state.password = action.payload;
     },
     setIsAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload;
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -24,24 +27,21 @@ export const loginDetailsForUserSlice = createSlice({
     setIsUpdated: (state, action) => {
       state.isUpdated = action.payload;
     },
-    setEmail: (state, action) => {
-      state.email = action.payload;
-    },
-    setPassword: (state, action) => {
-      state.password = action.payload;
+    setToken: (state, action) => {
+      state.token = action.payload;
     },
   },
 });
 
 export const {
-  setLoading,
-  setUser,
+  setEmail,
+  setPassword,
   setIsAuthenticated,
+  setLoading,
   setError,
   setMessage,
   setIsUpdated,
-  setEmail,
-  setPassword,
+  setToken,
 } = loginDetailsForUserSlice.actions;
 
 export default loginDetailsForUserSlice.reducer;

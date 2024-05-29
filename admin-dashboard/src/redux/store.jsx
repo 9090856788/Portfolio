@@ -2,7 +2,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 // reducer
-import loginDetailsForUserReducer from "./Login/reducer";
+import loginDetailsForUserReducer from "./Login/reducers";
 
 // initialState
 import { UserLoginDetails } from "./Login/initialState";
