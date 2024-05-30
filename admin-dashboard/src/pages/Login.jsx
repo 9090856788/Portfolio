@@ -10,7 +10,7 @@ import loginImage from "/6310507.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import provideLoginDetailsForUser from "../redux/Login/dispatchActionProvider";
-import LoadingSpinner from "../utils/LoadingSpinner";
+import { RotatingLines } from "react-loader-spinner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -83,11 +83,7 @@ const Login = () => {
       dispatch(setIsUpdated(true));
       dispatch(setToken(updateReduxData.token));
       dispatch(setUser(updateReduxData.user));
-
-      toast.success("Login successful", {
-        onClose: () => navigate("/"),
-        autoClose: 300, // auto close the toast after 3 seconds
-      });
+      navigate("/");
     } catch (error) {
       toast.error("Unable to fetch data from server");
     } finally {
@@ -106,7 +102,19 @@ const Login = () => {
             </p>
           </div>
           {loading ? (
-            <LoadingSpinner /> // Show loading spinner during API call
+            <div className="flex justify-center">
+              <RotatingLines
+                visible={true}
+                height="96"
+                width="96"
+                color="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                ariaLabel="rotating-lines-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+            </div>
           ) : (
             <div className="grid gap-4">
               <div className="grid gap-2">
