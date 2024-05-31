@@ -10,7 +10,7 @@ import loginImage from "/6310507.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import provideLoginDetailsForUser from "../redux/Login/dispatchActionProvider";
-import { RotatingLines } from "react-loader-spinner";
+import { DNA } from "react-loader-spinner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -94,28 +94,27 @@ const Login = () => {
   return (
     <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
       <div className="min-h-[100vh] flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
-            </p>
+        {loading ? (
+          <div className="flex justify-center">
+            <DNA
+              visible={true}
+              height="80"
+              width="80"
+              ariaLabel="dna-loading"
+              wrapperStyle={{}}
+              wrapperClass="dna-wrapper"
+            />
           </div>
-          {loading ? (
-            <div className="flex justify-center">
-              <RotatingLines
-                visible={true}
-                height="96"
-                width="96"
-                color="grey"
-                strokeWidth="5"
-                animationDuration="0.75"
-                ariaLabel="rotating-lines-loading"
-                wrapperStyle={{}}
-                wrapperClass=""
-              />
+        ) : (
+          <div className="mx-auto grid w-[350px] gap-6">
+            <div className="grid gap-2 text-center">
+              {/* */}
+              <h1 className="text-3xl font-bold">Login</h1>
+              <p className="text-balance text-muted-foreground">
+                Enter your email below to login to your account
+              </p>
             </div>
-          ) : (
+
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -172,15 +171,15 @@ const Login = () => {
                 Sign in with Google
               </Button>
             </div>
-          )}
-          {error && <p>{error}</p>}
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link to="/signup" className="underline">
-              Sign up
-            </Link>
+            {error && <p>{error}</p>}
+            <div className="mt-4 text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link to="/signup" className="underline">
+                Sign up
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="hidden bg-muted lg:block">
         <img
