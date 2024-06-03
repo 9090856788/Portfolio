@@ -226,10 +226,11 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
   await user.save({ validateBeforeSave: false });
 
-  const resetPasswordUrl = `${process.env.ADMIN_DASHBOARD_URL}/password/reset/${resetToken}`;
+  const resetPasswordUrl = `${resetToken}`;
 
-  const message = `Your Reset Password Token is:- \n\n ${resetPasswordUrl}  \n\n If 
-  You've not requested this email then, please ignore it.`;
+  const message = `Your Reset Password Token is :- ${resetPasswordUrl} 
+  \n Please copy the token & paste in below token field.
+  \n If You've not requested this email then, please ignore it.`;
 
   try {
     await sendEmail({

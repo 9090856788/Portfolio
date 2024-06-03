@@ -22,6 +22,6 @@ router.put("/update/profile", isAuthenticated, updateProfile);
 router.put("/update/password", isAuthenticated, updatePassword);
 router.get("/profile/portfolio", getUserPortfolioDetails);
 router.post("/password/forgot", forgotPassword);
-router.get("/password/reset/:token", resetPassword);
+router.post("/password/reset/:token", resetPassword);
 
 export default router;
