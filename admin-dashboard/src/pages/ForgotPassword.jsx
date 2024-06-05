@@ -87,7 +87,7 @@ const ForgotPassword = () => {
             </div>
           ) : (
             <div className="mx-auto grid w-[350px] gap-6">
-              {success ? (
+              {/* {success ? (
                 <>
                   <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
                     <div className="min-h-[100vh] flex items-center justify-center py-12">
@@ -157,7 +157,7 @@ const ForgotPassword = () => {
                     </div>
                   </div>
                 </>
-              ) : null}
+              ) : null} */}
               <div className="grid gap-2 text-center">
                 <h1 className="text-3xl font-bold">Forgot Password</h1>
                 <p className="text-balance text-muted-foreground">
