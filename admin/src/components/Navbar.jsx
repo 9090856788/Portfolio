@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Link } from "react-router-dom";
 import { SidebarData } from "../utils/Data";
-import { Avatar, Button, Box, Typography } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import TopNavbar from "./TopNavbar";
 
 const SideNavbar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -15,45 +16,26 @@ const SideNavbar = () => {
 
   return (
     <>
+      <TopNavbar />
       <Box
         sx={{
-          width: "100%",
-          padding: "10px",
-          borderBottom: "1px solid #ddd",
-          backgroundColor: "#f4f4f4",
-          marginBottom: 1,
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" }, // Stack vertically on small screens
+          height: "100vh", // Full height
         }}
       >
-        <Box
-          sx={{
-            border: "1px solid red",
-            display: "flex",
-            alignContent: "center",
-            width: "190px",
-            height: "40px",
-            padding: "2px",
-          }}
-        >
-          <Avatar
-            sx={{
-              width: 36,
-              height: 36,
-              marginLeft: 1.8,
-              cursor: "pointer"
-            }}
-          />
-          <Typography variant="h6" sx={{ marginLeft: 2 }}>
-            Kanhu
-          </Typography>
-        </Box>
-      </Box>
-      <Box>
         <Sidebar
           collapsed={collapsed}
-          width="200px"
-          style={{ borderRight: "1px solid red" }}
+          width={collapsed ? "80px" : "200px"} // Adjust width based on collapse state
+          breakPoint="md" // Breakpoint for responsive behavior
+          style={{
+            borderRight: "1px solid #ddd",
+            transition: "width 0.3s",
+            position: { xs: "absolute", sm: "relative" }, // Position based on screen size
+            zIndex: { xs: 1000, sm: "auto" }, // Ensure sidebar is on top on small screens
+          }}
         >
-          <Menu style={{ }}>
+          <Menu>
             {SidebarData &&
               SidebarData.map((item) => (
                 <MenuItem
@@ -66,10 +48,24 @@ const SideNavbar = () => {
                 </MenuItem>
               ))}
           </Menu>
-          <Button onClick={handleToggleMenuItem} sx={{ marginLeft: 1 }}>
+          <Button
+            onClick={handleToggleMenuItem}
+            sx={{
+              marginLeft: 1,
+            }}
+          >
             {collapsed ? <ArrowForward /> : <ArrowBack />}
           </Button>
         </Sidebar>
+        <Box
+          sx={{
+            flexGrow: 1,
+            padding: 2,
+            marginLeft: { xs: 0, sm: collapsed ? "80px" : "200px" }, // Adjust margin based on sidebar width
+            transition: "margin-left 0.3s",
+            overflow: "auto", // Handle overflow
+          }}
+        ></Box>
       </Box>
     </>
   );
