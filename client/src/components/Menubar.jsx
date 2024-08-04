@@ -13,14 +13,13 @@ const Menubar = () => {
   return (
     <Box
       sx={{
-        width: "auto",
-        // width: {
-        //   xs: "100%",
-        //   sm: "80%",
-        //   md: "70%",
-        //   lg: "65%",
-        //   xl: "60%",
-        // },
+        width: {
+          xs: "100%",
+          sm: "80%",
+          md: "70%",
+          lg: "65%",
+          xl: "60%",
+        },
         height: "auto",
         display: "flex",
         justifyContent: {

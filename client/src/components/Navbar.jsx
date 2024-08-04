@@ -5,7 +5,7 @@ import { CssBaseline, createTheme, ThemeProvider } from "@mui/material";
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [avatar, setAvatar] = useState(""); // Default placeholder image
+  const [avatar, setAvatar] = useState(""); // Navbar specific avatar state
 
   const theme = createTheme({
     palette: {
@@ -68,7 +68,6 @@ const Navbar = () => {
                 bgcolor: "#e0e0e0",
                 boxShadow: "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
                 borderRadius: "50%",
-                // transition: "all 0.2s ease-in-out",
                 "&:hover": {
                   boxShadow:
                     "inset 7px 7px 15px #bebebe, inset -7px -7px 15px #ffffff",

@@ -15,7 +15,7 @@ const About = () => {
           borderRadius: "10px",
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
           background: "white",
-          margin: 10,
+          margin: 5,
         }}
       >
         <Box
