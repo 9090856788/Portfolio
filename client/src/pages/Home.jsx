@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
-import Menubar from "../components/Menubar";
-
+import Menubar from "../components/Menubar.jsx";
+import ProfileCard from "../components/ProfileCard.jsx";
 const About = () => {
   return (
     <>
@@ -26,11 +26,7 @@ const About = () => {
             // border: "1px solid blue",
           }}
         >
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium
-            obcaecati soluta sequi consequatur, pariatur vitae ullam atque vel
-            re
-          </p>
+          <ProfileCard />
         </Box>
         <Box
           className="Right Side"
@@ -42,7 +38,7 @@ const About = () => {
             flexDirection: "column",
           }}
         >
-          <Menubar/>
+          <Menubar />
           <p>
             Lorem ipsum, dolor sit amet consectetur adipisicing elit.
             Consequatur eaque ipsam odit exercitationem eligendi veniam aperiam

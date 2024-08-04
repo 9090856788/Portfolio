@@ -8,19 +8,20 @@ import ContactMailIcon from "@mui/icons-material/ContactMail";
 const Menubar = () => {
   const theme = useTheme();
 
-  const isDarkMode = theme.palette.mode === 'dark';
+  const isDarkMode = theme.palette.mode === "dark";
 
   return (
     <Box
       sx={{
-        width: {
-          xs: "100%",
-          sm: "80%",
-          md: "70%",
-          lg: "65%",
-          xl: "60%",
-        },
-        height: "10vh",
+        width: "auto",
+        // width: {
+        //   xs: "100%",
+        //   sm: "80%",
+        //   md: "70%",
+        //   lg: "65%",
+        //   xl: "60%",
+        // },
+        height: "auto",
         display: "flex",
         justifyContent: {
           xs: "space-between",
@@ -30,7 +31,7 @@ const Menubar = () => {
         padding: "10px",
         borderRadius: "10px",
         marginLeft: "auto",
-        bgcolor: isDarkMode ? 'grey.900' : '#e0e0e0',
+        bgcolor: isDarkMode ? "grey.900" : "#e0e0e0",
         boxShadow: isDarkMode
           ? "inset 7px 7px 15px #333, inset -7px -7px 15px #000"
           : "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
@@ -52,7 +53,7 @@ const Menubar = () => {
               xs: 1,
               sm: 2,
             },
-            bgcolor: isDarkMode ? 'grey.800' : '#e0e0e0',
+            bgcolor: isDarkMode ? "grey.800" : "#e0e0e0",
             borderRadius: "10px",
             boxShadow: isDarkMode
               ? "inset 4px 4px 8px #333, inset -4px -4px 8px #000"
@@ -67,7 +68,13 @@ const Menubar = () => {
           }}
         >
           {item.icon}
-          <Typography sx={{ ml: 1, color: isDarkMode ? '#e0e0e0' : 'inherit', display: { xs: "none", sm: "block" } }}>
+          <Typography
+            sx={{
+              ml: 1,
+              color: isDarkMode ? "#e0e0e0" : "inherit",
+              display: { xs: "none", sm: "block" },
+            }}
+          >
             {item.label}
           </Typography>
         </Box>
