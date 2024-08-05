@@ -19,7 +19,7 @@ const App = () => {
           <Route exact path="/contact" element={<Contact />} />
         </Routes>
       </Router>
-      {/* <Navbar /> */}
+      <Footer />
     </>
   );
 };
