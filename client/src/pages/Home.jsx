@@ -1,7 +1,9 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Menubar from "../components/Menubar.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
+import { Facebook } from "@mui/icons-material";
+
 const About = () => {
   return (
     <>
@@ -33,37 +35,207 @@ const About = () => {
           sx={{
             width: "65%",
             height: "100vh",
-            // border: "1px solid red",
+            border: "1px solid red",
             display: "flex",
             flexDirection: "column",
           }}
         >
           <Menubar />
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-            Consequatur eaque ipsam odit exercitationem eligendi veniam aperiam
-            dolor neque soluta facere nemo distinctio, est praesentium quia
-            vitae aliquid incidunt nesciunt fuga possimus libero sapiente! Nam
-            enim, neque dolore ea eaque distinctio? Perferendis recusandae quasi
-            facere asperiores blanditiis ducimus quia in soluta sit deserunt id
-            aliquid tenetur architecto nobis neque quo aliquam praesentium,
-            suscipit quos magni ab animi voluptatum? A, quae? Eaque eius porro
-            commodi. Repellendus consequatur nisi, minima nam et recusandae
-            quidem voluptatem. Velit qui harum aliquid, unde repellat quis eaque
-            atque doloremque veniam corporis, deserunt numquam eos tenetur
-            mollitia illum aliquam tempora animi exercitationem provident.
-            Exercitationem ullam quis accusamus pariatur fugiat vel temporibus
-            corporis, ipsum laborum alias sit. Modi accusamus voluptates
-            molestias non porro aspernatur doloribus libero iure ipsa, ipsam
-            vitae odit perferendis voluptas atque dolores neque debitis? Eaque
-            fuga adipisci asperiores neque, autem ad. Sapiente tempora id fugiat
-            suscipit. Corrupti error, quia amet debitis cupiditate nisi labore
-            adipisci, optio officiis tenetur eum omnis possimus non ratione
-            numquam sed ut deserunt fugiat libero voluptas vel, odit quas esse.
-            Ipsam perspiciatis molestias eum aut ut repellendus, saepe iure
-            expedita sit explicabo nesciunt cupiditate corporis, dolorem laborum
-            ea eligendi labore placeat! Quo.
-          </p>
+          <Box
+            sx={{
+              width: "auto",
+              // height: "100vh",
+              border: "1px solid red",
+              marginTop: 2.6,
+              marginLeft: 1,
+              padding: 2,
+              backgroundColor: "#f5f5f5",
+              // display: "flex",
+              // flexDirection: "column",
+              // justifyContent: "center",
+              borderRadius: "2%",
+            }}
+          >
+            <h1>About Me</h1>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+              pulvinar, ipsum vel condimentum luctus, neque metus ultricies
+              lectus, vel semper nisi ligula non arcu. Sed et arcu lacinia,
+              dignissim lectus at, ullamcorper neque. Nulla facilisi. Sed sed
+              fermentum neque, vel varius ipsum. Integer id mauris at dui
+              consectetur pulvinar. Donec vel velit vel neque vulputate semper.
+              Proin in consectetur nisi.
+            </p>
+            <h2>What I do!</h2>
+            <Box
+              sx={{
+                width: "auto",
+                height: "48vh",
+                border: "1px solid red",
+                marginTop: 2.6,
+                // marginLeft: 1,
+                padding: 2,
+                backgroundColor: "#f5f5f5",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "2%",
+              }}
+            >
+              <Box
+                className="Parent div"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: "2%",
+                  backgroundColor: "#ffeb3b",
+                  cursor: "pointer",
+                  color: "white",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  flexDirection: "column",
+                  border: "1px solid pink",
+                }}
+              >
+                <Box
+                  className="box"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    border: "1px solid red",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "2%",
+                      backgroundColor: "blue",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <IconButton>
+                      <Facebook />
+                    </IconButton>
+                    <p>Full Stack Development</p>
+                  </Box>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Amet, dolorem!
+                  </p>
+                </Box>
+
+                <Box
+                  className="box"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    border: "1px solid red",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "2%",
+                      backgroundColor: "blue",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <IconButton>
+                      <Facebook />
+                    </IconButton>
+                    <p>Frontend Development</p>
+                  </Box>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Amet, dolorem!
+                  </p>
+                </Box>
+              </Box>
+
+              <Box
+                className="Parent div"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: "2%",
+                  backgroundColor: "#ffeb3b",
+                  cursor: "pointer",
+                  color: "white",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  flexDirection: "column",
+                  border: "1px solid pink",
+                }}
+              >
+                <Box
+                  className="box"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    border: "1px solid red",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "2%",
+                      backgroundColor: "blue",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <IconButton>
+                      <Facebook />
+                    </IconButton>
+                    <p>Web Development</p>
+                  </Box>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Amet, dolorem!
+                  </p>
+                </Box>
+
+                <Box
+                  className="box"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    border: "1px solid red",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "2%",
+                      backgroundColor: "blue",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <IconButton>
+                      <Facebook />
+                    </IconButton>
+                    <p>React Development</p>
+                  </Box>
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Amet, dolorem!
+                  </p>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         </Box>
       </Box>
     </>
