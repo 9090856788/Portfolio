@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Avatar, IconButton, Typography, Button } from "@mui/material";
+import { Box, Avatar, IconButton, Typography, Button, useMediaQuery, useTheme } from "@mui/material";
 import {
   Facebook,
   Instagram,
@@ -12,7 +12,6 @@ import {
   LocationOn,
   Download,
 } from "@mui/icons-material";
-// import axios from 'axios'; // Import axios
 
 const socialMediaLinks = [
   {
@@ -54,7 +53,9 @@ const socialMediaLinks = [
 ];
 
 const ProfileCard = () => {
-  const [avatar, setAvatar] = useState(""); // Profile Card specific avatar state
+  const [avatar, setAvatar] = useState("");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
@@ -68,20 +69,15 @@ const ProfileCard = () => {
   const handleResumeDownload = async () => {
     try {
       const response = await fetch("https://api.example.com/download-resume", {
-        responseType: "blob", // Ensure response is treated as a binary blob
+        responseType: "blob",
       });
 
-      // Create a link element
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "resume.pdf"); // Filename for the downloaded file
-
-      // Append the link to the body and trigger a click to start the download
+      link.setAttribute("download", "resume.pdf");
       document.body.appendChild(link);
       link.click();
-
-      // Cleanup
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -91,28 +87,26 @@ const ProfileCard = () => {
 
   return (
     <Box
-      className="Main Box"
       sx={{
         position: "relative",
-        width: "auto",
+        width: isMobile ? '90%' : 'auto',
         height: "85vh",
         border: "1px solid #e0e0e0",
-        padding: "20px",
+        padding: isMobile ? '10px' : '20px',
         borderRadius: "16px",
         boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-        marginTop: 12,
+        marginTop: isMobile ? 6 : 12,
         backgroundColor: "#fff",
       }}
     >
-      {/* Overlapping Avatar */}
       <Box
         sx={{
           position: "absolute",
-          top: "-100px",
+          top: isMobile ? '-60px' : '-100px',
           left: "50%",
           transform: "translateX(-50%)",
-          width: "200px",
-          height: "200px",
+          width: isMobile ? '120px' : '200px',
+          height: isMobile ? '120px' : '200px',
           borderRadius: "50%",
           overflow: "hidden",
           border: "4px solid #fff",
@@ -123,7 +117,7 @@ const ProfileCard = () => {
       >
         <Avatar
           alt="User Avatar"
-          src={avatar} // Use Profile Card's specific avatar state
+          src={avatar}
           sx={{ width: "100%", height: "100%" }}
           onClick={() =>
             document.getElementById("avatarInputForMainUserProfile").click()
@@ -137,20 +131,15 @@ const ProfileCard = () => {
           onChange={handleAvatarChange}
         />
       </Box>
-      {/* Main content below the Avatar */}
       <Box
         sx={{
           height: "20vh",
           padding: "10px",
           backgroundColor: "#f5f5f5",
-          marginTop: 12,
+          marginTop: isMobile ? 8 : 12,
         }}
       >
-        <Box
-          sx={{
-            textAlign: "center",
-          }}
-        >
+        <Box sx={{ textAlign: "center" }}>
           <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 1 }}>
             Kanhu Charan Sahoo
           </Typography>
@@ -168,18 +157,17 @@ const ProfileCard = () => {
             marginTop: 2,
           }}
         >
-          {socialMediaLinks &&
-            socialMediaLinks.map((link) => (
-              <IconButton
-                key={link.name}
-                href={link.url}
-                target="_blank"
-                aria-label={link.name}
-                sx={{ color: link.color }}
-              >
-                {link.icon}
-              </IconButton>
-            ))}
+          {socialMediaLinks.map((link) => (
+            <IconButton
+              key={link.name}
+              href={link.url}
+              target="_blank"
+              aria-label={link.name}
+              sx={{ color: link.color }}
+            >
+              {link.icon}
+            </IconButton>
+          ))}
         </Box>
       </Box>
       <Box
@@ -206,7 +194,9 @@ const ProfileCard = () => {
           }}
         >
           <Phone sx={{ color: "#3f51b5" }} />
-          <Typography variant="h6">9090856788</Typography>
+          <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
+            9090856788
+          </Typography>
         </Box>
         <Box
           sx={{
@@ -218,7 +208,9 @@ const ProfileCard = () => {
           }}
         >
           <Email sx={{ color: "#f44336" }} />
-          <Typography variant="h6">kanhucharansahoo595@gmail.com</Typography>
+          <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
+            kanhucharansahoo595@gmail.com
+          </Typography>
         </Box>
         <Box
           sx={{
@@ -230,13 +222,15 @@ const ProfileCard = () => {
           }}
         >
           <LocationOn sx={{ color: "#4caf50" }} />
-          <Typography variant="h6">Nayagarh, Odisha, India</Typography>
+          <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
+            Nayagarh, Odisha, India
+          </Typography>
         </Box>
 
         <Button
           variant="contained"
           startIcon={<Download />}
-          onClick={handleResumeDownload} // Trigger resume download
+          onClick={handleResumeDownload}
           sx={{
             marginTop: 2,
             bgcolor: "#1976d2",
@@ -244,6 +238,7 @@ const ProfileCard = () => {
             "&:hover": {
               bgcolor: "#1565c0",
             },
+            fontSize: isMobile ? '0.75rem' : '1rem'
           }}
         >
           Download Resume
