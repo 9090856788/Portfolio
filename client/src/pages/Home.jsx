@@ -35,7 +35,6 @@ const About = () => {
           sx={{
             width: "65%",
             height: "100vh",
-            border: "1px solid red",
             display: "flex",
             flexDirection: "column",
           }}
@@ -44,15 +43,10 @@ const About = () => {
           <Box
             sx={{
               width: "auto",
-              // height: "100vh",
-              border: "1px solid red",
               marginTop: 2.6,
               marginLeft: 1,
               padding: 2,
               backgroundColor: "#f5f5f5",
-              // display: "flex",
-              // flexDirection: "column",
-              // justifyContent: "center",
               borderRadius: "2%",
             }}
           >
@@ -71,9 +65,7 @@ const About = () => {
               sx={{
                 width: "auto",
                 height: "48vh",
-                border: "1px solid red",
                 marginTop: 2.6,
-                // marginLeft: 1,
                 padding: 2,
                 backgroundColor: "#f5f5f5",
                 display: "flex",
@@ -104,7 +96,6 @@ const About = () => {
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    border: "1px solid red",
                   }}
                 >
                   <Box
@@ -133,7 +124,6 @@ const About = () => {
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    border: "1px solid red",
                   }}
                 >
                   <Box
@@ -181,7 +171,6 @@ const About = () => {
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    border: "1px solid red",
                   }}
                 >
                   <Box
@@ -210,7 +199,6 @@ const About = () => {
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    border: "1px solid red",
                   }}
                 >
                   <Box
