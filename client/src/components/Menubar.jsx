@@ -57,18 +57,6 @@ const Menubar = ({ toggleDarkMode }) => {
         },
       }}
     >
-      {/* Name on the left */}
-      <Typography
-        variant="h6"
-        sx={{
-          display: { xs: "none", sm: "block" },
-          marginLeft: 1,
-          color: theme.palette.text.primary,
-        }}
-      >
-        Kanhu
-      </Typography>
-
       {/* Hamburger Icon for Mobile */}
       <IconButton
         sx={{ display: { xs: "block", sm: "none" } }}
