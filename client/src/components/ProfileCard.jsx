@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Avatar, IconButton, Typography, Button, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Box,
+  Avatar,
+  IconButton,
+  Typography,
+  Button,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import {
   Facebook,
   Instagram,
@@ -55,7 +63,7 @@ const socialMediaLinks = [
 const ProfileCard = () => {
   const [avatar, setAvatar] = useState("");
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
@@ -68,11 +76,9 @@ const ProfileCard = () => {
 
   const handleResumeDownload = async () => {
     try {
-      const response = await fetch("https://api.example.com/download-resume", {
-        responseType: "blob",
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const response = await fetch("https://api.example.com/download-resume");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "resume.pdf");
@@ -85,14 +91,44 @@ const ProfileCard = () => {
     }
   };
 
+  const renderSocialMediaIcons = () =>
+    socialMediaLinks.map((link) => (
+      <IconButton
+        key={link.name}
+        href={link.url}
+        target="_blank"
+        aria-label={link.name}
+        sx={{ color: link.color }}
+      >
+        {link.icon}
+      </IconButton>
+    ));
+
+  const renderContactInfo = (Icon, text, color) => (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        borderBottom: "1px solid grey",
+        paddingBottom: 1,
+      }}
+    >
+      <Icon sx={{ color }} />
+      <Typography variant="h6" sx={{ fontSize: isMobile ? "1rem" : "1.25rem" }}>
+        {text}
+      </Typography>
+    </Box>
+  );
+
   return (
     <Box
       sx={{
         position: "relative",
-        width: isMobile ? '90%' : 'auto',
+        width: isMobile ? "90%" : "auto",
         height: "85vh",
         border: "1px solid #e0e0e0",
-        padding: isMobile ? '10px' : '20px',
+        padding: isMobile ? "10px" : "20px",
         borderRadius: "16px",
         boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
         marginTop: isMobile ? 6 : 12,
@@ -102,11 +138,11 @@ const ProfileCard = () => {
       <Box
         sx={{
           position: "absolute",
-          top: isMobile ? '-60px' : '-100px',
+          top: isMobile ? "-60px" : "-100px",
           left: "50%",
           transform: "translateX(-50%)",
-          width: isMobile ? '120px' : '200px',
-          height: isMobile ? '120px' : '200px',
+          width: isMobile ? "120px" : "200px",
+          height: isMobile ? "120px" : "200px",
           borderRadius: "50%",
           overflow: "hidden",
           border: "4px solid #fff",
@@ -119,18 +155,17 @@ const ProfileCard = () => {
           alt="User Avatar"
           src={avatar}
           sx={{ width: "100%", height: "100%" }}
-          onClick={() =>
-            document.getElementById("avatarInputForMainUserProfile").click()
-          }
+          onClick={() => document.getElementById("avatarInput").click()}
         />
         <input
           type="file"
-          id="avatarInputForMainUserProfile"
+          id="avatarInput"
           accept="image/*"
           style={{ display: "none" }}
           onChange={handleAvatarChange}
         />
       </Box>
+
       <Box
         sx={{
           height: "20vh",
@@ -147,7 +182,6 @@ const ProfileCard = () => {
             Full Stack Developer
           </Typography>
         </Box>
-
         <Box
           sx={{
             display: "flex",
@@ -157,19 +191,10 @@ const ProfileCard = () => {
             marginTop: 2,
           }}
         >
-          {socialMediaLinks.map((link) => (
-            <IconButton
-              key={link.name}
-              href={link.url}
-              target="_blank"
-              aria-label={link.name}
-              sx={{ color: link.color }}
-            >
-              {link.icon}
-            </IconButton>
-          ))}
+          {renderSocialMediaIcons()}
         </Box>
       </Box>
+
       <Box
         sx={{
           marginTop: 2,
@@ -184,49 +209,9 @@ const ProfileCard = () => {
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            borderBottom: "1px solid grey",
-            paddingBottom: 1,
-          }}
-        >
-          <Phone sx={{ color: "#3f51b5" }} />
-          <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
-            9090856788
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            borderBottom: "1px solid grey",
-            paddingBottom: 1,
-          }}
-        >
-          <Email sx={{ color: "#f44336" }} />
-          <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
-            kanhucharansahoo595@gmail.com
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            borderBottom: "1px solid grey",
-            paddingBottom: 1,
-          }}
-        >
-          <LocationOn sx={{ color: "#4caf50" }} />
-          <Typography variant="h6" sx={{ fontSize: isMobile ? '1rem' : '1.25rem' }}>
-            Nayagarh, Odisha, India
-          </Typography>
-        </Box>
-
+        {renderContactInfo(Phone, "9090856788", "#3f51b5")}
+        {renderContactInfo(Email, "kanhucharansahoo595@gmail.com", "#f44336")}
+        {renderContactInfo(LocationOn, "Nayagarh, Odisha, India", "#4caf50")}
         <Button
           variant="contained"
           startIcon={<Download />}
@@ -235,10 +220,8 @@ const ProfileCard = () => {
             marginTop: 2,
             bgcolor: "#1976d2",
             color: "#fff",
-            "&:hover": {
-              bgcolor: "#1565c0",
-            },
-            fontSize: isMobile ? '0.75rem' : '1rem'
+            "&:hover": { bgcolor: "#1565c0" },
+            fontSize: isMobile ? "0.75rem" : "1rem",
           }}
         >
           Download Resume

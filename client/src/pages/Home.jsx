@@ -3,6 +3,7 @@ import { Box, IconButton } from "@mui/material";
 import Menubar from "../components/Menubar.jsx";
 import ProfileCard from "../components/ProfileCard.jsx";
 import { Facebook } from "@mui/icons-material";
+import InfoCard from "../components/InfoCard.jsx";
 
 const About = () => {
   return (
@@ -63,165 +64,23 @@ const About = () => {
             <h2>What I do!</h2>
             <Box
               sx={{
-                width: "auto",
-                height: "48vh",
-                marginTop: 2.6,
-                padding: 2,
-                backgroundColor: "#f5f5f5",
                 display: "flex",
+                alignItems: "center",
                 justifyContent: "center",
-                borderRadius: "2%",
               }}
             >
-              <Box
-                className="Parent div"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: "2%",
-                  backgroundColor: "#ffeb3b",
-                  cursor: "pointer",
-                  color: "white",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  flexDirection: "column",
-                  border: "1px solid pink",
-                }}
-              >
-                <Box
-                  className="box"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: "2%",
-                      backgroundColor: "blue",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <IconButton>
-                      <Facebook />
-                    </IconButton>
-                    <p>Full Stack Development</p>
-                  </Box>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Amet, dolorem!
-                  </p>
-                </Box>
-
-                <Box
-                  className="box"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: "2%",
-                      backgroundColor: "blue",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <IconButton>
-                      <Facebook />
-                    </IconButton>
-                    <p>Frontend Development</p>
-                  </Box>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Amet, dolorem!
-                  </p>
-                </Box>
-              </Box>
-
-              <Box
-                className="Parent div"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: "2%",
-                  backgroundColor: "#ffeb3b",
-                  cursor: "pointer",
-                  color: "white",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  flexDirection: "column",
-                  border: "1px solid pink",
-                }}
-              >
-                <Box
-                  className="box"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: "2%",
-                      backgroundColor: "blue",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <IconButton>
-                      <Facebook />
-                    </IconButton>
-                    <p>Web Development</p>
-                  </Box>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Amet, dolorem!
-                  </p>
-                </Box>
-
-                <Box
-                  className="box"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: "2%",
-                      backgroundColor: "blue",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <IconButton>
-                      <Facebook />
-                    </IconButton>
-                    <p>React Development</p>
-                  </Box>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Amet, dolorem!
-                  </p>
-                </Box>
-              </Box>
+              <InfoCard />
+              <InfoCard />
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <InfoCard />
+              <InfoCard />
             </Box>
           </Box>
         </Box>
