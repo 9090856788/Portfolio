@@ -17,7 +17,7 @@ const mockInfoCardData = [
   },
 ];
 
-const Home = () => {
+const Home = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -56,7 +56,7 @@ const Home = () => {
           flexDirection: "column",
         }}
       >
-        <Menubar />
+        <Menubar toggleDarkMode={toggleDarkMode} />
         <Box
           sx={{
             marginTop: "20px",
@@ -67,9 +67,9 @@ const Home = () => {
             boxShadow:
               theme.palette.mode === "dark"
                 ? `7px 7px 15px ${theme.palette.grey[900]}, 
-                 -7px -7px 15px ${theme.palette.grey[800]}`
+                   -7px -7px 15px ${theme.palette.grey[800]}`
                 : `7px 7px 15px ${theme.palette.grey[300]}, 
-                 -7px -7px 15px ${theme.palette.grey[100]}`,
+                   -7px -7px 15px ${theme.palette.grey[100]}`,
           }}
         >
           <Typography variant="h4" sx={{ marginBottom: 2 }}>

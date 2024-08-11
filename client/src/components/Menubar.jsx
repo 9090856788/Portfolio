@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Typography,
@@ -23,7 +23,7 @@ const Menubar = ({ toggleDarkMode }) => {
   const navigate = useNavigate();
   const isDarkMode = theme.palette.mode === "dark";
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   const menuItems = [
     { icon: <HomeIcon />, label: "Home", path: "/" },
@@ -42,13 +42,7 @@ const Menubar = ({ toggleDarkMode }) => {
         width: "100%",
         display: "flex",
         alignItems: "center",
-        justifyContent: {
-          xs: "space-between",
-          sm: "space-between",
-          md: "space-between",
-          lg: "space-between",
-          xl: "space-between",
-        },
+        justifyContent: "space-between",
         padding: "5px",
         borderRadius: "10px",
         bgcolor: theme.palette.background.default,
@@ -64,14 +58,16 @@ const Menubar = ({ toggleDarkMode }) => {
       }}
     >
       {/* Name on the left */}
-      {/* <Typography variant="h6" sx={{ display: { xs: "none", sm: "block" }, marginLeft: 1 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          display: { xs: "none", sm: "block" },
+          marginLeft: 1,
+          color: theme.palette.text.primary,
+        }}
+      >
         Kanhu
-      </Typography> */}
-      {/* <svg>
-        <text x="50%" y="50%" dy=".35em" text-anchor="middle">
-          Kanhu
-        </text>
-      </svg> */}
+      </Typography>
 
       {/* Hamburger Icon for Mobile */}
       <IconButton
@@ -118,37 +114,31 @@ const Menubar = ({ toggleDarkMode }) => {
       <IconButton
         onClick={toggleDarkMode}
         sx={{
-          display: { xs: "block", sm: "flex" },
           width: 60,
           height: 60,
           bgcolor: theme.palette.background.default,
-          boxShadow:
-            theme.palette.mode === "dark"
-              ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-              : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+          boxShadow: isDarkMode
+            ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
           borderRadius: "50%",
-          transition: "box-shadow 0.3s ease, transform 0.3s ease",
+          transition: "box-shadow 0.3s ease-in-out",
           "&:hover": {
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
-            transform: "translateY(-2px)",
+            boxShadow: isDarkMode
+              ? `inset 8px 8px 16px ${theme.palette.grey[900]}, inset -8px -8px 16px ${theme.palette.grey[800]}`
+              : `inset 8px 8px 16px ${theme.palette.grey[300]}, inset -8px -8px 16px ${theme.palette.grey[100]}`,
           },
         }}
       >
         {isDarkMode ? <Brightness7 /> : <Brightness4 />}
       </IconButton>
 
-      {/* Drawer Component for Mobile */}
+      {/* Drawer for Mobile */}
       <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
         <Box
           sx={{
             width: 250,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
             bgcolor: theme.palette.background.default,
+            height: "100%",
           }}
         >
           <List>
@@ -158,7 +148,7 @@ const Menubar = ({ toggleDarkMode }) => {
                 key={item.label}
                 onClick={() => {
                   navigate(item.path);
-                  handleDrawerToggle(); // Close drawer after selection
+                  handleDrawerToggle();
                 }}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
@@ -166,26 +156,24 @@ const Menubar = ({ toggleDarkMode }) => {
               </ListItem>
             ))}
           </List>
-          <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              padding: 1,
+            }}
+          >
             <IconButton
               onClick={toggleDarkMode}
               sx={{
-                width: 60,
-                height: 60,
                 bgcolor: theme.palette.background.default,
-                boxShadow:
-                  theme.palette.mode === "dark"
-                    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-                    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
-                borderRadius: "50%",
-                transition: "box-shadow 0.3s ease, transform 0.3s ease",
-                "&:hover": {
-                  boxShadow:
-                    theme.palette.mode === "dark"
-                      ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                      : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
-                  transform: "translateY(-2px)",
-                },
+                boxShadow: isDarkMode
+                  ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                  : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+                transform: "translateY(-2px)",
               }}
             >
               {isDarkMode ? <Brightness7 /> : <Brightness4 />}

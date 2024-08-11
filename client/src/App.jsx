@@ -5,7 +5,6 @@ import Home from "./pages/Home.jsx";
 import Resume from "./pages/Resume.jsx";
 import Project from "./pages/Project.jsx";
 import Contact from "./pages/Contact.jsx";
-import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
 const App = () => {
@@ -25,9 +24,12 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Navbar toggleDarkMode={toggleDarkMode} />
         <Routes>
-          <Route exact path="/" element={<Home />} />
+          <Route
+            exact
+            path="/"
+            element={<Home toggleDarkMode={toggleDarkMode} />}
+          />
           <Route exact path="/resume" element={<Resume />} />
           <Route exact path="/project" element={<Project />} />
           <Route exact path="/contact" element={<Contact />} />

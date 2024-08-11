@@ -258,10 +258,17 @@ const ProfileCard = () => {
           onClick={handleResumeDownload}
           sx={{
             marginTop: 2,
-            bgcolor: "#1976d2",
+            bgcolor: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)", // Gradient background
             color: "#fff",
-            "&:hover": { bgcolor: "#1565c0" },
+            borderRadius: "50px",
+            boxShadow: "0px 4px 20px rgba(33, 150, 243, 0.3)",
+            "&:hover": {
+              bgcolor: "linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)",
+              boxShadow: "0px 6px 30px rgba(33, 150, 243, 0.5)",
+              transform: "scale(1.05)",
+            },
             fontSize: isMobile ? "0.75rem" : "1rem",
+            padding: isMobile ? "6px 12px" : "10px 20px",
           }}
         >
           Download Resume
