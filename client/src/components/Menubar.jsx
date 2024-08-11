@@ -1,16 +1,29 @@
-import React from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  useTheme,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import DescriptionIcon from "@mui/icons-material/Description";
 import WorkIcon from "@mui/icons-material/Work";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 
-const Menubar = () => {
+const Menubar = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-
   const isDarkMode = theme.palette.mode === "dark";
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const menuItems = [
     { icon: <HomeIcon />, label: "Home", path: "/" },
@@ -19,71 +32,167 @@ const Menubar = () => {
     { icon: <ContactMailIcon />, label: "Contact", path: "/contact" },
   ];
 
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <Box
       sx={{
-        width: {
-          xs: "100%",
-          sm: "80%",
-          md: "70%",
-          lg: "65%",
-          xl: "60%",
-        },
-        height: "auto",
+        width: "100%",
         display: "flex",
+        alignItems: "center",
         justifyContent: {
           xs: "space-between",
-          sm: "space-around",
+          sm: "space-between",
+          md: "space-between",
+          lg: "space-between",
+          xl: "space-between",
         },
-        alignItems: "center",
-        padding: "10px",
+        padding: "5px",
         borderRadius: "10px",
-        marginLeft: "auto",
-        bgcolor: isDarkMode ? "grey.900" : "#e0e0e0",
+        bgcolor: theme.palette.background.default,
         boxShadow: isDarkMode
-          ? "inset 7px 7px 15px #333, inset -7px -7px 15px #000"
-          : "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
-        transition: "all 0.2s ease-in-out",
+          ? `7px 7px 15px ${theme.palette.grey[900]}, -7px -7px 15px ${theme.palette.grey[800]}`
+          : `7px 7px 15px ${theme.palette.grey[300]}, -7px -7px 15px ${theme.palette.grey[100]}`,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: isDarkMode
+            ? `inset 7px 7px 15px ${theme.palette.grey[900]}, inset -7px -7px 15px ${theme.palette.grey[800]}`
+            : `inset 7px 7px 15px ${theme.palette.grey[300]}, inset -7px -7px 15px ${theme.palette.grey[100]}`,
+        },
       }}
     >
-      {menuItems &&
-        menuItems.map((item, index) => (
+      {/* Name on the left */}
+      {/* <Typography variant="h6" sx={{ display: { xs: "none", sm: "block" }, marginLeft: 1 }}>
+        Kanhu
+      </Typography> */}
+      {/* <svg>
+        <text x="50%" y="50%" dy=".35em" text-anchor="middle">
+          Kanhu
+        </text>
+      </svg> */}
+
+      {/* Hamburger Icon for Mobile */}
+      <IconButton
+        sx={{ display: { xs: "block", sm: "none" } }}
+        onClick={handleDrawerToggle}
+      >
+        <MenuIcon />
+      </IconButton>
+
+      {/* Navigation Buttons */}
+      <Box
+        sx={{
+          display: { xs: "none", sm: "flex" },
+          alignItems: "center",
+          gap: 2,
+          flexGrow: 1,
+        }}
+      >
+        {menuItems.map((item) => (
           <Box
-            key={index}
+            key={item.label}
+            onClick={() => navigate(item.path)}
             sx={{
               display: "flex",
               alignItems: "center",
-              padding: {
-                xs: 1,
-                sm: 2,
-              },
-              bgcolor: isDarkMode ? "grey.800" : "#e0e0e0",
-              borderRadius: "10px",
-              boxShadow: isDarkMode
-                ? "inset 4px 4px 8px #333, inset -4px -4px 8px #000"
-                : "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
-              transition: "all 0.2s ease-in-out",
+              gap: 1,
               cursor: "pointer",
+              padding: 1,
+              transition: "background-color 0.3s",
               "&:hover": {
-                boxShadow: isDarkMode
-                  ? "inset 7px 7px 15px #333, inset -7px -7px 15px #000"
-                  : "inset 7px 7px 15px #bebebe, inset -7px -7px 15px #ffffff",
+                backgroundColor: isDarkMode ? "#333" : "#f0f0f0",
               },
             }}
-            onClick={() => navigate(item.path)}
           >
             {item.icon}
-            <Typography
-              sx={{
-                ml: 1,
-                color: isDarkMode ? "#e0e0e0" : "inherit",
-                display: { xs: "none", sm: "block" },
-              }}
-            >
+            <Typography variant="body1" sx={{ fontSize: "1rem" }}>
               {item.label}
             </Typography>
           </Box>
         ))}
+      </Box>
+
+      {/* Dark Mode Toggle Button */}
+      <IconButton
+        onClick={toggleDarkMode}
+        sx={{
+          display: { xs: "block", sm: "flex" },
+          width: 60,
+          height: 60,
+          bgcolor: theme.palette.background.default,
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+              : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+          borderRadius: "50%",
+          transition: "box-shadow 0.3s ease, transform 0.3s ease",
+          "&:hover": {
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+            transform: "translateY(-2px)",
+          },
+        }}
+      >
+        {isDarkMode ? <Brightness7 /> : <Brightness4 />}
+      </IconButton>
+
+      {/* Drawer Component for Mobile */}
+      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
+        <Box
+          sx={{
+            width: 250,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            bgcolor: theme.palette.background.default,
+          }}
+        >
+          <List>
+            {menuItems.map((item) => (
+              <ListItem
+                button
+                key={item.label}
+                onClick={() => {
+                  navigate(item.path);
+                  handleDrawerToggle(); // Close drawer after selection
+                }}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
+          </List>
+          <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
+            <IconButton
+              onClick={toggleDarkMode}
+              sx={{
+                width: 60,
+                height: 60,
+                bgcolor: theme.palette.background.default,
+                boxShadow:
+                  theme.palette.mode === "dark"
+                    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+                    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+                borderRadius: "50%",
+                transition: "box-shadow 0.3s ease, transform 0.3s ease",
+                "&:hover": {
+                  boxShadow:
+                    theme.palette.mode === "dark"
+                      ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                      : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+                  transform: "translateY(-2px)",
+                },
+              }}
+            >
+              {isDarkMode ? <Brightness7 /> : <Brightness4 />}
+            </IconButton>
+          </Box>
+        </Box>
+      </Drawer>
     </Box>
   );
 };

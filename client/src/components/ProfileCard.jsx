@@ -110,12 +110,25 @@ const ProfileCard = () => {
         display: "flex",
         alignItems: "center",
         gap: 1,
-        borderBottom: "1px solid grey",
         paddingBottom: 1,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        width: "100%", // Ensure it takes full width
       }}
     >
       <Icon sx={{ color }} />
-      <Typography variant="h6" sx={{ fontSize: isMobile ? "1rem" : "1.25rem" }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontSize: isMobile ? "1rem" : "1.25rem",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          flex: 1, // Allow the text to grow and shrink as needed
+          maxWidth: "calc(100% - 40px)", // Account for icon width and padding
+        }}
+      >
         {text}
       </Typography>
     </Box>
@@ -126,13 +139,27 @@ const ProfileCard = () => {
       sx={{
         position: "relative",
         width: isMobile ? "90%" : "auto",
-        height: "85vh",
-        border: "1px solid #e0e0e0",
+        height: isMobile ? "auto" : "85vh",
         padding: isMobile ? "10px" : "20px",
         borderRadius: "16px",
-        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? `8px 8px 16px ${theme.palette.grey[900]}, 
+             -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, 
+             -8px -8px 16px ${theme.palette.grey[100]}`,
         marginTop: isMobile ? 6 : 12,
-        backgroundColor: "#fff",
+        backgroundColor: theme.palette.background.paper,
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        "&:hover": {
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `12px 12px 24px ${theme.palette.grey[900]}, 
+               -12px -12px 24px ${theme.palette.grey[800]}`
+              : `12px 12px 24px ${theme.palette.grey[300]}, 
+               -12px -12px 24px ${theme.palette.grey[100]}`,
+          transform: "translateY(-2px)",
+        },
       }}
     >
       <Box
@@ -145,9 +172,14 @@ const ProfileCard = () => {
           height: isMobile ? "120px" : "200px",
           borderRadius: "50%",
           overflow: "hidden",
-          border: "4px solid #fff",
+          border: "4px solid transparent", // Remove border color
           backgroundColor: "white",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `8px 8px 16px ${theme.palette.grey[900]}, 
+               -8px -8px 16px ${theme.palette.grey[800]}`
+              : `8px 8px 16px ${theme.palette.grey[300]}, 
+               -8px -8px 16px ${theme.palette.grey[100]}`,
           cursor: "pointer",
         }}
       >
@@ -168,9 +200,9 @@ const ProfileCard = () => {
 
       <Box
         sx={{
-          height: "20vh",
+          height: isMobile ? "auto" : "20vh",
           padding: "10px",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: theme.palette.background.paper,
           marginTop: isMobile ? 8 : 12,
         }}
       >
@@ -178,7 +210,10 @@ const ProfileCard = () => {
           <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 1 }}>
             Kanhu Charan Sahoo
           </Typography>
-          <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          <Typography
+            variant="body1"
+            sx={{ color: theme.palette.text.secondary }}
+          >
             Full Stack Developer
           </Typography>
         </Box>
@@ -198,7 +233,7 @@ const ProfileCard = () => {
       <Box
         sx={{
           marginTop: 2,
-          border: "1px solid #f5f5f5",
+          border: "1px solid transparent", // Remove border color
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -206,7 +241,12 @@ const ProfileCard = () => {
           gap: 2,
           padding: 2,
           borderRadius: "8px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `8px 8px 16px ${theme.palette.grey[900]}, 
+               -8px -8px 16px ${theme.palette.grey[800]}`
+              : `8px 8px 16px ${theme.palette.grey[300]}, 
+               -8px -8px 16px ${theme.palette.grey[100]}`,
         }}
       >
         {renderContactInfo(Phone, "9090856788", "#3f51b5")}

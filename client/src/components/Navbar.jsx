@@ -1,89 +1,79 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, Box, Avatar, IconButton } from "@mui/material";
+import React from "react";
+import { AppBar, Toolbar, Box, IconButton, Typography } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
-import { CssBaseline, createTheme, ThemeProvider } from "@mui/material";
+import { useTheme } from "@mui/material";
 
-const Navbar = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [avatar, setAvatar] = useState(""); // Navbar specific avatar state
-
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? "dark" : "light",
-    },
-  });
-
-  const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => setAvatar(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+const Navbar = ({ toggleDarkMode }) => {
+  const theme = useTheme();
+  const darkMode = theme.palette.mode === "dark";
 
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppBar
-          position="sticky"
+    <AppBar
+      position="sticky"
+      sx={{
+        bgcolor: theme.palette.background.default,
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? `8px 8px 16px ${theme.palette.grey[900]}, 
+             -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, 
+             -8px -8px 16px ${theme.palette.grey[100]}`,
+        padding: "0.5rem 1rem",
+        borderRadius: "16px",
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        margin: "0 auto", // Centering the Navbar
+        maxWidth: "1200px", // Adjust to match the width of Menubar
+        "&:hover": {
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `12px 12px 24px ${theme.palette.grey[900]}, 
+               -12px -12px 24px ${theme.palette.grey[800]}`
+              : `12px 12px 24px ${theme.palette.grey[300]}, 
+               -12px -12px 24px ${theme.palette.grey[100]}`,
+          transform: "translateY(-2px)",
+        },
+      }}
+    >
+      <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
+        <Typography
+          variant="h6"
           sx={{
-            bgcolor: "#e0e0e0",
-            boxShadow: "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
-            padding: "0.5rem 1rem",
+            color: theme.palette.text.primary,
+            fontWeight: "bold",
+            letterSpacing: "0.5px",
           }}
         >
-          <Toolbar sx={{ justifyContent: "space-between" }}>
-            <Box sx={{ position: "relative" }}>
-              <Avatar
-                alt="User Avatar"
-                src={avatar}
-                sx={{
-                  width: 60,
-                  height: 60,
-                  bgcolor: "#e0e0e0",
-                  boxShadow: "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
-                  cursor: "pointer",
-                }}
-                onClick={() => document.getElementById("avatarInput").click()}
-              />
-              <input
-                type="file"
-                id="avatarInput"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleAvatarChange}
-              />
-            </Box>
-            <IconButton
-              onClick={toggleDarkMode}
-              sx={{
-                width: 60,
-                height: 60,
-                bgcolor: "#e0e0e0",
-                boxShadow: "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
-                borderRadius: "50%",
-                "&:hover": {
-                  boxShadow:
-                    "inset 7px 7px 15px #bebebe, inset -7px -7px 15px #ffffff",
-                },
-              }}
-            >
-              {darkMode ? (
-                <Brightness7 sx={{ color: "#333" }} />
-              ) : (
-                <Brightness4 sx={{ color: "#333" }} />
-              )}
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-      </ThemeProvider>
-    </>
+          Kanhu
+        </Typography>
+        <IconButton
+          onClick={toggleDarkMode}
+          sx={{
+            width: 60,
+            height: 60,
+            bgcolor: theme.palette.background.default,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `8px 8px 16px ${theme.palette.grey[900]}, 
+                 -8px -8px 16px ${theme.palette.grey[800]}`
+                : `8px 8px 16px ${theme.palette.grey[300]}, 
+                 -8px -8px 16px ${theme.palette.grey[100]}`,
+            borderRadius: "50%",
+            transition: "box-shadow 0.3s ease, transform 0.3s ease",
+            "&:hover": {
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                   -12px -12px 24px ${theme.palette.grey[800]}`
+                  : `12px 12px 24px ${theme.palette.grey[300]}, 
+                   -12px -12px 24px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
+            },
+          }}
+        >
+          {darkMode ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
 };
 

@@ -1,47 +1,57 @@
 import React from "react";
-import { Box, Typography, Card, CardContent } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 
 const InfoCard = () => {
-  // Dummy data
-  const data = {
-    icon: <InfoIcon fontSize="large" />,
-    heading: "Information",
-    description: "This is a brief description of the information provided in this section.",
-  };
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Card
+    <Box
       sx={{
-        maxWidth: 345,
-        margin: "20px",
-        boxShadow: "7px 7px 15px #bebebe, -7px -7px 15px #ffffff",
-        transition: "all 0.2s ease-in-out",
+        width: isMobile ? "90%" : "auto",
+        padding: isMobile ? "10px" : "20px",
+        borderRadius: "16px",
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? `8px 8px 16px ${theme.palette.grey[900]}, 
+             -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, 
+             -8px -8px 16px ${theme.palette.grey[100]}`,
+        marginTop: isMobile ? 1 : 2,
+        backgroundColor: theme.palette.background.paper,
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
         "&:hover": {
-          boxShadow: "inset 7px 7px 15px #bebebe, inset -7px -7px 15px #ffffff",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `12px 12px 24px ${theme.palette.grey[900]}, 
+               -12px -12px 24px ${theme.palette.grey[800]}`
+              : `12px 12px 24px ${theme.palette.grey[300]}, 
+               -12px -12px 24px ${theme.palette.grey[100]}`,
+          transform: "translateY(-2px)",
         },
       }}
     >
-      <CardContent>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "16px",
-          }}
-        >
-          <Box sx={{ marginRight: "10px", color: "primary.main" }}>
-            {data.icon}
-          </Box>
-          <Typography variant="h5" component="div">
-            {data.heading}
-          </Typography>
-        </Box>
-        <Typography variant="body2" color="text.secondary">
-          {data.description}
-        </Typography>
-      </CardContent>
-    </Card>
+      <Typography
+        variant="h6"
+        sx={{
+          fontSize: isMobile ? "1rem" : "1.25rem",
+          fontWeight: "bold",
+          marginBottom: 1,
+        }}
+      >
+        Information Title
+      </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          fontSize: isMobile ? "0.875rem" : "1rem",
+          color: theme.palette.text.secondary,
+        }}
+      >
+        This is some informational content to be displayed within the InfoCard
+        component. Adjust text as necessary to fit your needs.
+      </Typography>
+    </Box>
   );
 };
 

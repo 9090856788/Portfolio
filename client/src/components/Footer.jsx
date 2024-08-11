@@ -1,76 +1,25 @@
 import React from "react";
-import { Grid, Box, Typography, IconButton } from "@mui/material";
-import { Email, Phone, Facebook, Twitter, LinkedIn } from "@mui/icons-material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 
 const Footer = () => {
-  return (
-    <>
-      <Box sx={{ width: "100%", height: "100%", p: 2 }}>
-        <Grid container spacing={4}>
-          {/* Social Media Links */}
-          <Grid
-            item
-            xs={12}
-            lg={6}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt={4}
-            gap={2}
-          >
-            <IconButton
-              href="https://www.facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Facebook />
-            </IconButton>
-            <IconButton
-              href="https://www.twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Twitter />
-            </IconButton>
-            <IconButton
-              href="https://www.linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <LinkedIn />
-            </IconButton>
-          </Grid>
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-          {/* Email and Phone Number */}
-          <Grid
-            item
-            xs={12}
-            lg={6}
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            mt={4}
-            gap={1}
-          >
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              textAlign="center"
-            >
-              <Email sx={{ mr: 1 }} /> kanhucharansahoo595@gmail.com
-            </Typography>
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              textAlign="center"
-            >
-              <Phone sx={{ mr: 1 }} /> +91 9090856788
-            </Typography>
-          </Grid>
-        </Grid>
-      </Box>
-    </>
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        padding: isMobile ? "10px" : "20px",
+        backgroundColor: "#f5f5f5",
+        textAlign: "center",
+        position: "relative",
+        bottom: 0,
+      }}
+    >
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        © 2024 Kanhu Charan Sahoo. All rights reserved.
+      </Typography>
+    </Box>
   );
 };
 
