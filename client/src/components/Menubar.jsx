@@ -72,6 +72,7 @@ const Menubar = ({ toggleDarkMode }) => {
           alignItems: "center",
           gap: 2,
           flexGrow: 1,
+          marginLeft: 2,
         }}
       >
         {menuItems.map((item) => (

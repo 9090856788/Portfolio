@@ -1,56 +1,99 @@
-import React from "react";
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, useTheme } from "@mui/material";
 
-const InfoCard = () => {
+const InfoCard = ({ title, content, imageSrc }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isDarkMode = theme.palette.mode === "dark";
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Toggle content visibility
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  // Truncate content if not expanded
+  const truncatedContent =
+    content.length > 100 ? content.substring(0, 100) + "..." : content;
 
   return (
     <Box
       sx={{
-        width: isMobile ? "90%" : "auto",
-        padding: isMobile ? "10px" : "20px",
-        borderRadius: "16px",
-        boxShadow:
-          theme.palette.mode === "dark"
-            ? `8px 8px 16px ${theme.palette.grey[900]}, 
-             -8px -8px 16px ${theme.palette.grey[800]}`
-            : `8px 8px 16px ${theme.palette.grey[300]}, 
-             -8px -8px 16px ${theme.palette.grey[100]}`,
-        marginTop: isMobile ? 1 : 2,
-        backgroundColor: theme.palette.background.paper,
-        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        width: "300px",
+        padding: "16px",
+        borderRadius: "12px",
+        bgcolor: theme.palette.background.default,
+        boxShadow: isDarkMode
+          ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+          : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+        transition: "box-shadow 0.3s ease-in-out",
         "&:hover": {
-          boxShadow:
-            theme.palette.mode === "dark"
-              ? `12px 12px 24px ${theme.palette.grey[900]}, 
-               -12px -12px 24px ${theme.palette.grey[800]}`
-              : `12px 12px 24px ${theme.palette.grey[300]}, 
-               -12px -12px 24px ${theme.palette.grey[100]}`,
-          transform: "translateY(-2px)",
+          boxShadow: isDarkMode
+            ? `inset 8px 8px 16px ${theme.palette.grey[900]}, inset -8px -8px 16px ${theme.palette.grey[800]}`
+            : `inset 8px 8px 16px ${theme.palette.grey[300]}, inset -8px -8px 16px ${theme.palette.grey[100]}`,
         },
+        position: "relative",
+        overflow: 'hidden', // Ensure that the image does not overflow the card
       }}
     >
+      {imageSrc && (
+        <Box
+          sx={{
+            width: "100%",
+            height: "150px",
+            overflow: "hidden",
+            borderRadius: "8px",
+            mb: "16px",
+          }}
+        >
+          <img
+            src={imageSrc}
+            alt={title}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </Box>
+      )}
       <Typography
         variant="h6"
-        sx={{
-          fontSize: isMobile ? "1rem" : "1.25rem",
-          fontWeight: "bold",
-          marginBottom: 1,
-        }}
+        component="p"
+        sx={{ textAlign: "center", fontWeight: "bold", marginBottom: "8px" }}
       >
-        Information Title
+        {title}
       </Typography>
-      <Typography
-        variant="body1"
+      <Typography variant="body2" component="p" sx={{ marginBottom: "16px" }}>
+        {isExpanded ? content : truncatedContent}
+      </Typography>
+      <Box
         sx={{
-          fontSize: isMobile ? "0.875rem" : "1rem",
-          color: theme.palette.text.secondary,
+          position: "absolute",
+          bottom: "8px",
+          right: "8px",
+          backgroundColor: isDarkMode
+            ? theme.palette.grey[800]
+            : theme.palette.grey[200],
+          width: "24px",
+          height: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "50%",
+          boxShadow: isDarkMode
+            ? `4px 4px 8px ${theme.palette.grey[900]}, -4px -4px 8px ${theme.palette.grey[800]}`
+            : `4px 4px 8px ${theme.palette.grey[300]}, -4px -4px 8px ${theme.palette.grey[100]}`,
+          cursor: "pointer",
         }}
+        onClick={handleToggle}
       >
-        This is some informational content to be displayed within the InfoCard
-        component. Adjust text as necessary to fit your needs.
-      </Typography>
+        <Typography
+          variant="body2"
+          sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}
+        >
+          {isExpanded ? "↑" : "→"}
+        </Typography>
+      </Box>
     </Box>
   );
 };

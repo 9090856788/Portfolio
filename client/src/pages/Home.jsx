@@ -1,21 +1,10 @@
-import React from "react";
-import { Box, useTheme, useMediaQuery, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
 import InfoCard from "../components/InfoCard";
-
-const mockInfoCardData = [
-  { title: "Experience", content: "4 years of experience in IT." },
-  { title: "Skills", content: "JavaScript, React, Redux, etc." },
-  {
-    title: "Projects",
-    content: "Developed various projects in web development.",
-  },
-  {
-    title: "Projects",
-    content: "Developed various projects in web development.",
-  },
-];
+import freelancerImage from "../img/freelancer.jpg";
+import frontendImage from "../img/frontendImage.jpg";
 
 const Home = ({ toggleDarkMode }) => {
   const theme = useTheme();
@@ -75,22 +64,60 @@ const Home = ({ toggleDarkMode }) => {
           <Typography variant="h4" sx={{ marginBottom: 2 }}>
             About Me
           </Typography>
-          <Typography variant="body1" sx={{ marginBottom: 2 }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-            pulvinar, ipsum vel condimentum luctus, neque metus ultricies
-            lectus, vel semper nisi ligula non arcu. Sed et arcu lacinia,
-            dignissim lectus at, ullamcorper neque. Nulla facilisi. Sed sed
-            fermentum neque, vel varius ipsum. Integer id mauris at dui
-            consectetur pulvinar. Donec vel velit vel neque vulputate semper.
-            Proin in consectetur nisi. Lorem ipsum dolor sit amet, consectetur
-            adipiscing elit. Sed pulvinar, ipsum vel condimentum luctus, neque
-            metus ultricies lectus, vel semper nisi ligula non arcu. Sed et arcu
-            lacinia, dignissim lectus at, ullamcorper neque. Nulla facilisi. Sed
-            sed fermentum neque, vel varius ipsum. Integer id mauris at dui
-            consectetur pulvinar. Donec vel velit vel neque vulputate semper.
-            Proin in consectetur nisi.
+          <Typography
+            variant="body1"
+            sx={{
+              marginBottom: "2px",
+              position: "relative",
+              "&::before": {
+                content: '"•"',
+                position: "absolute",
+                left: "-10px", // Adjust this value based on your needs
+              },
+            }}
+          >
+            As a Frontend developer passionate about creating seamless web
+            experiences & developing robust and problem-solving skills and
+            proven experience in creating and designing software in a
+            test-driven environment.
           </Typography>
-          <Typography variant="h5">What I do!</Typography>
+
+          <Typography
+            variant="body1"
+            sx={{
+              marginBottom: "2px",
+              position: "relative",
+              "&::before": {
+                content: '"•"',
+                position: "absolute",
+                left: "-10px", // Adjust this value based on your needs
+              },
+            }}
+          >
+            My expertise spans front-end development, where I have good hands-on
+            experience with HTML, CSS, JavaScript, Typescript, ReactJs, NextJs,
+            Material UI, Tailwind CSS, ShadCn, for crafting sleek user
+            interfaces.
+          </Typography>
+
+          <Typography
+            variant="body1"
+            sx={{
+              marginBottom: "2px",
+              position: "relative",
+              "&::before": {
+                content: '"•"',
+                position: "absolute",
+                left: "-10px", // Adjust this value based on your needs
+              },
+            }}
+          >
+            On the server side, my focus revolves around the reliable
+            functioning of applications using Node.js and Express.js.
+          </Typography>
+          <Typography variant="h5" sx={{ marginTop: 2 }}>
+            What I do!
+          </Typography>
           <Box
             sx={{
               display: "flex",
@@ -100,9 +127,27 @@ const Home = ({ toggleDarkMode }) => {
               marginBottom: 2,
             }}
           >
-            {mockInfoCardData.map((data, index) => (
-              <InfoCard key={index} title={data.title} content={data.content} />
-            ))}
+            {/* Manually added InfoCards with different data */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 5,
+                margin: 2,
+              }}
+            >
+              <InfoCard
+                title="Web Development"
+                content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+                imageSrc={frontendImage} // Pass image source here
+              />
+              <InfoCard
+                title="Freelancer"
+                content="I specialize in building high-performance web applications with React.js and Next.js. Using modern UI frameworks like MUI and Tailwind CSS, I create scalable, responsive designs tailored to your needs. I combine advanced technology with innovative design to deliver user-centric solutions that are both visually appealing and seamless in performance. Whether you need a new application or enhancements to an existing one, I’m here to turn your vision into reality with precision and creativity."
+                imageSrc={freelancerImage} // Pass image source here
+              />
+            </Box>
           </Box>
         </Box>
       </Box>

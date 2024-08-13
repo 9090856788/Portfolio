@@ -20,6 +20,7 @@ import {
   LocationOn,
   Download,
 } from "@mui/icons-material";
+import profileImg from "../img/Kanhu.jpg";
 
 const socialMediaLinks = [
   {
@@ -61,7 +62,7 @@ const socialMediaLinks = [
 ];
 
 const ProfileCard = () => {
-  const [avatar, setAvatar] = useState("");
+  const [avatar, setAvatar] = useState(profileImg);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -114,7 +115,7 @@ const ProfileCard = () => {
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        width: "100%", // Ensure it takes full width
+        width: "100%",
       }}
     >
       <Icon sx={{ color }} />
@@ -125,8 +126,8 @@ const ProfileCard = () => {
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
-          flex: 1, // Allow the text to grow and shrink as needed
-          maxWidth: "calc(100% - 40px)", // Account for icon width and padding
+          flex: 1,
+          maxWidth: "calc(100% - 40px)",
         }}
       >
         {text}
@@ -172,7 +173,7 @@ const ProfileCard = () => {
           height: isMobile ? "120px" : "200px",
           borderRadius: "50%",
           overflow: "hidden",
-          border: "4px solid transparent", // Remove border color
+          border: "4px solid transparent",
           backgroundColor: "white",
           boxShadow:
             theme.palette.mode === "dark"
@@ -233,7 +234,7 @@ const ProfileCard = () => {
       <Box
         sx={{
           marginTop: 2,
-          border: "1px solid transparent", // Remove border color
+          border: "1px solid transparent",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -258,14 +259,25 @@ const ProfileCard = () => {
           onClick={handleResumeDownload}
           sx={{
             marginTop: 2,
-            bgcolor: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)", // Gradient background
-            color: "#fff",
+            bgcolor: theme.palette.background.default,
+            color: theme.palette.text.primary,
             borderRadius: "50px",
-            boxShadow: "0px 4px 20px rgba(33, 150, 243, 0.3)",
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
+                : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
+            transition:
+              "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
             "&:hover": {
-              bgcolor: "linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)",
-              boxShadow: "0px 6px 30px rgba(33, 150, 243, 0.5)",
-              transform: "scale(1.05)",
+              bgcolor:
+                theme.palette.mode === "dark"
+                  ? "#333" // Darker background on hover for dark mode
+                  : "#f0f0f0", // Lighter background on hover for light mode
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
+                  : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
             },
             fontSize: isMobile ? "0.75rem" : "1rem",
             padding: isMobile ? "6px 12px" : "10px 20px",
