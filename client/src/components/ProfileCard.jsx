@@ -66,14 +66,14 @@ const ProfileCard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => setAvatar(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleAvatarChange = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => setAvatar(e.target.result);
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const handleResumeDownload = async () => {
     try {
@@ -189,14 +189,14 @@ const ProfileCard = () => {
           alt="User Avatar"
           src={avatar}
           sx={{ width: "100%", height: "100%" }}
-          onClick={() => document.getElementById("avatarInput").click()}
+          // onClick={() => document.getElementById("avatarInput").click()}
         />
         <input
           type="file"
           id="avatarInput"
           accept="image/*"
           style={{ display: "none" }}
-          onChange={handleAvatarChange}
+          // onChange={handleAvatarChange}
         />
       </Box>
 

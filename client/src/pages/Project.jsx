@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
-import ContactForm from "../components/ContactForm";
+import freelancerImage from "../img/freelancer.jpg";
+import frontendImage from "../img/frontendImage.jpg";
+import InfoCard from "../components/InfoCard";
 
 const Project = ({ toggleDarkMode }) => {
   const theme = useTheme();
@@ -59,9 +61,23 @@ const Project = ({ toggleDarkMode }) => {
                    -7px -7px 15px ${theme.palette.grey[100]}`,
           }}
         >
-          <Typography variant="h4" sx={{ marginBottom: 2 }}>
-            Contact Me
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1 }}>
+              Portfolio
+            </Typography>
+            <Box
+              component="hr"
+              sx={{
+                flexGrow: 1,
+                border: 0,
+                borderTop: "2px solid",
+                borderColor: "currentColor",
+                margin: 0,
+              }}
+            />
+          </Box>
+
+          {/* Manually added InfoCards with different data */}
 
           <Box
             sx={{
@@ -72,9 +88,73 @@ const Project = ({ toggleDarkMode }) => {
               marginBottom: 2,
             }}
           >
-            <ContactForm />
-            {/* Manually added InfoCards with different data */}
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage} // Pass image source here
+            />
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage} // Pass image source here
+            />
+            <InfoCard
+              title="Freelancer"
+              content="I specialize in building high-performance web applications with React.js and Next.js. Using modern UI frameworks like MUI and Tailwind CSS, I create scalable, responsive designs tailored to your needs. I combine advanced technology with innovative design to deliver user-centric solutions that are both visually appealing and seamless in performance. Whether you need a new application or enhancements to an existing one, I’m here to turn your vision into reality with precision and creativity."
+              imageSrc={freelancerImage} // Pass image source here
+            />
+          </Box>
 
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              justifyContent: "center",
+              gap: 2,
+              marginBottom: 2,
+            }}
+          >
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage} // Pass image source here
+            />
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage} // Pass image source here
+            />
+            <InfoCard
+              title="Freelancer"
+              content="I specialize in building high-performance web applications with React.js and Next.js. Using modern UI frameworks like MUI and Tailwind CSS, I create scalable, responsive designs tailored to your needs. I combine advanced technology with innovative design to deliver user-centric solutions that are both visually appealing and seamless in performance. Whether you need a new application or enhancements to an existing one, I’m here to turn your vision into reality with precision and creativity."
+              imageSrc={freelancerImage} // Pass image source here
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              justifyContent: "center",
+              gap: 2,
+              marginBottom: 2,
+            }}
+          >
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage} // Pass image source here
+            />
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage} // Pass image source here
+            />
+            <InfoCard
+              title="Freelancer"
+              content="I specialize in building high-performance web applications with React.js and Next.js. Using modern UI frameworks like MUI and Tailwind CSS, I create scalable, responsive designs tailored to your needs. I combine advanced technology with innovative design to deliver user-centric solutions that are both visually appealing and seamless in performance. Whether you need a new application or enhancements to an existing one, I’m here to turn your vision into reality with precision and creativity."
+              imageSrc={freelancerImage} // Pass image source here
+            />
           </Box>
         </Box>
       </Box>

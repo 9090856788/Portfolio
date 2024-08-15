@@ -59,9 +59,21 @@ const Resume = ({ toggleDarkMode }) => {
                    -7px -7px 15px ${theme.palette.grey[100]}`,
           }}
         >
-          <Typography variant="h4" sx={{ marginBottom: 2 }}>
-            Contact Me
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1 }}>
+              Resume
+            </Typography>
+            <Box
+              component="hr"
+              sx={{
+                flexGrow: 1,
+                border: 0,
+                borderTop: "2px solid",
+                borderColor: "currentColor",
+                margin: 0,
+              }}
+            />
+          </Box>
 
           <Box
             sx={{
@@ -74,7 +86,6 @@ const Resume = ({ toggleDarkMode }) => {
           >
             <ContactForm />
             {/* Manually added InfoCards with different data */}
-
           </Box>
         </Box>
       </Box>

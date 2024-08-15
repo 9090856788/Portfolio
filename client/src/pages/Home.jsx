@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
@@ -61,9 +61,21 @@ const Home = ({ toggleDarkMode }) => {
                    -7px -7px 15px ${theme.palette.grey[100]}`,
           }}
         >
-          <Typography variant="h4" sx={{ marginBottom: 2 }}>
-            About Me
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1 }}>
+              About Me
+            </Typography>
+            <Box
+              component="hr"
+              sx={{
+                flexGrow: 1,
+                border: 0,
+                borderTop: "2px solid",
+                borderColor: "currentColor",
+                margin: 0,
+              }}
+            />
+          </Box>
           <Typography
             variant="body1"
             sx={{
@@ -138,7 +150,7 @@ const Home = ({ toggleDarkMode }) => {
               }}
             >
               <InfoCard
-                title="Web Development"
+                title="Frontend Development"
                 content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
                 imageSrc={frontendImage} // Pass image source here
               />
