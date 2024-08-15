@@ -140,8 +140,9 @@ const ProfileCard = () => {
       sx={{
         position: "relative",
         width: isMobile ? "90%" : "auto",
-        height: isMobile ? "auto" : "85vh",
-        padding: isMobile ? "10px" : "20px",
+        height: isMobile ? "auto" : "76vh",
+        padding: isMobile ? "15px" : "20px",
+        marginLeft: isMobile ? "15px" : "0px",
         borderRadius: "16px",
         boxShadow:
           theme.palette.mode === "dark"

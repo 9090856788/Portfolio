@@ -30,9 +30,9 @@ const App = () => {
             path="/"
             element={<Home toggleDarkMode={toggleDarkMode} />}
           />
-          <Route exact path="/resume" element={<Resume />} />
-          <Route exact path="/project" element={<Project />} />
-          <Route exact path="/contact" element={<Contact />} />
+          <Route exact path="/resume" element={<Resume toggleDarkMode={toggleDarkMode} />} />
+          <Route exact path="/project" element={<Project toggleDarkMode={toggleDarkMode} />} />
+          <Route exact path="/contact" element={<Contact toggleDarkMode={toggleDarkMode} />} />
         </Routes>
         <Footer />
       </Router>
