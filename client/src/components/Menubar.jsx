@@ -58,12 +58,19 @@ const Menubar = ({ toggleDarkMode }) => {
         },
       }}
     >
-      {/* Hamburger Icon for Mobile */}
       <IconButton
-        sx={{ display: { xs: "block", sm: "none" } }}
+        sx={{
+          display: { xs: "block", sm: "none" },
+          color: isDarkMode ? "#fff" : "#000",
+          // marginTop: 1,
+        }}
         onClick={handleDrawerToggle}
       >
-        <MenuIcon />
+        <MenuIcon
+          sx={{
+            marginTop: 1,
+          }}
+        />
       </IconButton>
 
       {/* Navigation Buttons */}

@@ -41,8 +41,7 @@ const InfoCard = ({ title, content, imageSrc }) => {
       {imageSrc && (
         <Box
           sx={{
-            width: "100%",
-            height: { xs: "120px", sm: "180px", md: "150px" },
+            width: "auto",
             overflow: "hidden",
             borderRadius: "8px",
             mb: "16px",

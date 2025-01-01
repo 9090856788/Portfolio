@@ -23,6 +23,7 @@ const Home = ({ toggleDarkMode }) => {
         padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
         margin: "0 auto",
         maxWidth: "1200px",
+        height: "auto",
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
       }}
@@ -55,13 +56,24 @@ const Home = ({ toggleDarkMode }) => {
             padding: "20px",
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: "16px",
-            backgroundColor: theme.palette.background.default,
             boxShadow:
               theme.palette.mode === "dark"
-                ? `7px 7px 15px ${theme.palette.grey[900]}, 
-                   -7px -7px 15px ${theme.palette.grey[800]}`
-                : `7px 7px 15px ${theme.palette.grey[300]}, 
-                   -7px -7px 15px ${theme.palette.grey[100]}`,
+                ? `8px 8px 16px ${theme.palette.grey[900]}, 
+                 -8px -8px 16px ${theme.palette.grey[800]}`
+                : `8px 8px 16px ${theme.palette.grey[300]}, 
+                 -8px -8px 16px ${theme.palette.grey[100]}`,
+            // marginTop: isMobile ? 6 : isTablet ? 8 : 12,
+            backgroundColor: theme.palette.background.paper,
+            transition: "box-shadow 0.3s ease, transform 0.3s ease",
+            "&:hover": {
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                   -12px -12px 24px ${theme.palette.grey[800]}`
+                  : `12px 12px 24px ${theme.palette.grey[300]}, 
+                   -12px -12px 24px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
+            },
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>

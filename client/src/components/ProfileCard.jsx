@@ -96,7 +96,12 @@ const ProfileCard = () => {
           target="_blank"
           aria-label={link.name}
           sx={{
-            color: link.color,
+            color:
+              link.name === "GitHub"
+                ? theme.palette.mode === "dark"
+                  ? "white"
+                  : link.color // Set white for dark mode, default color for light mode
+                : link.color, // Default color for other icons
             fontSize: { xs: "24px", sm: "30px", md: "36px" }, // Responsive font size
             margin: { xs: "4px", sm: "8px" }, // Responsive margin
           }}
@@ -107,7 +112,7 @@ const ProfileCard = () => {
     </Box>
   );
 
-  const renderContactInfo = (Icon, text, color) => (
+  const renderContactInfo = (Icon, text, color, isMobile) => (
     <Box
       sx={{
         display: "flex",
@@ -120,16 +125,17 @@ const ProfileCard = () => {
         width: "100%",
       }}
     >
-      <Icon sx={{ color }} />
+      <Icon sx={{ color, fontSize: { xs: 20, sm: 24 } }} />{" "}
+      {/* Adjust icon size based on screen size */}
       <Typography
         variant="h6"
         sx={{
-          fontSize: isMobile ? "1rem" : "1.25rem",
+          fontSize: { xs: "0.875rem", sm: "1rem", md: "1.25rem" }, // Responsive font size
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
           flex: 1,
-          maxWidth: "calc(100% - 40px)",
+          maxWidth: "calc(100% - 40px)", // Ensures text doesn't overflow
         }}
       >
         {text}
@@ -235,7 +241,7 @@ const ProfileCard = () => {
 
       <Box
         sx={{
-          marginTop: 2,
+          // marginTop: -2,
           border: "1px solid transparent",
           display: "flex",
           flexDirection: "column",
