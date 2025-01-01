@@ -11,15 +11,16 @@ import frontendImage from "../img/frontendImage.jpg";
 const Home = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection: isMobile ? "column" : "row",
+        flexDirection: isMobile ? "column" : isTablet ? "row" : "row",
         justifyContent: "center",
         alignItems: "flex-start",
-        padding: isMobile ? "10px" : "20px",
+        padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
         margin: "0 auto",
         maxWidth: "1200px",
         backgroundColor: theme.palette.background.default,
@@ -29,8 +30,8 @@ const Home = ({ toggleDarkMode }) => {
       {/* Left Section: ProfileCard */}
       <Box
         sx={{
-          width: isMobile ? "100%" : "35%",
-          padding: isMobile ? "10px" : "20px",
+          width: isMobile ? "100%" : isTablet ? "40%" : "35%",
+          padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
           boxSizing: "border-box",
         }}
       >
@@ -40,8 +41,8 @@ const Home = ({ toggleDarkMode }) => {
       {/* Right Section: Menubar, InfoCards */}
       <Box
         sx={{
-          width: isMobile ? "100%" : "65%",
-          padding: isMobile ? "10px" : "20px",
+          width: isMobile ? "100%" : isTablet ? "60%" : "65%",
+          padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
@@ -132,23 +133,20 @@ const Home = ({ toggleDarkMode }) => {
           <Typography variant="h5" sx={{ marginTop: 2 }}>
             What I do!
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "center",
-              gap: 2,
-              marginBottom: 2,
-            }}
-          >
+          <Box>
             {/* Manually added InfoCards with different data */}
             <Box
               sx={{
                 display: "flex",
+                flexDirection: isMobile
+                  ? "column"
+                  : isTablet
+                  ? "column"
+                  : "row",
                 justifyContent: "center",
-                alignItems: "center",
-                gap: 5,
-                margin: 2,
+                gap: 2,
+                marginBottom: 2,
+                marginTop: 2,
               }}
             >
               <InfoCard

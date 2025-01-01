@@ -20,7 +20,7 @@ const InfoCard = ({ title, content, imageSrc }) => {
   return (
     <Box
       sx={{
-        width: "300px",
+        width: { xs: "auto", sm: "auto", md: "auto" },
         padding: "16px",
         borderRadius: "12px",
         bgcolor: theme.palette.background.default,
@@ -34,14 +34,15 @@ const InfoCard = ({ title, content, imageSrc }) => {
             : `inset 8px 8px 16px ${theme.palette.grey[300]}, inset -8px -8px 16px ${theme.palette.grey[100]}`,
         },
         position: "relative",
-        overflow: 'hidden', // Ensure that the image does not overflow the card
+        overflow: "hidden",
+        margin: "0 auto", // Center card on smaller screens
       }}
     >
       {imageSrc && (
         <Box
           sx={{
             width: "100%",
-            height: "150px",
+            height: { xs: "120px", sm: "180px", md: "150px" },
             overflow: "hidden",
             borderRadius: "8px",
             mb: "16px",
@@ -61,11 +62,24 @@ const InfoCard = ({ title, content, imageSrc }) => {
       <Typography
         variant="h6"
         component="p"
-        sx={{ textAlign: "center", fontWeight: "bold", marginBottom: "8px" }}
+        sx={{
+          textAlign: "center",
+          fontWeight: "bold",
+          marginBottom: "8px",
+          fontSize: { xs: "1rem", sm: "1.2rem" },
+        }}
       >
         {title}
       </Typography>
-      <Typography variant="body2" component="p" sx={{ marginBottom: "16px" }}>
+      <Typography
+        variant="body2"
+        component="p"
+        sx={{
+          marginBottom: "16px",
+          fontSize: { xs: "0.8rem", sm: "0.9rem" },
+          textAlign: "justify",
+        }}
+      >
         {isExpanded ? content : truncatedContent}
       </Typography>
       <Box
@@ -76,8 +90,8 @@ const InfoCard = ({ title, content, imageSrc }) => {
           backgroundColor: isDarkMode
             ? theme.palette.grey[800]
             : theme.palette.grey[200],
-          width: "24px",
-          height: "24px",
+          width: "32px",
+          height: "32px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

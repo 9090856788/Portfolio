@@ -10,8 +10,6 @@ import {
   useTheme,
 } from "@mui/material";
 import {
-  Facebook,
-  Instagram,
   LinkedIn,
   Twitter,
   GitHub,
@@ -24,18 +22,6 @@ import {
 import profileImg from "../img/Kanhu.jpg";
 
 const socialMediaLinks = [
-  // {
-  //   name: "Facebook",
-  //   url: "https://www.facebook.com",
-  //   icon: <Facebook />,
-  //   color: "#3b5998",
-  // },
-  // {
-  //   name: "Instagram",
-  //   url: "https://www.instagram.com",
-  //   icon: <Instagram />,
-  //   color: "#e4405f",
-  // },
   {
     name: "LinkedIn",
     url: "https://www.linkedin.com",
@@ -66,7 +52,7 @@ const ProfileCard = () => {
   const [avatar, setAvatar] = useState(profileImg);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   // const handleAvatarChange = (event) => {
   //   const file = event.target.files[0];
   //   if (file) {
@@ -93,18 +79,33 @@ const ProfileCard = () => {
     }
   };
 
-  const renderSocialMediaIcons = () =>
-    socialMediaLinks.map((link) => (
-      <IconButton
-        key={link.name}
-        href={link.url}
-        target="_blank"
-        aria-label={link.name}
-        sx={{ color: link.color }}
-      >
-        {link.icon}
-      </IconButton>
-    ));
+  const renderSocialMediaIcons = () => (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap", // Wrap icons to next line on smaller screens
+        gap: 2, // Space between icons
+        padding: 2,
+      }}
+    >
+      {socialMediaLinks.map((link) => (
+        <IconButton
+          key={link.name}
+          href={link.url}
+          target="_blank"
+          aria-label={link.name}
+          sx={{
+            color: link.color,
+            fontSize: { xs: "24px", sm: "30px", md: "36px" }, // Responsive font size
+            margin: { xs: "4px", sm: "8px" }, // Responsive margin
+          }}
+        >
+          {link.icon}
+        </IconButton>
+      ))}
+    </Box>
+  );
 
   const renderContactInfo = (Icon, text, color) => (
     <Box
@@ -140,10 +141,9 @@ const ProfileCard = () => {
     <Box
       sx={{
         position: "relative",
-        width: isMobile ? "90%" : "auto",
-        height: isMobile ? "auto" : "76vh",
+        width: isMobile ? "auto" : isTablet ? "auto" : "auto",
+        height: isMobile ? "auto" : isTablet ? "auto" : "auto",
         padding: isMobile ? "15px" : "20px",
-        marginLeft: isMobile ? "15px" : "0px",
         borderRadius: "16px",
         boxShadow:
           theme.palette.mode === "dark"
@@ -151,7 +151,7 @@ const ProfileCard = () => {
              -8px -8px 16px ${theme.palette.grey[800]}`
             : `8px 8px 16px ${theme.palette.grey[300]}, 
              -8px -8px 16px ${theme.palette.grey[100]}`,
-        marginTop: isMobile ? 6 : 12,
+        marginTop: isMobile ? 6 : isTablet ? 8 : 12,
         backgroundColor: theme.palette.background.paper,
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         "&:hover": {
@@ -168,11 +168,11 @@ const ProfileCard = () => {
       <Box
         sx={{
           position: "absolute",
-          top: isMobile ? "-60px" : "-100px",
+          top: isMobile || isTablet ? "-60px" : "-100px",
           left: "50%",
           transform: "translateX(-50%)",
-          width: isMobile ? "120px" : "200px",
-          height: isMobile ? "120px" : "200px",
+          width: isMobile || isTablet ? "120px" : "200px",
+          height: isMobile || isTablet ? "120px" : "200px",
           borderRadius: "50%",
           overflow: "hidden",
           border: "4px solid transparent",
@@ -203,10 +203,10 @@ const ProfileCard = () => {
 
       <Box
         sx={{
-          height: isMobile ? "auto" : "20vh",
+          height: "auto",
           padding: "10px",
           backgroundColor: theme.palette.background.paper,
-          marginTop: isMobile ? 8 : 12,
+          marginTop: isMobile || isTablet ? 8 : 12,
         }}
       >
         <Box sx={{ textAlign: "center" }}>
@@ -271,18 +271,19 @@ const ProfileCard = () => {
             transition:
               "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
             "&:hover": {
-              bgcolor:
-                theme.palette.mode === "dark"
-                  ? "#333" // Darker background on hover for dark mode
-                  : "#f0f0f0", // Lighter background on hover for light mode
+              bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
               boxShadow:
                 theme.palette.mode === "dark"
                   ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
                   : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
               transform: "translateY(-2px)",
             },
-            fontSize: isMobile ? "0.75rem" : "1rem",
-            padding: isMobile ? "6px 12px" : "10px 20px",
+            fontSize: isMobile ? "0.75rem" : isTablet ? "0.85rem" : "1rem",
+            padding: isMobile
+              ? "6px 12px"
+              : isTablet
+              ? "8px 16px"
+              : "10px 20px",
           }}
         >
           Download Resume

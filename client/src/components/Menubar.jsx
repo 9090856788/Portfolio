@@ -69,11 +69,11 @@ const Menubar = ({ toggleDarkMode }) => {
       {/* Navigation Buttons */}
       <Box
         sx={{
-          display: { xs: "none", sm: "flex" },
+          display: { xs: "none", sm: "flex", md: "flex" },
           alignItems: "center",
-          gap: 2,
+          gap: { xs: 1, sm: 2, md: 3 },
           flexGrow: 1,
-          marginLeft: 2,
+          marginLeft: { xs: 1, sm: 2, md: 3 },
         }}
       >
         {menuItems.map((item) => (
@@ -82,8 +82,10 @@ const Menubar = ({ toggleDarkMode }) => {
             onClick={() => navigate(item.path)}
             sx={{
               display: "flex",
-              alignItems: "center",
-              gap: 1,
+              alignItems: "center", // Default alignment
+              justifyContent: { sm: "center" }, // Center icons on tablets
+              flexDirection: { xs: "row", sm: "column" }, // Stack icon and text on tablet
+              gap: { xs: 1, sm: 0 }, // Adjust gap based on screen size
               cursor: "pointer",
               padding: 1,
               transition: "background-color 0.3s",
@@ -92,8 +94,23 @@ const Menubar = ({ toggleDarkMode }) => {
               },
             }}
           >
-            {item.icon}
-            <Typography variant="body1" sx={{ fontSize: "1rem" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center", // Ensures icon is centered
+                alignItems: "center",
+                mb: { sm: 0.5 }, // Adds margin below icon for tablet view
+              }}
+            >
+              {item.icon}
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: { xs: "0.9rem", sm: "0.85rem", md: "1rem" }, // Adjust font size
+                textAlign: { sm: "center" }, // Center text on tablets
+              }}
+            >
               {item.label}
             </Typography>
           </Box>
