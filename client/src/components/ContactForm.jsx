@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 import React from "react";
 import {
   Box,
@@ -13,6 +15,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 const ContactForm = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   return (
     <>
@@ -24,7 +27,7 @@ const ContactForm = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            flexDirection: isMobile ? "column" : "row",
+            flexDirection: isMobile ? "column" : isTablet ? "column" : "row",
             gap: 2,
             padding: 2,
             borderRadius: "8px",
@@ -34,6 +37,16 @@ const ContactForm = () => {
                        -8px -8px 16px ${theme.palette.grey[800]}`
                 : `8px 8px 16px ${theme.palette.grey[300]}, 
                        -8px -8px 16px ${theme.palette.grey[100]}`,
+            transition: "box-shadow 0.3s ease, transform 0.3s ease",
+            "&:hover": {
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                     -12px -12px 24px ${theme.palette.grey[800]}`
+                  : `12px 12px 24px ${theme.palette.grey[300]}, 
+                     -12px -12px 24px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
+            },
           }}
         >
           {/* Email Section */}
@@ -53,6 +66,16 @@ const ContactForm = () => {
                        -8px -8px 16px ${theme.palette.grey[800]}`
                   : `8px 8px 16px ${theme.palette.grey[300]}, 
                        -8px -8px 16px ${theme.palette.grey[100]}`,
+              transition: "box-shadow 0.3s ease, transform 0.3s ease",
+              "&:hover": {
+                boxShadow:
+                  theme.palette.mode === "dark"
+                    ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                       -12px -12px 24px ${theme.palette.grey[800]}`
+                    : `12px 12px 24px ${theme.palette.grey[300]}, 
+                       -12px -12px 24px ${theme.palette.grey[100]}`,
+                transform: "translateY(-2px)",
+              },
             }}
           >
             <Box
@@ -91,6 +114,16 @@ const ContactForm = () => {
                        -8px -8px 16px ${theme.palette.grey[800]}`
                   : `8px 8px 16px ${theme.palette.grey[300]}, 
                        -8px -8px 16px ${theme.palette.grey[100]}`,
+              transition: "box-shadow 0.3s ease, transform 0.3s ease",
+              "&:hover": {
+                boxShadow:
+                  theme.palette.mode === "dark"
+                    ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                       -12px -12px 24px ${theme.palette.grey[800]}`
+                    : `12px 12px 24px ${theme.palette.grey[300]}, 
+                       -12px -12px 24px ${theme.palette.grey[100]}`,
+                transform: "translateY(-2px)",
+              },
             }}
           >
             <Box
@@ -123,7 +156,7 @@ const ContactForm = () => {
             justifyContent: "center",
             alignItems: "center",
             gap: 2,
-            padding: 5,
+            padding: isMobile ? 3 : isTablet ? 4 : 5,
             borderRadius: "8px",
             boxShadow:
               theme.palette.mode === "dark"
@@ -131,6 +164,16 @@ const ContactForm = () => {
                        -8px -8px 16px ${theme.palette.grey[800]}`
                 : `8px 8px 16px ${theme.palette.grey[300]}, 
                        -8px -8px 16px ${theme.palette.grey[100]}`,
+            transition: "box-shadow 0.3s ease, transform 0.3s ease",
+            "&:hover": {
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                       -12px -12px 24px ${theme.palette.grey[800]}`
+                  : `12px 12px 24px ${theme.palette.grey[300]}, 
+                       -12px -12px 24px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
+            },
           }}
         >
           <Typography>
@@ -147,37 +190,31 @@ const ContactForm = () => {
               fullWidth
               sx={{
                 "& .MuiInputLabel-root": {
-                  color: (theme) =>
+                  color:
                     theme.palette.mode === "dark"
                       ? theme.palette.text.primary
                       : theme.palette.text.primary,
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: (theme) =>
+                  color:
                     theme.palette.mode === "dark"
                       ? theme.palette.text.primary
                       : theme.palette.text.primary,
                 },
                 "& .MuiInput-underline:before": {
-                  borderBottomColor: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[700]
-                      : theme.palette.grey[300],
-                },
-                "& .MuiInput-underline:hover:before": {
-                  borderBottomColor: (theme) =>
+                  borderBottomColor:
                     theme.palette.mode === "dark"
                       ? theme.palette.grey[700]
                       : theme.palette.grey[300],
                 },
                 "& .MuiInput-underline:after": {
-                  borderBottomColor: (theme) =>
+                  borderBottomColor:
                     theme.palette.mode === "dark"
                       ? theme.palette.grey[700]
                       : theme.palette.grey[300],
                 },
               }}
-            />{" "}
+            />
             <TextField
               label="Email"
               variant="standard"
@@ -185,31 +222,25 @@ const ContactForm = () => {
               sx={{
                 margin: "20px 0px 20px 0px",
                 "& .MuiInputLabel-root": {
-                  color: (theme) =>
+                  color:
                     theme.palette.mode === "dark"
                       ? theme.palette.text.primary
                       : theme.palette.text.primary,
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: (theme) =>
+                  color:
                     theme.palette.mode === "dark"
                       ? theme.palette.text.primary
                       : theme.palette.text.primary,
                 },
                 "& .MuiInput-underline:before": {
-                  borderBottomColor: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[700]
-                      : theme.palette.grey[300],
-                },
-                "& .MuiInput-underline:hover:before": {
-                  borderBottomColor: (theme) =>
+                  borderBottomColor:
                     theme.palette.mode === "dark"
                       ? theme.palette.grey[700]
                       : theme.palette.grey[300],
                 },
                 "& .MuiInput-underline:after": {
-                  borderBottomColor: (theme) =>
+                  borderBottomColor:
                     theme.palette.mode === "dark"
                       ? theme.palette.grey[700]
                       : theme.palette.grey[300],
@@ -222,37 +253,31 @@ const ContactForm = () => {
               fullWidth
               sx={{
                 "& .MuiInputLabel-root": {
-                  color: (theme) =>
+                  color:
                     theme.palette.mode === "dark"
                       ? theme.palette.text.primary
                       : theme.palette.text.primary,
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: (theme) =>
+                  color:
                     theme.palette.mode === "dark"
                       ? theme.palette.text.primary
                       : theme.palette.text.primary,
                 },
                 "& .MuiInput-underline:before": {
-                  borderBottomColor: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[700]
-                      : theme.palette.grey[300],
-                },
-                "& .MuiInput-underline:hover:before": {
-                  borderBottomColor: (theme) =>
+                  borderBottomColor:
                     theme.palette.mode === "dark"
                       ? theme.palette.grey[700]
                       : theme.palette.grey[300],
                 },
                 "& .MuiInput-underline:after": {
-                  borderBottomColor: (theme) =>
+                  borderBottomColor:
                     theme.palette.mode === "dark"
                       ? theme.palette.grey[700]
                       : theme.palette.grey[300],
                 },
               }}
-            />{" "}
+            />
           </Box>
           <Button
             variant="contained"
@@ -276,11 +301,10 @@ const ContactForm = () => {
                     : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
                 transform: "translateY(-2px)",
               },
-              fontSize: isMobile ? "0.75rem" : "1rem",
-              padding: isMobile ? "6px 12px" : "10px 20px",
+              fontSize: isMobile ? "0.75rem" : isTablet ? "0.875rem" : "1rem",
             }}
           >
-            Submit
+            Send Message
           </Button>
         </Box>
       </Box>
