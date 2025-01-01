@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import {
   Box,
@@ -23,18 +24,18 @@ import {
 import profileImg from "../img/Kanhu.jpg";
 
 const socialMediaLinks = [
-  {
-    name: "Facebook",
-    url: "https://www.facebook.com",
-    icon: <Facebook />,
-    color: "#3b5998",
-  },
-  {
-    name: "Instagram",
-    url: "https://www.instagram.com",
-    icon: <Instagram />,
-    color: "#e4405f",
-  },
+  // {
+  //   name: "Facebook",
+  //   url: "https://www.facebook.com",
+  //   icon: <Facebook />,
+  //   color: "#3b5998",
+  // },
+  // {
+  //   name: "Instagram",
+  //   url: "https://www.instagram.com",
+  //   icon: <Instagram />,
+  //   color: "#e4405f",
+  // },
   {
     name: "LinkedIn",
     url: "https://www.linkedin.com",
