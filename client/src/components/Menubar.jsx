@@ -11,7 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import DescriptionIcon from "@mui/icons-material/Description";
 import WorkIcon from "@mui/icons-material/Work";
@@ -22,6 +22,7 @@ import { Brightness4, Brightness7 } from "@mui/icons-material";
 const Menubar = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation(); // Get current route
   const isDarkMode = theme.palette.mode === "dark";
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -36,6 +37,8 @@ const Menubar = ({ toggleDarkMode }) => {
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
+
+  const isActive = (path) => location.pathname === path; // Check if menu item is active
 
   return (
     <Box
@@ -62,15 +65,10 @@ const Menubar = ({ toggleDarkMode }) => {
         sx={{
           display: { xs: "block", sm: "none" },
           color: isDarkMode ? "#fff" : "#000",
-          // marginTop: 1,
         }}
         onClick={handleDrawerToggle}
       >
-        <MenuIcon
-          sx={{
-            marginTop: 1,
-          }}
-        />
+        <MenuIcon sx={{ marginTop: 1 }} />
       </IconButton>
 
       {/* Navigation Buttons */}
@@ -89,24 +87,37 @@ const Menubar = ({ toggleDarkMode }) => {
             onClick={() => navigate(item.path)}
             sx={{
               display: "flex",
-              alignItems: "center", // Default alignment
-              justifyContent: { sm: "center" }, // Center icons on tablets
-              flexDirection: { xs: "row", sm: "column" }, // Stack icon and text on tablet
-              gap: { xs: 1, sm: 0 }, // Adjust gap based on screen size
+              alignItems: "center",
+              justifyContent: { sm: "center" },
+              flexDirection: { xs: "row", sm: "column" },
+              gap: { xs: 1, sm: 0 },
               cursor: "pointer",
               padding: 1,
               transition: "background-color 0.3s",
+              backgroundColor: isActive(item.path)
+                ? isDarkMode
+                  ? "#444"
+                  : "#e0e0e0"
+                : "transparent", // Active color change
+              borderRadius: isActive(item.path) ? "16px" : "0px", // Optional rounded corners for active item
               "&:hover": {
-                backgroundColor: isDarkMode ? "#333" : "#f0f0f0",
+                backgroundColor: isActive(item.path)
+                  ? isDarkMode
+                    ? "#555"
+                    : "#f0f0f0"
+                  : isDarkMode
+                  ? "#333"
+                  : "#f0f0f0",
+                borderRadius: "16px",
               },
             }}
           >
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center", // Ensures icon is centered
+                justifyContent: "center",
                 alignItems: "center",
-                mb: { sm: 0.5 }, // Adds margin below icon for tablet view
+                mb: { sm: 0.5 },
               }}
             >
               {item.icon}
@@ -114,8 +125,9 @@ const Menubar = ({ toggleDarkMode }) => {
             <Typography
               variant="body1"
               sx={{
-                fontSize: { xs: "0.9rem", sm: "0.85rem", md: "1rem" }, // Adjust font size
-                textAlign: { sm: "center" }, // Center text on tablets
+                fontSize: { xs: "0.9rem", sm: "0.85rem", md: "1rem" },
+                textAlign: { sm: "center" },
+                fontWeight: isActive(item.path) ? "bold" : "normal", // Optional font weight change for active item
               }}
             >
               {item.label}
@@ -163,6 +175,22 @@ const Menubar = ({ toggleDarkMode }) => {
                 onClick={() => {
                   navigate(item.path);
                   handleDrawerToggle();
+                }}
+                sx={{
+                  backgroundColor: isActive(item.path)
+                    ? isDarkMode
+                      ? "#444"
+                      : "#e0e0e0"
+                    : "transparent",
+                  "&:hover": {
+                    backgroundColor: isActive(item.path)
+                      ? isDarkMode
+                        ? "#555"
+                        : "#f0f0f0"
+                      : isDarkMode
+                      ? "#333"
+                      : "#f0f0f0",
+                  },
                 }}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>

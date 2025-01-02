@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
-import ContactForm from "../components/ContactForm";
 
 const Resume = ({ toggleDarkMode }) => {
   const theme = useTheme();
@@ -96,10 +95,7 @@ const Resume = ({ toggleDarkMode }) => {
               gap: 2,
               marginBottom: 2,
             }}
-          >
-            <ContactForm />
-            {/* Manually added InfoCards with different data */}
-          </Box>
+          ></Box>
         </Box>
       </Box>
     </Box>
