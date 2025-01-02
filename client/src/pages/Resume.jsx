@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
-
+import ResumeForm from "../components/ResumeForm";
 const Resume = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -95,7 +95,9 @@ const Resume = ({ toggleDarkMode }) => {
               gap: 2,
               marginBottom: 2,
             }}
-          ></Box>
+          >
+            <ResumeForm />
+          </Box>
         </Box>
       </Box>
     </Box>

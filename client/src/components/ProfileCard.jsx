@@ -40,12 +40,6 @@ const socialMediaLinks = [
     icon: <GitHub />,
     color: "#333",
   },
-  {
-    name: "YouTube",
-    url: "https://www.youtube.com",
-    icon: <YouTube />,
-    color: "#ff0000",
-  },
 ];
 
 const ProfileCard = () => {
@@ -87,6 +81,23 @@ const ProfileCard = () => {
         flexWrap: "wrap", // Wrap icons to next line on smaller screens
         gap: 2, // Space between icons
         padding: 2,
+        borderRadius: "10px",
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? `8px 8px 16px ${theme.palette.grey[900]}, 
+                 -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, 
+                 -8px -8px 16px ${theme.palette.grey[100]}`,
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        "&:hover": {
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `12px 12px 24px ${theme.palette.grey[900]}, 
+               -12px -12px 24px ${theme.palette.grey[800]}`
+              : `12px 12px 24px ${theme.palette.grey[300]}, 
+               -12px -12px 24px ${theme.palette.grey[100]}`,
+          transform: "translateY(-2px)",
+        },
       }}
     >
       {socialMediaLinks.map((link) => (
@@ -96,14 +107,27 @@ const ProfileCard = () => {
           target="_blank"
           aria-label={link.name}
           sx={{
+            bgcolor: theme.palette.background.default,
             color:
               link.name === "GitHub"
                 ? theme.palette.mode === "dark"
                   ? "white"
                   : link.color // Set white for dark mode, default color for light mode
-                : link.color, // Default color for other icons
-            fontSize: { xs: "24px", sm: "30px", md: "36px" }, // Responsive font size
-            margin: { xs: "4px", sm: "8px" }, // Responsive margin
+                : link.color, // Default color for other icons            borderRadius: "7px",
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
+                : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
+            transition:
+              "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
+            "&:hover": {
+              bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
+                  : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
+            },
           }}
         >
           {link.icon}
@@ -195,7 +219,24 @@ const ProfileCard = () => {
         <Avatar
           alt="User Avatar"
           src={avatar}
-          sx={{ width: "100%", height: "100%" }}
+          sx={{
+            width: "100%",
+            height: "100%",
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
+                : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
+            transition:
+              "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
+            "&:hover": {
+              bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
+                  : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
+              transform: "translateY(-2px)",
+            },
+          }}
           // onClick={() => document.getElementById("avatarInput").click()}
         />
         <input
@@ -241,7 +282,6 @@ const ProfileCard = () => {
 
       <Box
         sx={{
-          // marginTop: -2,
           border: "1px solid transparent",
           display: "flex",
           flexDirection: "column",
@@ -253,9 +293,19 @@ const ProfileCard = () => {
           boxShadow:
             theme.palette.mode === "dark"
               ? `8px 8px 16px ${theme.palette.grey[900]}, 
-               -8px -8px 16px ${theme.palette.grey[800]}`
+                   -8px -8px 16px ${theme.palette.grey[800]}`
               : `8px 8px 16px ${theme.palette.grey[300]}, 
-               -8px -8px 16px ${theme.palette.grey[100]}`,
+                   -8px -8px 16px ${theme.palette.grey[100]}`,
+          transition: "box-shadow 0.3s ease, transform 0.3s ease",
+          "&:hover": {
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `12px 12px 24px ${theme.palette.grey[900]}, 
+                 -12px -12px 24px ${theme.palette.grey[800]}`
+                : `12px 12px 24px ${theme.palette.grey[300]}, 
+                 -12px -12px 24px ${theme.palette.grey[100]}`,
+            transform: "translateY(-2px)",
+          },
         }}
       >
         {renderContactInfo(Phone, "9090856788", "#3f51b5")}

@@ -30,7 +30,7 @@ const Menubar = ({ toggleDarkMode }) => {
   const menuItems = [
     { icon: <HomeIcon />, label: "Home", path: "/" },
     { icon: <DescriptionIcon />, label: "Resume", path: "/resume" },
-    { icon: <WorkIcon />, label: "Work", path: "/project" },
+    { icon: <WorkIcon />, label: "Works", path: "/project" },
     { icon: <ContactMailIcon />, label: "Contact", path: "/contact" },
   ];
 
@@ -78,7 +78,7 @@ const Menubar = ({ toggleDarkMode }) => {
           alignItems: "center",
           gap: { xs: 1, sm: 2, md: 3 },
           flexGrow: 1,
-          marginLeft: { xs: 1, sm: 2, md: 3 },
+          marginLeft: 1,
         }}
       >
         {menuItems.map((item) => (
@@ -142,6 +142,7 @@ const Menubar = ({ toggleDarkMode }) => {
         sx={{
           width: 60,
           height: 60,
+          marginRight: 1,
           bgcolor: theme.palette.background.default,
           boxShadow: isDarkMode
             ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
@@ -170,7 +171,6 @@ const Menubar = ({ toggleDarkMode }) => {
           <List>
             {menuItems.map((item) => (
               <ListItem
-                button
                 key={item.label}
                 onClick={() => {
                   navigate(item.path);
