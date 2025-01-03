@@ -75,16 +75,20 @@ const Resume = ({ toggleDarkMode }) => {
             <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1 }}>
               Resume
             </Typography>
-            <Box
-              component="hr"
-              sx={{
-                flexGrow: 1,
-                border: 0,
-                borderTop: "2px solid",
-                borderColor: "currentColor",
-                margin: 0,
-              }}
-            />
+            {isMobile ? (
+              ""
+            ) : (
+              <Box
+                component="hr"
+                sx={{
+                  flexGrow: 1,
+                  border: 0,
+                  borderTop: "2px solid",
+                  borderColor: "currentColor",
+                  margin: 0,
+                }}
+              />
+            )}
           </Box>
 
           <Box
