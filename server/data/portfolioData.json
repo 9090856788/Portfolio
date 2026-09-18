@@ -34,7 +34,8 @@
         "content": "I specialize in building high-performance web applications with React.js and Next.js. Using modern UI frameworks, I create scalable, responsive designs tailored to your needs. I combine advanced technology with innovative design to deliver user-centric solutions.",
         "imageSrc": "/src/img/freelancer.jpg"
       }
-    ]
+    ],
+    "password": "newSecretPassword123"
   },
   "projects": [
     {

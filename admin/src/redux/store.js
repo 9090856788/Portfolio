@@ -1,18 +1,23 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-const initialToken = localStorage.getItem("portfolio_admin_token") || "demo_admin_jwt_token_2026";
+const storedToken = localStorage.getItem("portfolio_admin_token");
+const storedUser = JSON.parse(localStorage.getItem("portfolio_admin_user") || "null");
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    token: initialToken,
-    isAuthenticated: true, // Seamless admin experience for demo/testing
-    user: JSON.parse(localStorage.getItem("portfolio_admin_user") || "null") || {
+    token: storedToken || null,
+    // Authenticated if token exists or defaults to true for demo session
+    isAuthenticated: Boolean(storedToken),
+    user: storedUser || {
       fullName: "Kanhu Charan Sahoo",
       email: "kanhucharansahoo595@gmail.com",
-      role: "Frontend Developer",
+      phone: "+91 9090856788",
+      role: "Frontend Developer & UI/UX",
     },
     activeTab: "dashboard",
+    // Auto-resizing / collapsible sidebar state
+    isSidebarCollapsed: localStorage.getItem("portfolio_admin_sidebar_collapsed") === "true",
     toast: null,
   },
   reducers: {
@@ -37,6 +42,10 @@ const authSlice = createSlice({
     setActiveTab: (state, action) => {
       state.activeTab = action.payload;
     },
+    toggleSidebarCollapsed: (state) => {
+      state.isSidebarCollapsed = !state.isSidebarCollapsed;
+      localStorage.setItem("portfolio_admin_sidebar_collapsed", String(state.isSidebarCollapsed));
+    },
     setToast: (state, action) => {
       state.toast = action.payload;
     },
@@ -51,6 +60,7 @@ export const {
   logoutSuccess,
   setUser,
   setActiveTab,
+  toggleSidebarCollapsed,
   setToast,
   clearToast,
 } = authSlice.actions;

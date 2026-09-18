@@ -1,3 +1,7 @@
+/**
+ * Admin API Client
+ * Clean HTTP client for admin operations with authentication tokens and error handling.
+ */
 const API_BASE = "/api/v1";
 
 function getAuthHeaders(isFormData = false) {
@@ -12,6 +16,8 @@ function getAuthHeaders(isFormData = false) {
   return headers;
 }
 
+// ---------------- Authentication & Credentials ----------------
+
 export async function adminLogin(email, password) {
   const res = await fetch(`${API_BASE}/user/login`, {
     method: "POST",
@@ -19,9 +25,52 @@ export async function adminLogin(email, password) {
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Login failed");
+  if (!res.ok) throw new Error(data.message || "Invalid credentials");
   return data;
 }
+
+export async function adminRegister(credentials) {
+  const res = await fetch(`${API_BASE}/user/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to create account");
+  return data;
+}
+
+export async function sendMobileOtp(phone) {
+  const res = await fetch(`${API_BASE}/user/otp/send`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to dispatch verification OTP");
+  return data;
+}
+
+export async function verifyOtpAndResetPassword(payload) {
+  const res = await fetch(`${API_BASE}/user/otp/verify-reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Password reset verification failed");
+  return data;
+}
+
+export async function adminLogout() {
+  try {
+    await fetch(`${API_BASE}/user/logout`);
+  } catch (err) {
+    console.warn("Logout request error:", err);
+  }
+}
+
+// ---------------- Profile & Photo Management ----------------
 
 export async function fetchAdminProfile() {
   const res = await fetch(`${API_BASE}/user/profile/portfolio`);
@@ -42,7 +91,8 @@ export async function updateAdminProfile(payload) {
   return data;
 }
 
-// Projects
+// ---------------- Projects ----------------
+
 export async function fetchProjects() {
   const res = await fetch(`${API_BASE}/project/getall`);
   if (!res.ok) throw new Error("Failed to fetch projects");
@@ -84,7 +134,8 @@ export async function deleteProject(id) {
   return data;
 }
 
-// Skills
+// ---------------- Skills ----------------
+
 export async function fetchSkills() {
   const res = await fetch(`${API_BASE}/skill/getall`);
   if (!res.ok) throw new Error("Failed to fetch skills");
@@ -125,7 +176,8 @@ export async function deleteSkill(id) {
   return data;
 }
 
-// Timeline
+// ---------------- Timeline ----------------
+
 export async function fetchTimeline() {
   const res = await fetch(`${API_BASE}/timeline/getall`);
   if (!res.ok) throw new Error("Failed to fetch timeline");
@@ -140,7 +192,7 @@ export async function addTimeline(payload) {
     body: JSON.stringify(payload),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to add timeline");
+  if (!res.ok) throw new Error(data.message || "Failed to add timeline item");
   return data;
 }
 
@@ -150,14 +202,15 @@ export async function deleteTimeline(id) {
     headers: getAuthHeaders(),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to delete timeline");
+  if (!res.ok) throw new Error(data.message || "Failed to delete timeline item");
   return data;
 }
 
-// Software
+// ---------------- Software ----------------
+
 export async function fetchSoftware() {
   const res = await fetch(`${API_BASE}/software/getall`);
-  if (!res.ok) throw new Error("Failed to fetch software");
+  if (!res.ok) throw new Error("Failed to fetch software applications");
   const data = await res.json();
   return data.softwareApplications || [];
 }
@@ -170,7 +223,7 @@ export async function addSoftware(payload) {
     body: isFormData ? payload : JSON.stringify(payload),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to add software");
+  if (!res.ok) throw new Error(data.message || "Failed to add application");
   return data;
 }
 
@@ -180,11 +233,12 @@ export async function deleteSoftware(id) {
     headers: getAuthHeaders(),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to delete software");
+  if (!res.ok) throw new Error(data.message || "Failed to delete application");
   return data;
 }
 
-// Messages
+// ---------------- Messages ----------------
+
 export async function fetchMessages() {
   const res = await fetch(`${API_BASE}/message/getall`, {
     headers: getAuthHeaders(),

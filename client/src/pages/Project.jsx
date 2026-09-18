@@ -17,16 +17,25 @@ import ProfileCard from "../components/ProfileCard";
 import { fetchProjects } from "../api/portfolioApi";
 import frontendImage from "../img/frontendImage.jpg";
 
+/**
+ * Projects gallery view.
+ * Highlights web applications, repositories, live deployments, and stack tags.
+ */
 const Project = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isDarkMode = theme.palette.mode === "dark";
 
-  const { data: projects, isLoading, isError } = useQuery({
+  // Fetch projects from backend store / database
+  const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: fetchProjects,
   });
+
+  const sectionShadow = isDarkMode
+    ? "8px 8px 20px rgba(0,0,0,0.5), -4px -4px 14px rgba(255,255,255,0.02)"
+    : "8px 8px 20px rgba(0,0,0,0.06), -4px -4px 14px rgba(255,255,255,0.9)";
 
   return (
     <Box
@@ -42,7 +51,7 @@ const Project = ({ toggleDarkMode }) => {
         color: theme.palette.text.primary,
       }}
     >
-      {/* Left Section: ProfileCard */}
+      {/* Left Column: Personal Profile Card */}
       <Box
         sx={{
           width: isMobile ? "100%" : isTablet ? "45%" : "35%",
@@ -53,7 +62,7 @@ const Project = ({ toggleDarkMode }) => {
         <ProfileCard />
       </Box>
 
-      {/* Right Section: Menubar, Projects List */}
+      {/* Right Column: Navigation & Project Showcase */}
       <Box
         sx={{
           width: isMobile ? "100%" : isTablet ? "55%" : "65%",
@@ -64,27 +73,20 @@ const Project = ({ toggleDarkMode }) => {
         }}
       >
         <Menubar toggleDarkMode={toggleDarkMode} />
+
         <Box
           sx={{
             marginTop: "20px",
-            padding: "20px",
+            padding: { xs: "18px", sm: "24px" },
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: "16px",
-            boxShadow: isDarkMode
-              ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-              : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+            boxShadow: sectionShadow,
             backgroundColor: theme.palette.background.paper,
             transition: "box-shadow 0.3s ease, transform 0.3s ease",
-            "&:hover": {
-              boxShadow: isDarkMode
-                ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
-              transform: "translateY(-2px)",
-            },
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            <Typography variant="h4" sx={{ marginRight: 2, fontWeight: 700 }}>
+            <Typography variant="h4" sx={{ marginRight: 2, fontWeight: 700, fontSize: { xs: "1.5rem", sm: "2rem" } }}>
               Portfolio Projects
             </Typography>
             {!isMobile && (
@@ -96,13 +98,14 @@ const Project = ({ toggleDarkMode }) => {
                   borderTop: "2px solid",
                   borderColor: "currentColor",
                   margin: 0,
+                  opacity: 0.2,
                 }}
               />
             )}
           </Box>
 
           {isLoading ? (
-            <Box sx={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 2 }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 2.5 }}>
               {[1, 2, 3, 4].map((n) => (
                 <Skeleton key={n} variant="rectangular" height={260} sx={{ borderRadius: 3 }} />
               ))}
@@ -112,7 +115,7 @@ const Project = ({ toggleDarkMode }) => {
               sx={{
                 display: "grid",
                 gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
-                gap: 3,
+                gap: 2.5,
               }}
             >
               {projects.map((proj) => {
@@ -133,120 +136,120 @@ const Project = ({ toggleDarkMode }) => {
                       borderRadius: "14px",
                       bgcolor: theme.palette.background.default,
                       border: `1px solid ${isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`,
-                      boxShadow: isDarkMode
-                        ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-                        : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
-                      transition: "all 0.3s ease",
+                      boxShadow: sectionShadow,
+                      transition: "transform 0.2s ease, box-shadow 0.2s ease",
                       "&:hover": {
-                        transform: "translateY(-4px)",
-                        boxShadow: isDarkMode
-                          ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                          : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+                        transform: "translateY(-3px)",
                       },
                     }}
                   >
-                    <Box>
-                      {/* Project Image Banner */}
+                    <div>
+                      {/* Project Preview Thumbnail */}
                       <Box
+                        component="img"
+                        src={bannerSrc}
+                        alt={proj.title}
                         sx={{
                           width: "100%",
                           height: "160px",
+                          objectFit: "cover",
                           borderRadius: "10px",
-                          overflow: "hidden",
-                          mb: 2,
-                          bgcolor: isDarkMode ? "#13141f" : "#f1f3f7",
+                          mb: 1.5,
+                          border: `1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"}`,
                         }}
-                      >
-                        <img
-                          src={bannerSrc}
-                          alt={proj.title}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = frontendImage;
-                          }}
-                        />
+                      />
+
+                      {/* Project Title & Stack Pill */}
+                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 1 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 700, fontSize: "1.05rem" }}>
+                          {proj.title}
+                        </Typography>
+                        {proj.stack && (
+                          <Chip
+                            label={proj.stack}
+                            size="small"
+                            sx={{
+                              fontSize: "0.7rem",
+                              fontWeight: 600,
+                              bgcolor: isDarkMode ? "rgba(129, 140, 248, 0.15)" : "rgba(99, 102, 241, 0.1)",
+                              color: isDarkMode ? "#a5b4fc" : "#4338ca",
+                            }}
+                          />
+                        )}
                       </Box>
 
-                      {/* Project Title */}
-                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                        {proj.title}
-                      </Typography>
-
-                      {/* Project Description */}
+                      {/* Description */}
                       <Typography
                         variant="body2"
                         sx={{
-                          color: theme.palette.text.secondary,
-                          mb: 2,
-                          lineHeight: 1.6,
+                          color: "text.secondary",
+                          mt: 1,
+                          fontSize: "0.86rem",
+                          lineHeight: 1.5,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
                         }}
                       >
                         {proj.description}
                       </Typography>
 
                       {/* Tech Chips */}
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8, mb: 2 }}>
-                        {techList.slice(0, 4).map((tech, i) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.6, mt: 1.5 }}>
+                        {techList.map((t, idx) => (
                           <Chip
-                            key={i}
-                            label={tech}
+                            key={idx}
+                            label={t}
                             size="small"
+                            variant="outlined"
                             sx={{
-                              fontSize: "0.72rem",
+                              fontSize: "0.7rem",
                               borderRadius: "6px",
-                              bgcolor: isDarkMode ? "rgba(129, 140, 248, 0.15)" : "rgba(99, 102, 241, 0.1)",
-                              color: isDarkMode ? "#a5b4fc" : "#4f46e5",
-                              border: `1px solid ${isDarkMode ? "rgba(129, 140, 248, 0.3)" : "rgba(99, 102, 241, 0.2)"}`,
+                              borderColor: isDarkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)",
                             }}
                           />
                         ))}
                       </Box>
-                    </Box>
+                    </div>
 
-                    {/* Action Links */}
-                    <Box sx={{ display: "flex", gap: 1.5, pt: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
-                      {proj.gitRepoLink && (
-                        <Button
-                          href={proj.gitRepoLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          variant="outlined"
-                          size="small"
-                          startIcon={<GitHub size={15} />}
-                          sx={{
-                            flex: 1,
-                            textTransform: "none",
-                            borderRadius: "8px",
-                            borderColor: theme.palette.divider,
-                            color: theme.palette.text.primary,
-                            "&:hover": {
-                              borderColor: theme.palette.primary.main,
-                            },
-                          }}
-                        >
-                          Code
-                        </Button>
-                      )}
+                    {/* External Project Links */}
+                    <Box sx={{ display: "flex", gap: 1.2, mt: 2.5 }}>
                       {proj.projectLink && (
                         <Button
+                          variant="contained"
+                          size="small"
                           href={proj.projectLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          variant="contained"
-                          size="small"
-                          startIcon={<Launch size={15} />}
+                          startIcon={<Launch fontSize="small" />}
                           sx={{
                             flex: 1,
                             textTransform: "none",
                             borderRadius: "8px",
+                            fontWeight: 600,
+                            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
                           }}
                         >
-                          Demo
+                          Live App
+                        </Button>
+                      )}
+                      {proj.gitRepoLink && (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          href={proj.gitRepoLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          startIcon={<GitHub fontSize="small" />}
+                          sx={{
+                            flex: proj.projectLink ? "0 0 auto" : 1,
+                            textTransform: "none",
+                            borderRadius: "8px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          Code
                         </Button>
                       )}
                     </Box>
@@ -255,9 +258,9 @@ const Project = ({ toggleDarkMode }) => {
               })}
             </Box>
           ) : (
-            <Box sx={{ textAlign: "center", py: 6 }}>
-              <Typography color="text.secondary">No projects added yet.</Typography>
-            </Box>
+            <Typography variant="body1" sx={{ color: "text.secondary", textAlign: "center", py: 4 }}>
+              No portfolio projects posted yet.
+            </Typography>
           )}
         </Box>
       </Box>

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -10,25 +11,31 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Tooltip,
+  useMediaQuery,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import DescriptionIcon from "@mui/icons-material/Description";
 import WorkIcon from "@mui/icons-material/Work";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 
+/**
+ * Public navigation bar.
+ * Clean, neumorphic styling without admin navigation links.
+ */
 const Menubar = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDarkMode = theme.palette.mode === "dark";
 
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Client-facing public menu items only (No Admin)
   const menuItems = [
     { icon: <HomeIcon fontSize="small" />, label: "Home", path: "/" },
     { icon: <DescriptionIcon fontSize="small" />, label: "Resume", path: "/resume" },
@@ -37,43 +44,53 @@ const Menubar = ({ toggleDarkMode }) => {
   ];
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+    setDrawerOpen((prev) => !prev);
   };
 
   const isActive = (path) => location.pathname === path;
 
+  // Modernized soft neuromorphic shadow
+  const containerShadow = isDarkMode
+    ? "6px 6px 14px rgba(0, 0, 0, 0.45), -4px -4px 12px rgba(255, 255, 255, 0.03)"
+    : "6px 6px 14px rgba(0, 0, 0, 0.07), -4px -4px 12px rgba(255, 255, 255, 0.9)";
+
   return (
     <Box
+      id="portfolio-menubar"
       sx={{
         width: "100%",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "6px 12px",
-        borderRadius: "12px",
-        bgcolor: theme.palette.background.default,
-        boxShadow: isDarkMode
-          ? `7px 7px 15px ${theme.palette.grey[900]}, -7px -7px 15px ${theme.palette.grey[800]}`
-          : `7px 7px 15px ${theme.palette.grey[300]}, -7px -7px 15px ${theme.palette.grey[100]}`,
-        transition: "box-shadow 0.3s ease-in-out",
+        padding: { xs: "6px 10px", sm: "8px 16px" },
+        borderRadius: "14px",
+        bgcolor: isDarkMode ? "rgba(30, 32, 44, 0.9)" : "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(8px)",
+        border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.05)"}`,
+        boxShadow: containerShadow,
+        transition: "box-shadow 0.3s ease, background-color 0.3s ease",
       }}
     >
+      {/* Mobile Drawer Trigger */}
       <IconButton
+        id="btn-mobile-menu"
+        aria-label="Open Navigation Menu"
         sx={{
-          display: { xs: "block", sm: "none" },
-          color: isDarkMode ? "#fff" : "#000",
+          display: { xs: "inline-flex", sm: "none" },
+          color: isDarkMode ? "#f8fafc" : "#1e293b",
+          p: 1,
         }}
         onClick={handleDrawerToggle}
       >
         <MenuIcon />
       </IconButton>
 
-      {/* Navigation Buttons */}
+      {/* Desktop Navigation Links */}
       <Box
         sx={{
           display: { xs: "none", sm: "flex" },
           alignItems: "center",
-          gap: { sm: 1.5, md: 2.5 },
+          gap: { sm: 1.5, md: 2 },
           flexGrow: 1,
         }}
       >
@@ -82,31 +99,34 @@ const Menubar = ({ toggleDarkMode }) => {
           return (
             <Box
               key={item.label}
+              id={`nav-${item.label.toLowerCase()}`}
               onClick={() => navigate(item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
                 gap: 0.8,
                 cursor: "pointer",
-                padding: "8px 14px",
-                transition: "all 0.25s ease",
+                padding: "8px 16px",
+                transition: "all 0.2s ease-in-out",
                 backgroundColor: active
                   ? isDarkMode
-                    ? "rgba(129, 140, 248, 0.18)"
-                    : "rgba(99, 102, 241, 0.12)"
+                    ? "rgba(129, 140, 248, 0.16)"
+                    : "rgba(99, 102, 241, 0.1)"
                   : "transparent",
                 borderRadius: "10px",
                 border: active
-                  ? `1px solid ${isDarkMode ? "rgba(129, 140, 248, 0.35)" : "rgba(99, 102, 241, 0.25)"}`
+                  ? `1px solid ${isDarkMode ? "rgba(129, 140, 248, 0.3)" : "rgba(99, 102, 241, 0.25)"}`
                   : "1px solid transparent",
                 color: active
                   ? isDarkMode
                     ? "#a5b4fc"
                     : "#4338ca"
-                  : theme.palette.text.primary,
+                  : isDarkMode
+                  ? "#cbd5e1"
+                  : "#475569",
                 "&:hover": {
-                  backgroundColor: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
-                  borderRadius: "10px",
+                  backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.04)",
+                  color: isDarkMode ? "#ffffff" : "#0f172a",
                 },
               }}
             >
@@ -115,7 +135,8 @@ const Menubar = ({ toggleDarkMode }) => {
                 variant="body2"
                 sx={{
                   fontWeight: active ? 700 : 500,
-                  fontSize: "0.92rem",
+                  fontSize: "0.93rem",
+                  letterSpacing: "-0.01em",
                 }}
               >
                 {item.label}
@@ -123,72 +144,57 @@ const Menubar = ({ toggleDarkMode }) => {
             </Box>
           );
         })}
-
-        {/* Link to Admin Panel */}
-        <Tooltip title="Open Admin Control Panel">
-          <Box
-            component="a"
-            href="/admin"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.8,
-              textDecoration: "none",
-              cursor: "pointer",
-              padding: "8px 14px",
-              borderRadius: "10px",
-              transition: "all 0.25s ease",
-              color: isDarkMode ? "#f59e0b" : "#b45309",
-              backgroundColor: isDarkMode ? "rgba(245, 158, 11, 0.12)" : "rgba(245, 158, 11, 0.1)",
-              border: `1px solid ${isDarkMode ? "rgba(245, 158, 11, 0.25)" : "rgba(245, 158, 11, 0.2)"}`,
-              "&:hover": {
-                backgroundColor: isDarkMode ? "rgba(245, 158, 11, 0.2)" : "rgba(245, 158, 11, 0.18)",
-              },
-            }}
-          >
-            <AdminPanelSettingsIcon fontSize="small" />
-            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: "0.92rem" }}>
-              Admin
-            </Typography>
-          </Box>
-        </Tooltip>
       </Box>
 
-      {/* Dark Mode Toggle Button */}
+      {/* Dark / Light Theme Toggle */}
       <IconButton
+        id="btn-theme-toggle"
+        aria-label="Toggle Color Theme"
         onClick={toggleDarkMode}
         sx={{
-          width: 44,
-          height: 44,
-          bgcolor: theme.palette.background.default,
-          boxShadow: isDarkMode
-            ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
-            : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`,
+          width: 40,
+          height: 40,
+          bgcolor: isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.04)",
+          border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)"}`,
+          color: isDarkMode ? "#fbbf24" : "#475569",
           borderRadius: "50%",
-          transition: "all 0.3s ease-in-out",
+          transition: "transform 0.2s ease, background-color 0.2s ease",
           "&:hover": {
-            transform: "scale(1.05)",
+            transform: "scale(1.06)",
+            bgcolor: isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)",
           },
         }}
       >
-        {isDarkMode ? <Brightness7 fontSize="small" sx={{ color: "#fbbf24" }} /> : <Brightness4 fontSize="small" />}
+        {isDarkMode ? <Brightness7 fontSize="small" /> : <Brightness4 fontSize="small" />}
       </IconButton>
 
-      {/* Drawer for Mobile */}
-      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
-        <Box
-          sx={{
-            width: 250,
-            bgcolor: theme.palette.background.default,
-            height: "100%",
-            p: 2,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, px: 2 }}>
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+        PaperProps={{
+          sx: {
+            width: 270,
+            bgcolor: isDarkMode ? "#131622" : "#ffffff",
+            color: isDarkMode ? "#f8fafc" : "#0f172a",
+            p: 2.5,
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: "-0.02em" }}>
             Portfolio
           </Typography>
-          <List>
-            {menuItems.map((item) => (
+          <IconButton size="small" onClick={handleDrawerToggle} sx={{ color: "inherit" }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+
+        <List sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          {menuItems.map((item) => {
+            const active = isActive(item.path);
+            return (
               <ListItem
                 button
                 key={item.label}
@@ -197,44 +203,34 @@ const Menubar = ({ toggleDarkMode }) => {
                   handleDrawerToggle();
                 }}
                 sx={{
-                  borderRadius: "8px",
-                  mb: 1,
-                  bgcolor: isActive(item.path)
+                  borderRadius: "10px",
+                  p: 1.2,
+                  bgcolor: active
                     ? isDarkMode
                       ? "rgba(129, 140, 248, 0.15)"
                       : "rgba(99, 102, 241, 0.1)"
                     : "transparent",
+                  color: active
+                    ? isDarkMode
+                      ? "#a5b4fc"
+                      : "#4338ca"
+                    : "inherit",
                 }}
               >
-                <ListItemIcon sx={{ color: isActive(item.path) ? theme.palette.primary.main : "inherit" }}>
+                <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
                   primaryTypographyProps={{
-                    fontWeight: isActive(item.path) ? "bold" : "normal",
+                    fontWeight: active ? 700 : 500,
+                    fontSize: "0.95rem",
                   }}
                 />
               </ListItem>
-            ))}
-            <ListItem
-              button
-              component="a"
-              href="/admin"
-              sx={{
-                borderRadius: "8px",
-                color: "#f59e0b",
-                bgcolor: "rgba(245, 158, 11, 0.1)",
-                mt: 2,
-              }}
-            >
-              <ListItemIcon sx={{ color: "#f59e0b" }}>
-                <AdminPanelSettingsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Admin Panel" primaryTypographyProps={{ fontWeight: 600 }} />
-            </ListItem>
-          </List>
-        </Box>
+            );
+          })}
+        </List>
       </Drawer>
     </Box>
   );

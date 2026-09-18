@@ -9,6 +9,9 @@ const DATA_FILE = path.join(__dirname, "portfolioData.json");
 
 let memoryData = null;
 
+// Temporary in-memory phone OTP repository with 10-minute expiry
+const phoneOtpCache = new Map();
+
 function loadData() {
   if (memoryData) return memoryData;
   try {
@@ -50,6 +53,41 @@ export const DataStore = {
     };
     saveData();
     return d.user;
+  },
+  // Update admin credentials (password, email, phone)
+  setCredentials: ({ email, phone, passwordHash }) => {
+    const d = loadData();
+    if (email) d.user.email = email;
+    if (phone) d.user.phone = phone;
+    if (passwordHash) d.user.password = passwordHash;
+    saveData();
+    return d.user;
+  },
+
+  // Mobile OTP Management
+  storePhoneOtp: (phone, otp) => {
+    // Standardize phone number format by stripping spaces and hyphens
+    const cleanPhone = String(phone).replace(/[\s-]/g, "");
+    phoneOtpCache.set(cleanPhone, {
+      otp: String(otp),
+      expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes validity
+      createdAt: Date.now(),
+    });
+  },
+  verifyPhoneOtp: (phone, inputOtp) => {
+    const cleanPhone = String(phone).replace(/[\s-]/g, "");
+    const record = phoneOtpCache.get(cleanPhone);
+    if (!record) return { valid: false, reason: "No OTP requested for this phone number." };
+    if (Date.now() > record.expiresAt) {
+      phoneOtpCache.delete(cleanPhone);
+      return { valid: false, reason: "OTP has expired. Please request a new code." };
+    }
+    if (record.otp !== String(inputOtp).trim()) {
+      return { valid: false, reason: "Incorrect verification code entered." };
+    }
+    // Remove used OTP
+    phoneOtpCache.delete(cleanPhone);
+    return { valid: true };
   },
 
   // Projects
