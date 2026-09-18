@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, Link, useTheme, useMediaQuery } from "@mui/material";
 
 const Footer = () => {
   const theme = useTheme();
@@ -11,14 +11,17 @@ const Footer = () => {
     <Box
       sx={{
         width: "100%",
-        padding: isMobile ? "10px" : "20px",
+        padding: isMobile ? "12px" : "18px",
         backgroundColor: isDarkMode
           ? theme.palette.background.default
           : "#f5f5f5",
         color: isDarkMode ? theme.palette.text.primary : "text.secondary",
         textAlign: "center",
-        position: "relative",
-        bottom: 0,
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 1,
         boxShadow: isDarkMode
           ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
           : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
@@ -27,8 +30,27 @@ const Footer = () => {
       }}
     >
       <Typography variant="body2">
-        © 2024 Kanhu Charan Sahoo. All rights reserved.
+        © {new Date().getFullYear()} Kanhu Charan Sahoo. All rights reserved.
       </Typography>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+        <Link
+          href="/api/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="hover"
+          sx={{ fontSize: "0.85rem", color: theme.palette.primary.main }}
+        >
+          Swagger API Docs
+        </Link>
+        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>•</Typography>
+        <Link
+          href="/admin"
+          underline="hover"
+          sx={{ fontSize: "0.85rem", color: theme.palette.text.secondary, "&:hover": { color: theme.palette.primary.main } }}
+        >
+          Admin Portal
+        </Link>
+      </Box>
     </Box>
   );
 };

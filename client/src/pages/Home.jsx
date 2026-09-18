@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React from "react";
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery, Skeleton } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
 import InfoCard from "../components/InfoCard";
+import { fetchUserProfile } from "../api/portfolioApi";
 import freelancerImage from "../img/freelancer.jpg";
 import frontendImage from "../img/frontendImage.jpg";
 
@@ -12,6 +14,20 @@ const Home = ({ toggleDarkMode }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["portfolioUser"],
+    queryFn: fetchUserProfile,
+  });
+
+  // Split bio text into paragraphs/bullets
+  const aboutBullets = user?.aboutMe
+    ? user.aboutMe.split("\n\n").filter(Boolean)
+    : [
+        "As a Frontend developer passionate about creating seamless web experiences & developing robust and problem-solving skills and proven experience in creating and designing software in a test-driven environment.",
+        "My expertise spans front-end development, where I have good hands-on experience with HTML, CSS, JavaScript, TypeScript, ReactJs, NextJs, Material UI, and modern CSS for crafting sleek user interfaces.",
+        "On the server side, my focus revolves around the reliable functioning of applications using Node.js and Express.js with MongoDB.",
+      ];
 
   return (
     <Box
@@ -58,31 +74,24 @@ const Home = ({ toggleDarkMode }) => {
             borderRadius: "16px",
             boxShadow:
               theme.palette.mode === "dark"
-                ? `8px 8px 16px ${theme.palette.grey[900]}, 
-                 -8px -8px 16px ${theme.palette.grey[800]}`
-                : `8px 8px 16px ${theme.palette.grey[300]}, 
-                 -8px -8px 16px ${theme.palette.grey[100]}`,
-            // marginTop: isMobile ? 6 : isTablet ? 8 : 12,
+                ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+                : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
             backgroundColor: theme.palette.background.paper,
             transition: "box-shadow 0.3s ease, transform 0.3s ease",
             "&:hover": {
               boxShadow:
                 theme.palette.mode === "dark"
-                  ? `12px 12px 24px ${theme.palette.grey[900]}, 
-                   -12px -12px 24px ${theme.palette.grey[800]}`
-                  : `12px 12px 24px ${theme.palette.grey[300]}, 
-                   -12px -12px 24px ${theme.palette.grey[100]}`,
+                  ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                  : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
               transform: "translateY(-2px)",
             },
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1 }}>
+            <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1, fontWeight: 700 }}>
               About Me
             </Typography>
-            {isMobile ? (
-              ""
-            ) : (
+            {!isMobile && (
               <Box
                 component="hr"
                 sx={{
@@ -95,71 +104,47 @@ const Home = ({ toggleDarkMode }) => {
               />
             )}
           </Box>
-          <Typography
-            variant="body1"
-            sx={{
-              marginBottom: "2px",
-              position: "relative",
-              "&::before": {
-                content: '"•"',
-                position: "absolute",
-                left: "-10px", // Adjust this value based on your needs
-              },
-            }}
-          >
-            As a Frontend developer passionate about creating seamless web
-            experiences & developing robust and problem-solving skills and
-            proven experience in creating and designing software in a
-            test-driven environment.
-          </Typography>
 
-          <Typography
-            variant="body1"
-            sx={{
-              marginBottom: "2px",
-              position: "relative",
-              "&::before": {
-                content: '"•"',
-                position: "absolute",
-                left: "-10px", // Adjust this value based on your needs
-              },
-            }}
-          >
-            My expertise spans front-end development, where I have good hands-on
-            experience with HTML, CSS, JavaScript, Typescript, ReactJs, NextJs,
-            Material UI, Tailwind CSS, ShadCn, for crafting sleek user
-            interfaces.
-          </Typography>
+          {isLoading ? (
+            <Box sx={{ my: 2 }}>
+              <Skeleton variant="text" height={30} />
+              <Skeleton variant="text" height={30} />
+              <Skeleton variant="text" height={30} />
+            </Box>
+          ) : (
+            aboutBullets.map((text, idx) => (
+              <Typography
+                key={idx}
+                variant="body1"
+                sx={{
+                  marginBottom: "12px",
+                  position: "relative",
+                  paddingLeft: "14px",
+                  lineHeight: 1.7,
+                  color: theme.palette.text.secondary,
+                  "&::before": {
+                    content: '"•"',
+                    position: "absolute",
+                    left: 0,
+                    color: theme.palette.primary.main || "#818cf8",
+                    fontWeight: "bold",
+                  },
+                }}
+              >
+                {text}
+              </Typography>
+            ))
+          )}
 
-          <Typography
-            variant="body1"
-            sx={{
-              marginBottom: "2px",
-              position: "relative",
-              "&::before": {
-                content: '"•"',
-                position: "absolute",
-                left: "-10px", // Adjust this value based on your needs
-              },
-            }}
-          >
-            On the server side, my focus revolves around the reliable
-            functioning of applications using Node.js and Express.js.
-          </Typography>
-          <Typography variant="h5" sx={{ marginTop: 2 }}>
+          <Typography variant="h5" sx={{ marginTop: 3, marginBottom: 2, fontWeight: 600 }}>
             What I do!
           </Typography>
+
           <Box>
-            {/* Manually added InfoCards with different data */}
             <Box
               sx={{
-                display: "flex",
-                flexDirection: isMobile
-                  ? "column"
-                  : isTablet
-                  ? "column"
-                  : "row",
-                justifyContent: "center",
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                 gap: 2,
                 marginBottom: 2,
                 marginTop: 2,
@@ -167,13 +152,13 @@ const Home = ({ toggleDarkMode }) => {
             >
               <InfoCard
                 title="Frontend Development"
-                content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I am always eager to dive into new projects that leverage these technologies, along with UI frameworks like MUI and Tailwind CSS, to build fast, user-friendly applications."
-                imageSrc={frontendImage} // Pass image source here
+                content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I dive into projects that leverage these technologies, along with UI frameworks like MUI and modern CSS, to build fast, user-friendly applications."
+                imageSrc={frontendImage}
               />
               <InfoCard
-                title="Freelancer"
-                content="I specialize in building high-performance web applications with React.js and Next.js. Using modern UI frameworks like MUI and Tailwind CSS, I create scalable, responsive designs tailored to your needs. I combine advanced technology with innovative design to deliver user-centric solutions that are both visually appealing and seamless in performance. Whether you need a new application or enhancements to an existing one, I’m here to turn your vision into reality with precision and creativity."
-                imageSrc={freelancerImage} // Pass image source here
+                title="Freelancer & Full-Stack"
+                content="I specialize in building high-performance web applications with React.js, Node.js, and Express. Using modern UI principles and glassmorphic designs, I create scalable, responsive architectures tailored to client requirements with clean, testable code."
+                imageSrc={freelancerImage}
               />
             </Box>
           </Box>

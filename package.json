@@ -1,0 +1,23 @@
+{
+  "name": "portfolio-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "admin",
+    "server"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=client",
+    "build": "npm run build --workspace=admin && npm run build --workspace=client",
+    "lint": "npm run lint --workspace=client"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.12.0",
+    "@tanstack/react-query": "^5.103.1",
+    "lucide-react": "^1.47.0",
+    "react-redux": "^9.3.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

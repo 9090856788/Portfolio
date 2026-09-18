@@ -7,276 +7,271 @@ import {
   Grid,
   Card,
   CardContent,
+  LinearProgress,
   useTheme,
   useMediaQuery,
+  Skeleton,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSkills, fetchTimeline, fetchSoftware } from "../api/portfolioApi";
 
-const ResumeForn = () => {
+const ResumeForm = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isDarkMode = theme.palette.mode === "dark";
+
+  const { data: skills, isLoading: skillsLoading } = useQuery({
+    queryKey: ["skills"],
+    queryFn: fetchSkills,
+  });
+
+  const { data: timeline, isLoading: timelineLoading } = useQuery({
+    queryKey: ["timeline"],
+    queryFn: fetchTimeline,
+  });
+
+  const { data: software } = useQuery({
+    queryKey: ["software"],
+    queryFn: fetchSoftware,
+  });
+
+  // Separate education and experience
+  const educationList = timeline?.filter(
+    (t) =>
+      t.title?.toLowerCase().includes("bachelor") ||
+      t.title?.toLowerCase().includes("degree") ||
+      t.title?.toLowerCase().includes("school") ||
+      t.title?.toLowerCase().includes("education") ||
+      t.company?.toLowerCase().includes("university") ||
+      t.company?.toLowerCase().includes("school")
+  ) || [];
+
+  const experienceList = timeline?.filter(
+    (t) => !educationList.some((e) => e._id === t._id)
+  ) || [];
+
+  // Fallback defaults if list is empty
+  const displayedEducation =
+    educationList.length > 0
+      ? educationList
+      : [
+          {
+            _id: "edu-1",
+            title: "Bachelor of Technology",
+            company: "Biju Patnaik University of Technology",
+            period: "2019 - 2023",
+            description: "Computer Science and Web Application Engineering.",
+          },
+        ];
+
+  const displayedExperience =
+    experienceList.length > 0
+      ? experienceList
+      : [
+          {
+            _id: "exp-1",
+            title: "Frontend Developer",
+            company: "Tech Solutions",
+            period: "2023 - Present",
+            description: "Building modern scalable web apps using React, Next.js, and Express.",
+          },
+        ];
 
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        width: "100%",
         padding: "10px",
-        maxWidth: "auto",
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
       }}
     >
       {/* Education & Experience Section */}
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          display: "flex",
-          marginBottom: "20px",
-        }}
-      >
+      <Grid container spacing={3} sx={{ marginBottom: "24px" }}>
         {/* Education Section */}
         <Grid item xs={12} sm={6}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             🎓 Education
           </Typography>
-          <Card
-            sx={{
-              marginBottom: "10px",
-              backgroundColor: theme.palette.background.paper,
-              "&:hover": {
-                boxShadow:
-                  theme.palette.mode === "dark"
-                    ? `12px 12px 24px ${theme.palette.grey[900]}, 
-                       -12px -12px 24px ${theme.palette.grey[800]}`
-                    : `12px 12px 24px ${theme.palette.grey[300]}, 
-                       -12px -12px 24px ${theme.palette.grey[100]}`,
-                transform: "translateY(-2px)",
-              },
-            }}
-          >
-            <CardContent>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Software Development
-              </Typography>
-              <Typography variant="body2">
-                Moringa School (2020-2021)
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card
-            sx={{
-              backgroundColor: theme.palette.background.paper,
-              "&:hover": {
-                boxShadow:
-                  theme.palette.mode === "dark"
-                    ? `12px 12px 24px ${theme.palette.grey[900]}, 
-                       -12px -12px 24px ${theme.palette.grey[800]}`
-                    : `12px 12px 24px ${theme.palette.grey[300]}, 
-                       -12px -12px 24px ${theme.palette.grey[100]}`,
-                transform: "translateY(-2px)",
-              },
-            }}
-          >
-            <CardContent>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Disaster Management
-              </Typography>
-              <Typography variant="body2">
-                Masinde Muliro University (2012-2016)
-              </Typography>
-            </CardContent>
-          </Card>
+          {timelineLoading ? (
+            <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
+          ) : (
+            displayedEducation.map((item) => (
+              <Card
+                key={item._id}
+                sx={{
+                  marginBottom: "12px",
+                  backgroundColor: theme.palette.background.paper,
+                  borderRadius: "12px",
+                  boxShadow: isDarkMode
+                    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+                    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: isDarkMode
+                      ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                      : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    {item.title}
+                  </Typography>
+                  <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
+                    {item.company} ({item.period || `${item.timeline?.from || ""} - ${item.timeline?.to || ""}`})
+                  </Typography>
+                  {item.description && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                      {item.description}
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </Grid>
 
         {/* Experience Section */}
         <Grid item xs={12} sm={6}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             💼 Experience
           </Typography>
-          <Card
-            sx={{
-              marginBottom: "10px",
-              backgroundColor: theme.palette.background.paper,
-              "&:hover": {
-                boxShadow:
-                  theme.palette.mode === "dark"
-                    ? `12px 12px 24px ${theme.palette.grey[900]}, 
-                       -12px -12px 24px ${theme.palette.grey[800]}`
-                    : `12px 12px 24px ${theme.palette.grey[300]}, 
-                       -12px -12px 24px ${theme.palette.grey[100]}`,
-                transform: "translateY(-2px)",
-              },
-            }}
-          >
-            <CardContent>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Technical Mentor
-              </Typography>
-              <Typography variant="body2">
-                Moringa School (2022 - Present)
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card
-            sx={{
-              backgroundColor: theme.palette.background.paper,
-              "&:hover": {
-                boxShadow:
-                  theme.palette.mode === "dark"
-                    ? `12px 12px 24px ${theme.palette.grey[900]}, 
-                       -12px -12px 24px ${theme.palette.grey[800]}`
-                    : `12px 12px 24px ${theme.palette.grey[300]}, 
-                       -12px -12px 24px ${theme.palette.grey[100]}`,
-                transform: "translateY(-2px)",
-              },
-            }}
-          >
-            <CardContent>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Website Development
-              </Typography>
-              <Typography variant="body2">
-                Village 2 Nation (2021-2022)
-              </Typography>
-            </CardContent>
-          </Card>
+          {timelineLoading ? (
+            <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
+          ) : (
+            displayedExperience.map((item) => (
+              <Card
+                key={item._id}
+                sx={{
+                  marginBottom: "12px",
+                  backgroundColor: theme.palette.background.paper,
+                  borderRadius: "12px",
+                  boxShadow: isDarkMode
+                    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+                    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: isDarkMode
+                      ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                      : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    {item.title}
+                  </Typography>
+                  <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
+                    {item.company} ({item.period || `${item.timeline?.from || ""} - ${item.timeline?.to || ""}`})
+                  </Typography>
+                  {item.description && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                      {item.description}
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </Grid>
       </Grid>
 
-      {/* Work Skills & Soft Skills Section */}
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Work Skills */}
-        <Grid item xs={12} sm={6}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Work Skills
-          </Typography>
+      {/* Technical Skills with Proficiency */}
+      <Box sx={{ mb: 3, width: "100%" }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          ⚡ Technical Proficiency
+        </Typography>
+        {skillsLoading ? (
+          <Skeleton variant="rectangular" height={80} sx={{ borderRadius: 2 }} />
+        ) : (
           <Box
             sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "10px",
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 2,
             }}
           >
-            {[
-              "NEXT.js",
-              "React.js",
-              "HTML 5",
-              "CSS 3",
-              "Tailwind CSS",
-              "Figma",
-              "JavaScript",
-              "Mongo DB",
-              "SQL",
-              "Angular",
-              "Android",
-              "Git",
-            ].map((skill) => (
-              <Chip
-                key={skill}
-                label={skill}
+            {(skills || []).map((skill) => (
+              <Box
+                key={skill._id}
                 sx={{
-                  bgcolor: theme.palette.background.default,
-                  color: theme.palette.text.primary,
-                  borderRadius: "7px",
-                  boxShadow:
-                    theme.palette.mode === "dark"
-                      ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
-                      : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-                  transition:
-                    "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
-                  "&:hover": {
-                    bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
-                    boxShadow:
-                      theme.palette.mode === "dark"
-                        ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
-                        : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
-                    transform: "translateY(-2px)",
-                  },
-                  fontSize: isMobile
-                    ? "0.75rem"
-                    : isTablet
-                    ? "0.85rem"
-                    : "1rem",
-                  padding: isMobile
-                    ? "6px 12px"
-                    : isTablet
-                    ? "8px 16px"
-                    : "10px 20px",
+                  p: 1.5,
+                  borderRadius: "10px",
+                  bgcolor: theme.palette.background.paper,
+                  border: `1px solid ${isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
                 }}
-              />
+              >
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.8 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {skill.svg?.url && (
+                      <img src={skill.svg.url} alt="" style={{ width: 18, height: 18 }} />
+                    )}
+                    <Typography variant="body2" fontWeight={600}>
+                      {skill.title}
+                    </Typography>
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                    {skill.proficiency}%
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={Number(skill.proficiency) || 75}
+                  sx={{
+                    height: 6,
+                    borderRadius: 3,
+                    bgcolor: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+                  }}
+                />
+              </Box>
             ))}
           </Box>
-        </Grid>
+        )}
+      </Box>
 
-        {/* Soft Skills */}
-        <Grid item xs={12} sm={6}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Soft Skills
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "10px",
-            }}
-          >
-            {[
-              "Time Management",
-              "Mentorship",
-              "Impeccable Communication",
-              "Flexibility",
-              "Research",
-              "Writing",
-            ].map((skill) => (
-              <Chip
-                key={skill}
-                label={skill}
-                sx={{
-                  bgcolor: theme.palette.background.default,
-                  color: theme.palette.text.primary,
-                  borderRadius: "7px",
-                  boxShadow:
-                    theme.palette.mode === "dark"
-                      ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
-                      : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-                  transition:
-                    "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
-                  "&:hover": {
-                    bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
-                    boxShadow:
-                      theme.palette.mode === "dark"
-                        ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
-                        : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
-                    transform: "translateY(-2px)",
-                  },
-                  fontSize: isMobile
-                    ? "0.75rem"
-                    : isTablet
-                    ? "0.85rem"
-                    : "1rem",
-                  padding: isMobile
-                    ? "6px 12px"
-                    : isTablet
-                    ? "8px 16px"
-                    : "10px 20px",
-                }}
-              />
-            ))}
-          </Box>
-        </Grid>
-      </Grid>
+      {/* Software Applications & Tools */}
+      <Box sx={{ width: "100%" }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          🛠️ Tools & Technologies
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.2 }}>
+          {((software && software.length > 0) ? software.map((s) => s.name) : [
+            "VS Code",
+            "Postman",
+            "GitHub",
+            "Figma",
+            "Chrome DevTools",
+            "Vite",
+            "Docker",
+          ]).map((tool) => (
+            <Chip
+              key={tool}
+              label={tool}
+              sx={{
+                bgcolor: theme.palette.background.default,
+                color: theme.palette.text.primary,
+                borderRadius: "7px",
+                boxShadow: isDarkMode
+                  ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
+                  : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                },
+                fontSize: "0.85rem",
+                padding: "8px 14px",
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
     </Box>
   );
 };
 
-export default ResumeForn;
+export default ResumeForm;

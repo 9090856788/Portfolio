@@ -1,65 +1,52 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import fileUpload from "express-fileupload";
-import dbConnection from "./database/dbConnection.js";
-import { v2 as cloudinary } from "cloudinary";
+import { app } from "./app.js";
 import { errorMiddleware } from "./middleware/error.js";
-import messageRouter from "./router/messageRoutes.js";
-import userRouter from "./router/userRoutes.js";
-import timelineRouter from "./router/timelineRoutes.js";
-import softwareAppRouter from "./router/softwareApplicationRoutes.js";
-import skillRouter from "./router/skillRoutes.js";
-import projectRouter from "./router/projectRoutes.js";
 
-// configure environmental variable
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3000;
 
-// Configure Packages Section
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(
-    fileUpload({
-        useTempFiles: true, // Use temporary files instead of storing in memory
-        tempFileDir: "/tmp/", // Specify the directory for temporary files
-        limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB file size limit
-    })
-);
-app.use(
-    cors({
-        origin: [process.env.ADMIN_DASHBOARD_URL, process.env.PORTFOLIO_URL],
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
-    })
-);
-// app.use((req, res, next) => {
-//     res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-//     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
-//     res.header("Access-Control-Allow-Headers", "Content-Type");
-//     next();
-// });
-dbConnection();
+// Serve Admin SPA at /admin
+const adminDistPath = path.resolve(__dirname, "../dist/admin");
+app.use("/admin", express.static(adminDistPath));
+app.get("/admin*", (req, res, next) => {
+  const indexPath = path.join(adminDistPath, "index.html");
+  res.sendFile(indexPath, (err) => {
+    if (err) next();
+  });
+});
+
+// Serve Client Portfolio SPA at /
+const clientDistPath = path.resolve(__dirname, "../dist/client");
+app.use(express.static(clientDistPath));
+const rootDistPath = path.resolve(__dirname, "../dist");
+app.use(express.static(rootDistPath));
+
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api")) {
+    return next();
+  }
+  const clientIndex = path.join(clientDistPath, "index.html");
+  res.sendFile(clientIndex, (err) => {
+    if (err) {
+      const rootIndex = path.join(rootDistPath, "index.html");
+      res.sendFile(rootIndex, (fallbackErr) => {
+        if (fallbackErr) {
+          res.status(200).send("Portfolio App loading...");
+        }
+      });
+    }
+  });
+});
+
+// Error handling middleware
 app.use(errorMiddleware);
 
-// cloudinary Configurations
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Backend server running on http://0.0.0.0:${PORT}`);
+  console.log(`Swagger documentation available at http://0.0.0.0:${PORT}/api/docs`);
 });
 
-// routes configuration
-app.use("/api/v1/message", messageRouter);
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/timeline", timelineRouter);
-app.use("/api/v1/software", softwareAppRouter);
-app.use("/api/v1/skill", skillRouter);
-app.use("/api/v1/project", projectRouter);
-
-app.listen(PORT, () => {
-    console.log(`Server running the PORT: ${PORT} :)`);
-});
+export default app;

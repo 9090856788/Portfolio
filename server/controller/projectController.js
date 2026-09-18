@@ -1,13 +1,13 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ErrorHandler from "../middleware/error.js";
 import { Project } from "../models/projectSchema.js";
-import { v2 as cloudinary } from "cloudinary";
+import { processUploadedFile } from "../utils/fileHandler.js";
+import { DataStore } from "../data/store.js";
+import mongoose from "mongoose";
+
+const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
 
 export const addNewProject = catchAsyncErrors(async (req, res, next) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return next(new ErrorHandler("Project Banner is Required!", 400));
-    }
-    const { projectBanner } = req.files;
     const {
         title,
         description,
@@ -18,60 +18,92 @@ export const addNewProject = catchAsyncErrors(async (req, res, next) => {
         deploy,
     } = req.body;
 
-    if (
-        !title ||
-        !description ||
-        !gitRepoLink ||
-        !projectLink ||
-        !technology ||
-        !stack ||
-        !deploy
-    ) {
+    if (!title || !description) {
         return next(
-            new ErrorHandler(
-                "Project Title, Description, Git Repository Link, Project Link, Technology, Tech Stack, & Deploy Field is Required",
-                400
-            )
+            new ErrorHandler("Project Title and Description are required", 400)
         );
     }
 
-    //POSTING SVG
-    const cloudinaryResponse = await cloudinary.uploader.upload(
-        projectBanner.tempFilePath,
-        { folder: "PORTFOLIO_PROJECT_BANNER" }
-    );
+    let bannerData = {
+        public_id: "default_banner_" + Date.now(),
+        url: "/src/img/frontendImage.jpg",
+    };
 
-    if (!cloudinaryResponse || cloudinaryResponse.error) {
-        console.error(
-            "Cloudinary Error:",
-            cloudinaryResponse.error || "Unknown Cloudinary error"
-        );
-        return next(
-            new ErrorHandler("Failed to upload Project Banner to Cloudinary", 500)
-        );
+    if (req.files && req.files.projectBanner) {
+        const uploaded = await processUploadedFile(req.files.projectBanner, "projects");
+        if (uploaded) bannerData = uploaded;
+    } else if (req.body.projectBannerUrl) {
+        bannerData = {
+            public_id: "banner_" + Date.now(),
+            url: req.body.projectBannerUrl,
+        };
     }
-    const project = await Project.create({
+
+    if (isDbConnected()) {
+        const project = await Project.create({
+            title,
+            description,
+            gitRepoLink: gitRepoLink || "",
+            projectLink: projectLink || "",
+            technology: technology || "React, JavaScript",
+            stack: stack || "Frontend",
+            deploy: deploy || "Live",
+            projectBanner: bannerData,
+        });
+        return res.status(201).json({
+            success: true,
+            message: "Project Added Successfully",
+            project,
+        });
+    }
+
+    const project = DataStore.addProject({
         title,
         description,
-        gitRepoLink,
-        projectLink,
-        technology,
-        stack,
-        deploy,
-        projectBanner: {
-            public_id: cloudinaryResponse.public_id,
-            url: cloudinaryResponse.secure_url,
-        },
+        gitRepoLink: gitRepoLink || "https://github.com",
+        projectLink: projectLink || "https://example.com",
+        technology: technology || "React, JavaScript",
+        stack: stack || "Frontend",
+        deploy: deploy || "Live",
+        projectBanner: bannerData,
     });
-    res.status(200).json({
+
+    res.status(201).json({
         success: true,
-        message: "Project Added",
+        message: "Project Added Successfully",
         project,
     });
 });
 
 export const getAllProjects = catchAsyncErrors(async (req, res, next) => {
-    const project = await Project.find();
+    if (isDbConnected()) {
+        const project = await Project.find().sort({ createdAt: -1 });
+        return res.status(200).json({
+            success: true,
+            project,
+        });
+    }
+
+    const project = DataStore.getProjects();
+    res.status(200).json({
+        success: true,
+        project,
+    });
+});
+
+export const getSingleProject = catchAsyncErrors(async (req, res, next) => {
+    const { id } = req.params;
+    if (isDbConnected()) {
+        const project = await Project.findById(id);
+        if (!project) return next(new ErrorHandler("Project not found", 404));
+        return res.status(200).json({
+            success: true,
+            project,
+        });
+    }
+
+    const project = DataStore.getProjectById(id);
+    if (!project) return next(new ErrorHandler("Project not found", 404));
     res.status(200).json({
         success: true,
         project,
@@ -79,6 +111,7 @@ export const getAllProjects = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const updateProject = catchAsyncErrors(async (req, res, next) => {
+    const { id } = req.params;
     const newUpdateProjectData = {
         title: req.body.title,
         description: req.body.description,
@@ -88,64 +121,63 @@ export const updateProject = catchAsyncErrors(async (req, res, next) => {
         stack: req.body.stack,
         deploy: req.body.deploy,
     };
+
+    // Remove undefined values
+    Object.keys(newUpdateProjectData).forEach(
+        (key) => newUpdateProjectData[key] === undefined && delete newUpdateProjectData[key]
+    );
+
     if (req.files && req.files.projectBanner) {
-        const projectBanner = req.files.projectBanner;
-        const project = await Project.findById(req.project.id);
-        const projectImageId = project.projectBanner.public_id;
-        await cloudinary.uploader.destroy(projectImageId);
-        const cloudinaryResponse = await cloudinary.uploader.upload(
-            projectBanner.tempFilePath,
-            { folder: "PORTFOLIO_PROJECT_BANNER" }
-        );
+        const uploaded = await processUploadedFile(req.files.projectBanner, "projects");
+        if (uploaded) {
+            newUpdateProjectData.projectBanner = uploaded;
+        }
+    } else if (req.body.projectBannerUrl) {
         newUpdateProjectData.projectBanner = {
-            public_id: cloudinaryResponse.public_id,
-            url: cloudinaryResponse.secure_url,
+            public_id: "banner_" + Date.now(),
+            url: req.body.projectBannerUrl,
         };
-        newUpdateProjectData.url = cloudinaryResponse.secure_url;
     }
-    const project = await Project.findByIdAndUpdate(
-        req.params.id,
-        newUpdateProjectData,
-        {
+
+    if (isDbConnected()) {
+        const project = await Project.findByIdAndUpdate(id, newUpdateProjectData, {
             new: true,
             runValidators: true,
             useFindAndModify: false,
-        }
-    );
+        });
+        if (!project) return next(new ErrorHandler("Project not found", 404));
+        return res.status(200).json({
+            success: true,
+            message: "Project Updated Successfully",
+            project,
+        });
+    }
+
+    const project = DataStore.updateProject(id, newUpdateProjectData);
+    if (!project) return next(new ErrorHandler("Project not found", 404));
     res.status(200).json({
         success: true,
-        message: "Project Updated",
+        message: "Project Updated Successfully",
         project,
     });
 });
 
 export const deleteProject = catchAsyncErrors(async (req, res, next) => {
     const { id } = req.params;
-    const project = await Project.findById(id);
-    if (!project) {
-        return next(ErrorHandler("Project Not Found", 400));
+    if (isDbConnected()) {
+        const project = await Project.findById(id);
+        if (!project) return next(new ErrorHandler("Project not found", 404));
+        await project.deleteOne();
+        return res.status(200).json({
+            success: true,
+            message: "Project Deleted Successfully",
+        });
     }
-    const projectBannerId = project.projectBanner.public_id;
-    await cloudinary.uploader.destroy(projectBannerId);
-    await project.deleteOne();
+
+    const deleted = DataStore.deleteProject(id);
+    if (!deleted) return next(new ErrorHandler("Project not found", 404));
     res.status(200).json({
         success: true,
-        message: "Project Deleted",
+        message: "Project Deleted Successfully",
     });
-});
-
-
-export const getSingleProject = catchAsyncErrors(async (req, res, next) => {
-    const { id } = req.params;
-    try {
-        const project = await Project.findById(id);
-        res.status(200).json({
-            success: true,
-            project,
-        });
-    } catch (error) {
-        res.status(400).json({
-            error,
-        });
-    }
 });

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Avatar,
@@ -8,68 +8,74 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import {
   LinkedIn,
   Twitter,
   GitHub,
-  YouTube,
   Phone,
   Email,
   LocationOn,
   Download,
 } from "@mui/icons-material";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUserProfile } from "../api/portfolioApi";
 import profileImg from "../img/Kanhu.jpg";
 
-const socialMediaLinks = [
-  {
-    name: "LinkedIn",
-    url: "https://www.linkedin.com",
-    icon: <LinkedIn />,
-    color: "#0077b5",
-  },
-  {
-    name: "Twitter",
-    url: "https://twitter.com",
-    icon: <Twitter />,
-    color: "#1da1f2",
-  },
-  {
-    name: "GitHub",
-    url: "https://github.com",
-    icon: <GitHub />,
-    color: "#333",
-  },
-];
-
 const ProfileCard = () => {
-  const [avatar, setAvatar] = useState(profileImg);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  // const handleAvatarChange = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => setAvatar(e.target.result);
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
 
-  const handleResumeDownload = async () => {
-    try {
-      const response = await fetch("https://api.example.com/download-resume");
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "resume.pdf");
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading the resume:", error);
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["portfolioUser"],
+    queryFn: fetchUserProfile,
+  });
+
+  const avatarSrc = user?.avatar?.url || profileImg;
+  const fullName = user?.fullName || "Kanhu Charan Sahoo";
+  const roleTitle = user?.role || "Frontend Developer & UI/UX";
+  const phone = user?.phone || "+91 9090856788";
+  const email = user?.email || "kanhucharansahoo595@gmail.com";
+  const location = user?.location || "Bhubaneswar, Odisha, India";
+  const resumeUrl = user?.resume?.url || "";
+
+  const socialMediaLinks = [
+    {
+      name: "LinkedIn",
+      url: user?.linkedInURL || "https://linkedin.com",
+      icon: <LinkedIn />,
+      color: "#0077b5",
+    },
+    {
+      name: "Twitter",
+      url: user?.twitterURL || "https://twitter.com",
+      icon: <Twitter />,
+      color: "#1da1f2",
+    },
+    {
+      name: "GitHub",
+      url: user?.githubURL || "https://github.com/9090856788",
+      icon: <GitHub />,
+      color: "#333",
+    },
+  ];
+
+  const handleResumeDownload = () => {
+    if (resumeUrl) {
+      window.open(resumeUrl, "_blank");
+    } else {
+      // Fallback resume notification or download
+      const element = document.createElement("a");
+      const file = new Blob([
+        `Resume: ${fullName}\nRole: ${roleTitle}\nEmail: ${email}\nPhone: ${phone}\nPortfolio: ${user?.portfolioURL || "https://kanhucharansahoo.dev"}`
+      ], { type: "text/plain" });
+      element.href = URL.createObjectURL(file);
+      element.download = `${fullName.replace(/\s+/g, "_")}_Resume.txt`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
     }
   };
 
@@ -78,24 +84,20 @@ const ProfileCard = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        flexWrap: "wrap", // Wrap icons to next line on smaller screens
-        gap: 2, // Space between icons
+        flexWrap: "wrap",
+        gap: 2,
         padding: 2,
         borderRadius: "10px",
         boxShadow:
           theme.palette.mode === "dark"
-            ? `8px 8px 16px ${theme.palette.grey[900]}, 
-                 -8px -8px 16px ${theme.palette.grey[800]}`
-            : `8px 8px 16px ${theme.palette.grey[300]}, 
-                 -8px -8px 16px ${theme.palette.grey[100]}`,
+            ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         "&:hover": {
           boxShadow:
             theme.palette.mode === "dark"
-              ? `12px 12px 24px ${theme.palette.grey[900]}, 
-               -12px -12px 24px ${theme.palette.grey[800]}`
-              : `12px 12px 24px ${theme.palette.grey[300]}, 
-               -12px -12px 24px ${theme.palette.grey[100]}`,
+              ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+              : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
           transform: "translateY(-2px)",
         },
       }}
@@ -105,6 +107,7 @@ const ProfileCard = () => {
           key={link.name}
           href={link.url}
           target="_blank"
+          rel="noopener noreferrer"
           aria-label={link.name}
           sx={{
             bgcolor: theme.palette.background.default,
@@ -112,14 +115,13 @@ const ProfileCard = () => {
               link.name === "GitHub"
                 ? theme.palette.mode === "dark"
                   ? "white"
-                  : link.color // Set white for dark mode, default color for light mode
-                : link.color, // Default color for other icons            borderRadius: "7px",
+                  : link.color
+                : link.color,
             boxShadow:
               theme.palette.mode === "dark"
                 ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
                 : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-            transition:
-              "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
+            transition: "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
             "&:hover": {
               bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
               boxShadow:
@@ -136,7 +138,7 @@ const ProfileCard = () => {
     </Box>
   );
 
-  const renderContactInfo = (Icon, text, color, isMobile) => (
+  const renderContactInfo = (Icon, text, color) => (
     <Box
       sx={{
         display: "flex",
@@ -149,17 +151,16 @@ const ProfileCard = () => {
         width: "100%",
       }}
     >
-      <Icon sx={{ color, fontSize: { xs: 20, sm: 24 } }} />{" "}
-      {/* Adjust icon size based on screen size */}
+      <Icon sx={{ color, fontSize: { xs: 20, sm: 24 } }} />
       <Typography
         variant="h6"
         sx={{
-          fontSize: { xs: "0.875rem", sm: "1rem", md: "1.25rem" }, // Responsive font size
+          fontSize: { xs: "0.875rem", sm: "1rem", md: "1.05rem" },
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
           flex: 1,
-          maxWidth: "calc(100% - 40px)", // Ensures text doesn't overflow
+          maxWidth: "calc(100% - 40px)",
         }}
       >
         {text}
@@ -171,30 +172,27 @@ const ProfileCard = () => {
     <Box
       sx={{
         position: "relative",
-        width: isMobile ? "auto" : isTablet ? "auto" : "auto",
-        height: isMobile ? "auto" : isTablet ? "auto" : "auto",
+        width: "auto",
+        height: "auto",
         padding: isMobile ? "15px" : "20px",
         borderRadius: "16px",
         boxShadow:
           theme.palette.mode === "dark"
-            ? `8px 8px 16px ${theme.palette.grey[900]}, 
-             -8px -8px 16px ${theme.palette.grey[800]}`
-            : `8px 8px 16px ${theme.palette.grey[300]}, 
-             -8px -8px 16px ${theme.palette.grey[100]}`,
+            ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+            : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
         marginTop: isMobile ? 6 : isTablet ? 8 : 12,
         backgroundColor: theme.palette.background.paper,
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         "&:hover": {
           boxShadow:
             theme.palette.mode === "dark"
-              ? `12px 12px 24px ${theme.palette.grey[900]}, 
-               -12px -12px 24px ${theme.palette.grey[800]}`
-              : `12px 12px 24px ${theme.palette.grey[300]}, 
-               -12px -12px 24px ${theme.palette.grey[100]}`,
+              ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+              : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
           transform: "translateY(-2px)",
         },
       }}
     >
+      {/* Dynamic Avatar Container */}
       <Box
         sx={{
           position: "absolute",
@@ -206,48 +204,29 @@ const ProfileCard = () => {
           borderRadius: "50%",
           overflow: "hidden",
           border: "4px solid transparent",
-          backgroundColor: "white",
+          backgroundColor: theme.palette.mode === "dark" ? "#1e1e2f" : "#ffffff",
           boxShadow:
             theme.palette.mode === "dark"
-              ? `8px 8px 16px ${theme.palette.grey[900]}, 
-               -8px -8px 16px ${theme.palette.grey[800]}`
-              : `8px 8px 16px ${theme.palette.grey[300]}, 
-               -8px -8px 16px ${theme.palette.grey[100]}`,
-          cursor: "pointer",
+              ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+              : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
         }}
       >
         <Avatar
-          alt="User Avatar"
-          src={avatar}
+          alt={fullName}
+          src={avatarSrc}
           sx={{
             width: "100%",
             height: "100%",
+            objectFit: "cover",
             boxShadow:
               theme.palette.mode === "dark"
                 ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
                 : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-            transition:
-              "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
-            "&:hover": {
-              bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
-              boxShadow:
-                theme.palette.mode === "dark"
-                  ? `inset 8px 8px 15px ${theme.palette.grey[900]}, inset -8px -8px 15px ${theme.palette.grey[800]}`
-                  : `inset 8px 8px 15px ${theme.palette.grey[300]}, inset -8px -8px 15px ${theme.palette.grey[100]}`,
-              transform: "translateY(-2px)",
-            },
           }}
-          // onClick={() => document.getElementById("avatarInput").click()}
-        />
-        <input
-          type="file"
-          id="avatarInput"
-          accept="image/*"
-          style={{ display: "none" }}
-          // onChange={handleAvatarChange}
         />
       </Box>
 
+      {/* User Information */}
       <Box
         sx={{
           height: "auto",
@@ -257,14 +236,14 @@ const ProfileCard = () => {
         }}
       >
         <Box sx={{ textAlign: "center" }}>
-          <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-            Kanhu Charan Sahoo
+          <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 0.5 }}>
+            {fullName}
           </Typography>
           <Typography
             variant="body1"
-            sx={{ color: theme.palette.text.secondary }}
+            sx={{ color: theme.palette.text.secondary, fontWeight: 500 }}
           >
-            Full Stack Developer
+            {roleTitle}
           </Typography>
         </Box>
         <Box
@@ -280,6 +259,7 @@ const ProfileCard = () => {
         </Box>
       </Box>
 
+      {/* Contact Details & Resume Action */}
       <Box
         sx={{
           border: "1px solid transparent",
@@ -292,26 +272,23 @@ const ProfileCard = () => {
           borderRadius: "8px",
           boxShadow:
             theme.palette.mode === "dark"
-              ? `8px 8px 16px ${theme.palette.grey[900]}, 
-                   -8px -8px 16px ${theme.palette.grey[800]}`
-              : `8px 8px 16px ${theme.palette.grey[300]}, 
-                   -8px -8px 16px ${theme.palette.grey[100]}`,
+              ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+              : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
           transition: "box-shadow 0.3s ease, transform 0.3s ease",
           "&:hover": {
             boxShadow:
               theme.palette.mode === "dark"
-                ? `12px 12px 24px ${theme.palette.grey[900]}, 
-                 -12px -12px 24px ${theme.palette.grey[800]}`
-                : `12px 12px 24px ${theme.palette.grey[300]}, 
-                 -12px -12px 24px ${theme.palette.grey[100]}`,
+                ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+                : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
             transform: "translateY(-2px)",
           },
         }}
       >
-        {renderContactInfo(Phone, "9090856788", "#3f51b5")}
-        {renderContactInfo(Email, "kanhucharansahoo595@gmail.com", "#f44336")}
-        {renderContactInfo(LocationOn, "Nayagarh, Odisha, India", "#4caf50")}
+        {renderContactInfo(Phone, phone, "#3f51b5")}
+        {renderContactInfo(Email, email, "#f44336")}
+        {renderContactInfo(LocationOn, location, "#4caf50")}
         <Button
+          id="btn-download-resume"
           variant="contained"
           startIcon={<Download />}
           onClick={handleResumeDownload}
@@ -324,8 +301,7 @@ const ProfileCard = () => {
               theme.palette.mode === "dark"
                 ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
                 : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-            transition:
-              "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
+            transition: "box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease",
             "&:hover": {
               bgcolor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
               boxShadow:
@@ -335,11 +311,7 @@ const ProfileCard = () => {
               transform: "translateY(-2px)",
             },
             fontSize: isMobile ? "0.75rem" : isTablet ? "0.85rem" : "1rem",
-            padding: isMobile
-              ? "6px 12px"
-              : isTablet
-              ? "8px 16px"
-              : "10px 20px",
+            padding: isMobile ? "6px 12px" : isTablet ? "8px 16px" : "10px 20px",
           }}
         >
           Download Resume

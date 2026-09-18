@@ -1,65 +1,84 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ErrorHandler from "../middleware/error.js";
-import { v2 as cloudinary } from "cloudinary";
 import { SoftwareApplication } from "../models/softwareApplicationSchema.js";
+import { processUploadedFile } from "../utils/fileHandler.js";
+import { DataStore } from "../data/store.js";
+import mongoose from "mongoose";
 
-// post api for adding new software application to the database
+const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
+
 export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return next(
-            new ErrorHandler("Software Application Icon/Image Required!", 404)
-        );
-    }
-    const { svg } = req.files;
-    const { name } = req.body;
+    const { name, svgUrl } = req.body;
     if (!name) {
-        return next(new ErrorHandler("Please Provide Software's Name!", 400));
+        return next(new ErrorHandler("Software Application Name is Required!", 400));
     }
-    const cloudinaryResponse = await cloudinary.uploader.upload(
-        svg.tempFilePath,
-        { folder: "PORTFOLIO SOFTWARE APPLICATION IMAGES" }
-    );
-    if (!cloudinaryResponse || cloudinaryResponse.error) {
-        console.error(
-            "Cloudinary Error:",
-            cloudinaryResponse.error || "Unknown Cloudinary error"
-        );
-        return next(new ErrorHandler("Failed to upload avatar to Cloudinary", 500));
+
+    let svgData = {
+        public_id: "software_" + Date.now(),
+        url: svgUrl || "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg",
+    };
+
+    if (req.files && req.files.svg) {
+        const uploaded = await processUploadedFile(req.files.svg, "software");
+        if (uploaded) svgData = uploaded;
     }
-    const softwareApplication = await SoftwareApplication.create({
+
+    if (isDbConnected()) {
+        const softwareApplication = await SoftwareApplication.create({
+            name,
+            svg: svgData,
+        });
+        return res.status(201).json({
+            success: true,
+            message: "New Software Application Added!",
+            softwareApplication,
+        });
+    }
+
+    const softwareApplication = DataStore.addSoftware({
         name,
-        svg: {
-            public_id: cloudinaryResponse.public_id, // Set your cloudinary public_id here
-            url: cloudinaryResponse.secure_url, // Set your cloudinary secure_url here
-        },
+        svg: svgData,
     });
-    res.status(200).json({
+
+    res.status(201).json({
         success: true,
         message: "New Software Application Added!",
         softwareApplication,
     });
 });
 
-// get api for fetAllApplications Icons
 export const getAllApplications = catchAsyncErrors(async (req, res, next) => {
-    const softwareApplication = await SoftwareApplication.find();
+    if (isDbConnected()) {
+        const softwareApplications = await SoftwareApplication.find();
+        return res.status(200).json({
+            success: true,
+            softwareApplications,
+        });
+    }
+
+    const softwareApplications = DataStore.getSoftware();
     res.status(200).json({
         success: true,
-        softwareApplication,
+        softwareApplications,
     });
 });
 
 export const deleteApplication = catchAsyncErrors(async (req, res, next) => {
     const { id } = req.params;
-    const softwareApplication = await SoftwareApplication.findById(id);
-    if (!softwareApplication) {
-        return next(ErrorHandler("Software Application Icon/SVG not found", 400));
+    if (isDbConnected()) {
+        const softwareApplication = await SoftwareApplication.findById(id);
+        if (!softwareApplication) return next(new ErrorHandler("Application not found", 404));
+        await softwareApplication.deleteOne();
+        return res.status(200).json({
+            success: true,
+            message: "Software Application Deleted!",
+        });
     }
-    const softwareApplicationSvgId = softwareApplication.svg.public_id;
-    await cloudinary.uploader.destroy(softwareApplicationSvgId);
-    await softwareApplication.deleteOne();
+
+    const deleted = DataStore.deleteSoftware(id);
+    if (!deleted) return next(new ErrorHandler("Application not found", 404));
     res.status(200).json({
         success: true,
-        message: "Software Application Deleted",
+        message: "Software Application Deleted!",
     });
 });
