@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React from "react";
 import { Box, Typography, useTheme, useMediaQuery, Skeleton } from "@mui/material";
@@ -6,14 +5,22 @@ import { useQuery } from "@tanstack/react-query";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
 import InfoCard from "../components/InfoCard";
+import SectionHeader from "../components/SectionHeader";
+import SubHeading from "../components/SubHeading";
 import { fetchUserProfile } from "../api/portfolioApi";
 import freelancerImage from "../img/freelancer.jpg";
 import frontendImage from "../img/frontendImage.jpg";
 
+/**
+ * Home page view.
+ * Showcases profile summary, biographical overview, and core domain competencies.
+ */
 const Home = ({ toggleDarkMode }) => {
   const theme = useTheme();
+  // Stack layout vertically on mobile and tablet to give full width to the menubar and content
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDarkMode = theme.palette.mode === "dark";
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["portfolioUser"],
@@ -29,138 +36,130 @@ const Home = ({ toggleDarkMode }) => {
         "On the server side, my focus revolves around the reliable functioning of applications using Node.js and Express.js with MongoDB.",
       ];
 
+  const mainContainerShadow = isDarkMode
+    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`;
+
+  const mainContainerHoverShadow = isDarkMode
+    ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+    : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`;
+
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection: isMobile ? "column" : isTablet ? "row" : "row",
+        flexDirection: isTabletOrMobile ? "column" : "row",
         justifyContent: "center",
-        alignItems: "flex-start",
-        padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
+        alignItems: isTabletOrMobile ? "center" : "flex-start",
+        padding: { xs: "12px 10px", sm: "16px", md: "24px 20px" },
         margin: "0 auto",
-        maxWidth: "1200px",
-        height: "auto",
+        maxWidth: "1260px",
+        width: "100%",
+        gap: { xs: 2.5, md: 3 },
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
       }}
     >
-      {/* Left Section: ProfileCard */}
+      {/* Left Column: ProfileCard - centered with max-width on mobile/tablet, fixed width on desktop */}
       <Box
         sx={{
-          width: isMobile ? "100%" : isTablet ? "40%" : "35%",
-          padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
+          width: isTabletOrMobile ? "100%" : { md: "340px", lg: "360px" },
+          maxWidth: isTabletOrMobile ? { xs: "100%", sm: "580px" } : "none",
+          flexShrink: 0,
           boxSizing: "border-box",
         }}
       >
         <ProfileCard />
       </Box>
 
-      {/* Right Section: Menubar, InfoCards */}
+      {/* Right Column: Menubar, Main Content Card - full width on mobile/tablet, flexible on desktop */}
       <Box
         sx={{
-          width: isMobile ? "100%" : isTablet ? "60%" : "65%",
-          padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
+          flex: 1,
+          minWidth: 0,
+          width: isTabletOrMobile ? "100%" : "auto",
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
         }}
       >
         <Menubar toggleDarkMode={toggleDarkMode} />
+
         <Box
+          id="main-home-container"
           sx={{
             marginTop: "20px",
-            padding: "20px",
+            padding: { xs: "20px 16px", sm: "24px 28px" },
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: "16px",
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-                : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+            boxShadow: mainContainerShadow,
             backgroundColor: theme.palette.background.paper,
             transition: "box-shadow 0.3s ease, transform 0.3s ease",
             "&:hover": {
-              boxShadow:
-                theme.palette.mode === "dark"
-                  ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                  : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
+              boxShadow: mainContainerHoverShadow,
               transform: "translateY(-2px)",
             },
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="h4" sx={{ marginRight: 2, marginBottom: 1, fontWeight: 700 }}>
-              About Me
-            </Typography>
-            {!isMobile && (
-              <Box
-                component="hr"
-                sx={{
-                  flexGrow: 1,
-                  border: 0,
-                  borderTop: "2px solid",
-                  borderColor: "currentColor",
-                  margin: 0,
-                }}
-              />
-            )}
-          </Box>
+          {/* Managed Section Header matching all other views */}
+          <SectionHeader title="About Me" />
 
           {isLoading ? (
             <Box sx={{ my: 2 }}>
-              <Skeleton variant="text" height={30} />
-              <Skeleton variant="text" height={30} />
-              <Skeleton variant="text" height={30} />
+              <Skeleton variant="text" height={32} />
+              <Skeleton variant="text" height={32} />
+              <Skeleton variant="text" height={32} />
             </Box>
           ) : (
-            aboutBullets.map((text, idx) => (
-              <Typography
-                key={idx}
-                variant="body1"
-                sx={{
-                  marginBottom: "12px",
-                  position: "relative",
-                  paddingLeft: "14px",
-                  lineHeight: 1.7,
-                  color: theme.palette.text.secondary,
-                  "&::before": {
-                    content: '"•"',
-                    position: "absolute",
-                    left: 0,
-                    color: theme.palette.primary.main || "#818cf8",
-                    fontWeight: "bold",
-                  },
-                }}
-              >
-                {text}
-              </Typography>
-            ))
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, my: 1 }}>
+              {aboutBullets.map((text, idx) => (
+                <Typography
+                  key={idx}
+                  variant="body1"
+                  sx={{
+                    position: "relative",
+                    paddingLeft: "20px",
+                    lineHeight: 1.75,
+                    fontSize: { xs: "0.9rem", sm: "0.95rem" },
+                    color: theme.palette.text.secondary,
+                    "&::before": {
+                      content: '"•"',
+                      position: "absolute",
+                      left: 0,
+                      top: "-2px",
+                      color: isDarkMode ? "#818cf8" : "#4f46e5",
+                      fontWeight: 700,
+                      fontSize: "1.4rem",
+                    },
+                  }}
+                >
+                  {text}
+                </Typography>
+              ))}
+            </Box>
           )}
 
-          <Typography variant="h5" sx={{ marginTop: 3, marginBottom: 2, fontWeight: 600 }}>
-            What I do!
-          </Typography>
+          {/* Managed SubHeading with cohesive spacing and typography */}
+          <SubHeading title="What I do!" />
 
-          <Box>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                gap: 2,
-                marginBottom: 2,
-                marginTop: 2,
-              }}
-            >
-              <InfoCard
-                title="Frontend Development"
-                content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I dive into projects that leverage these technologies, along with UI frameworks like MUI and modern CSS, to build fast, user-friendly applications."
-                imageSrc={frontendImage}
-              />
-              <InfoCard
-                title="Freelancer & Full-Stack"
-                content="I specialize in building high-performance web applications with React.js, Node.js, and Express. Using modern UI principles and glassmorphic designs, I create scalable, responsive architectures tailored to client requirements with clean, testable code."
-                imageSrc={freelancerImage}
-              />
-            </Box>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: 2.5,
+              mt: 1,
+            }}
+          >
+            <InfoCard
+              title="Frontend Development"
+              content="As a Frontend Developer, I am captivated by creating dynamic and scalable web applications using my expertise in React.js and Next.js. I dive into projects that leverage these technologies, along with UI frameworks like MUI and modern CSS, to build fast, user-friendly applications."
+              imageSrc={frontendImage}
+            />
+            <InfoCard
+              title="Freelancer & Full-Stack"
+              content="I specialize in building high-performance web applications with React.js, Node.js, and Express. Using modern UI principles and glassmorphic designs, I create scalable, responsive architectures tailored to client requirements with clean, testable code."
+              imageSrc={freelancerImage}
+            />
           </Box>
         </Box>
       </Box>
@@ -168,4 +167,4 @@ const Home = ({ toggleDarkMode }) => {
   );
 };
 
-export default Home;
+export default React.memo(Home);

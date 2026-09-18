@@ -49,10 +49,10 @@ const Menubar = ({ toggleDarkMode }) => {
 
   const isActive = (path) => location.pathname === path;
 
-  // Modernized soft neuromorphic shadow
+  // Neumorphic shadow aligned with theme
   const containerShadow = isDarkMode
-    ? "6px 6px 14px rgba(0, 0, 0, 0.45), -4px -4px 12px rgba(255, 255, 255, 0.03)"
-    : "6px 6px 14px rgba(0, 0, 0, 0.07), -4px -4px 12px rgba(255, 255, 255, 0.9)";
+    ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+    : `6px 6px 14px ${theme.palette.grey[300]}, -6px -6px 14px ${theme.palette.grey[100]}`;
 
   return (
     <Box
@@ -62,16 +62,16 @@ const Menubar = ({ toggleDarkMode }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: { xs: "6px 10px", sm: "8px 16px" },
+        padding: { xs: "6px 8px", sm: "6px 12px", md: "8px 16px" },
         borderRadius: "14px",
-        bgcolor: isDarkMode ? "rgba(30, 32, 44, 0.9)" : "rgba(255, 255, 255, 0.9)",
-        backdropFilter: "blur(8px)",
-        border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.05)"}`,
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
         boxShadow: containerShadow,
         transition: "box-shadow 0.3s ease, background-color 0.3s ease",
+        overflow: "hidden",
       }}
     >
-      {/* Mobile Drawer Trigger */}
+      {/* Mobile Drawer Trigger (xs screens) */}
       <IconButton
         id="btn-mobile-menu"
         aria-label="Open Navigation Menu"
@@ -79,19 +79,23 @@ const Menubar = ({ toggleDarkMode }) => {
           display: { xs: "inline-flex", sm: "none" },
           color: isDarkMode ? "#f8fafc" : "#1e293b",
           p: 1,
+          flexShrink: 0,
         }}
         onClick={handleDrawerToggle}
       >
         <MenuIcon />
       </IconButton>
 
-      {/* Desktop Navigation Links */}
+      {/* Navigation Links for Tablet and Desktop */}
       <Box
         sx={{
           display: { xs: "none", sm: "flex" },
           alignItems: "center",
-          gap: { sm: 1.5, md: 2 },
+          gap: { sm: 1, md: 1.5 },
           flexGrow: 1,
+          overflowX: "auto",
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": { display: "none" },
         }}
       >
         {menuItems.map((item) => {
@@ -102,11 +106,13 @@ const Menubar = ({ toggleDarkMode }) => {
               id={`nav-${item.label.toLowerCase()}`}
               onClick={() => navigate(item.path)}
               sx={{
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 0.8,
                 cursor: "pointer",
-                padding: "8px 16px",
+                padding: { sm: "7px 12px", md: "8px 16px" },
+                flexShrink: 0,
+                whiteSpace: "nowrap",
                 transition: "all 0.2s ease-in-out",
                 backgroundColor: active
                   ? isDarkMode
@@ -135,7 +141,7 @@ const Menubar = ({ toggleDarkMode }) => {
                 variant="body2"
                 sx={{
                   fontWeight: active ? 700 : 500,
-                  fontSize: "0.93rem",
+                  fontSize: { sm: "0.86rem", md: "0.93rem" },
                   letterSpacing: "-0.01em",
                 }}
               >
@@ -154,6 +160,8 @@ const Menubar = ({ toggleDarkMode }) => {
         sx={{
           width: 40,
           height: 40,
+          flexShrink: 0,
+          ml: { xs: "auto", sm: 1 },
           bgcolor: isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.04)",
           border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)"}`,
           color: isDarkMode ? "#fbbf24" : "#475569",

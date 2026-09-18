@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Menu, User, ExternalLink, ShieldCheck } from "lucide-react";
+import { Menu, FileCode2, ExternalLink } from "lucide-react";
 
 const AdminHeader = ({ onToggleSidebar }) => {
   const activeTab = useSelector((state) => state.auth.activeTab);
@@ -30,6 +30,32 @@ const AdminHeader = ({ onToggleSidebar }) => {
       </div>
 
       <div className="header-actions">
+        {/* Swagger API Quick Link */}
+        <a
+          href="/api/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "7px 12px",
+            borderRadius: "9px",
+            backgroundColor: "rgba(139, 92, 246, 0.12)",
+            border: "1px solid rgba(139, 92, 246, 0.28)",
+            color: "#c084fc",
+            fontSize: "0.82rem",
+            fontWeight: 600,
+            textDecoration: "none",
+            transition: "all 0.2s ease",
+          }}
+          title="Open Swagger REST API interactive explorer"
+        >
+          <FileCode2 size={15} />
+          <span>API Docs</span>
+          <ExternalLink size={12} style={{ opacity: 0.7 }} />
+        </a>
+
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{

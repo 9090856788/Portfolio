@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import {
   Box,
@@ -17,10 +15,13 @@ import SendIcon from "@mui/icons-material/Send";
 import { useMutation } from "@tanstack/react-query";
 import { sendContactMessage } from "../api/portfolioApi";
 
+/**
+ * ContactForm component.
+ * Features neumorphic contact badges, clean inputs, and tactile submit button.
+ */
 const ContactForm = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isDarkMode = theme.palette.mode === "dark";
 
   const [formData, setFormData] = useState({
@@ -61,6 +62,10 @@ const ContactForm = () => {
     });
   };
 
+  const cardShadow = isDarkMode
+    ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+    : `6px 6px 14px ${theme.palette.grey[300]}, -6px -6px 14px ${theme.palette.grey[100]}`;
+
   return (
     <Box sx={{ width: "100%" }}>
       {/* Phone & Email Section */}
@@ -70,59 +75,103 @@ const ContactForm = () => {
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
           gap: 2,
           padding: 2,
-          borderRadius: "12px",
+          borderRadius: "14px",
+          bgcolor: theme.palette.background.default,
+          border: `1px solid ${theme.palette.divider}`,
           boxShadow: isDarkMode
-            ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-            : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
-          transition: "all 0.3s ease",
+            ? `inset 3px 3px 8px ${theme.palette.grey[900]}, inset -3px -3px 8px ${theme.palette.grey[800]}`
+            : `inset 3px 3px 8px ${theme.palette.grey[300]}, inset -3px -3px 8px ${theme.palette.grey[100]}`,
           mb: 3,
         }}
       >
-        {/* Email Section */}
+        {/* Email Quick Badge */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             gap: 2,
             padding: 2,
-            borderRadius: "10px",
+            borderRadius: "12px",
             bgcolor: theme.palette.background.paper,
-            boxShadow: isDarkMode
-              ? `inset 2px 2px 5px ${theme.palette.grey[900]}, inset -2px -2px 5px ${theme.palette.grey[800]}`
-              : `inset 2px 2px 5px ${theme.palette.grey[300]}, inset -2px -2px 5px ${theme.palette.grey[100]}`,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: cardShadow,
           }}
         >
-          <EmailIcon sx={{ color: "#ef4444", fontSize: 32 }} />
-          <Box>
-            <Typography variant="caption" color="text.secondary" sx={{ textTransform: "uppercase", fontWeight: 700 }}>
-              Email Me
+          <Box
+            sx={{
+              width: 42,
+              height: 42,
+              borderRadius: "10px",
+              bgcolor: theme.palette.background.default,
+              border: `1px solid ${theme.palette.divider}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <EmailIcon sx={{ color: "#ef4444", fontSize: 24 }} />
+          </Box>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Typography variant="caption" sx={{ textTransform: "uppercase", fontWeight: 700, color: "text.secondary", letterSpacing: "0.04em", display: "block", mb: 0.2 }}>
+              Email Address
             </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600, wordBreak: "break-all" }}>
+            <Typography
+              component="a"
+              href="mailto:kanhucharansahoo595@gmail.com"
+              variant="body2"
+              sx={{
+                fontWeight: 600,
+                color: "text.primary",
+                textDecoration: "none",
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
+                lineHeight: 1.35,
+                display: "block",
+                transition: "color 0.2s ease",
+                "&:hover": {
+                  color: isDarkMode ? "#a5b4fc" : "#4f46e5",
+                },
+              }}
+            >
               kanhucharansahoo595@gmail.com
             </Typography>
           </Box>
         </Box>
 
-        {/* Phone Section */}
+        {/* Phone Quick Badge */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             gap: 2,
             padding: 2,
-            borderRadius: "10px",
+            borderRadius: "12px",
             bgcolor: theme.palette.background.paper,
-            boxShadow: isDarkMode
-              ? `inset 2px 2px 5px ${theme.palette.grey[900]}, inset -2px -2px 5px ${theme.palette.grey[800]}`
-              : `inset 2px 2px 5px ${theme.palette.grey[300]}, inset -2px -2px 5px ${theme.palette.grey[100]}`,
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: cardShadow,
           }}
         >
-          <PhoneIcon sx={{ color: "#3b82f6", fontSize: 32 }} />
-          <Box>
-            <Typography variant="caption" color="text.secondary" sx={{ textTransform: "uppercase", fontWeight: 700 }}>
-              Direct Line
+          <Box
+            sx={{
+              width: 42,
+              height: 42,
+              borderRadius: "10px",
+              bgcolor: theme.palette.background.default,
+              border: `1px solid ${theme.palette.divider}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <PhoneIcon sx={{ color: "#3b82f6", fontSize: 24 }} />
+          </Box>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Typography variant="caption" sx={{ textTransform: "uppercase", fontWeight: 700, color: "text.secondary", letterSpacing: "0.04em" }}>
+              Direct Contact
             </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: "text.primary" }}>
               +91 9090856788
             </Typography>
           </Box>
@@ -136,17 +185,16 @@ const ContactForm = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 2,
-          padding: 3,
-          borderRadius: "12px",
-          bgcolor: theme.palette.background.paper,
-          boxShadow: isDarkMode
-            ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-            : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
+          gap: 2.2,
+          padding: { xs: 2, sm: 3 },
+          borderRadius: "14px",
+          bgcolor: theme.palette.background.default,
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: cardShadow,
         }}
       >
-        <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-          I am always excited to explore new projects, opportunities, and freelance ventures. Send me a message and let's create something exceptional together!
+        <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6, fontSize: "0.93rem" }}>
+          I am always open to discussing new opportunities, frontend architectural projects, and creative collaborations. Feel free to leave a note below!
         </Typography>
 
         {feedback && (
@@ -196,26 +244,40 @@ const ContactForm = () => {
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
         />
 
+        {/* Neumorphic Submit Button */}
         <Button
           id="btn-send-contact-message"
           type="submit"
-          variant="contained"
+          variant="text"
           disabled={mutation.isPending}
-          startIcon={mutation.isPending ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
+          startIcon={mutation.isPending ? <CircularProgress size={18} color="inherit" /> : <SendIcon sx={{ fontSize: 18 }} />}
           sx={{
             alignSelf: "flex-start",
-            bgcolor: theme.palette.background.default,
-            color: theme.palette.text.primary,
-            borderRadius: "50px",
-            px: 4,
+            bgcolor: theme.palette.background.paper,
+            color: isDarkMode ? "#a5b4fc" : "#4f46e5",
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: "12px",
+            px: 3.5,
             py: 1.2,
+            fontWeight: 700,
+            fontSize: "0.92rem",
+            textTransform: "none",
             boxShadow: isDarkMode
-              ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
-              : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-            transition: "all 0.3s ease",
+              ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+              : `6px 6px 14px ${theme.palette.grey[300]}, -6px -6px 14px ${theme.palette.grey[100]}`,
+            transition: "all 0.25s ease",
             "&:hover": {
-              bgcolor: isDarkMode ? "#272a38" : "#e5e7eb",
               transform: "translateY(-2px)",
+              boxShadow: isDarkMode
+                ? `8px 8px 18px ${theme.palette.grey[900]}, -8px -8px 18px ${theme.palette.grey[800]}`
+                : `8px 8px 18px ${theme.palette.grey[400]}, -8px -8px 18px ${theme.palette.grey[100]}`,
+              bgcolor: isDarkMode ? "rgba(129, 140, 248, 0.08)" : "rgba(79, 70, 229, 0.04)",
+            },
+            "&:active": {
+              transform: "translateY(1px)",
+              boxShadow: isDarkMode
+                ? `inset 3px 3px 6px ${theme.palette.grey[900]}, inset -3px -3px 6px ${theme.palette.grey[800]}`
+                : `inset 3px 3px 6px ${theme.palette.grey[300]}, inset -3px -3px 6px ${theme.palette.grey[100]}`,
             },
           }}
         >
@@ -226,4 +288,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export default React.memo(ContactForm);

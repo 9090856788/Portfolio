@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React from "react";
 import {
   Box,
@@ -14,6 +13,7 @@ import { GitHub, Launch } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
+import SectionHeader from "../components/SectionHeader";
 import { fetchProjects } from "../api/portfolioApi";
 import frontendImage from "../img/frontendImage.jpg";
 
@@ -23,8 +23,9 @@ import frontendImage from "../img/frontendImage.jpg";
  */
 const Project = ({ toggleDarkMode }) => {
   const theme = useTheme();
+  // Responsive breakpoints: tablet/mobile stack for columns, mobile for inner grid
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isDarkMode = theme.palette.mode === "dark";
 
   // Fetch projects from backend store / database
@@ -33,40 +34,52 @@ const Project = ({ toggleDarkMode }) => {
     queryFn: fetchProjects,
   });
 
-  const sectionShadow = isDarkMode
-    ? "8px 8px 20px rgba(0,0,0,0.5), -4px -4px 14px rgba(255,255,255,0.02)"
-    : "8px 8px 20px rgba(0,0,0,0.06), -4px -4px 14px rgba(255,255,255,0.9)";
+  const mainContainerShadow = isDarkMode
+    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
+    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`;
+
+  const mainContainerHoverShadow = isDarkMode
+    ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
+    : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`;
+
+  const cardShadow = isDarkMode
+    ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+    : `6px 6px 14px ${theme.palette.grey[300]}, -6px -6px 14px ${theme.palette.grey[100]}`;
 
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection: isMobile ? "column" : isTablet ? "row" : "row",
+        flexDirection: isTabletOrMobile ? "column" : "row",
         justifyContent: "center",
-        alignItems: "flex-start",
-        padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
+        alignItems: isTabletOrMobile ? "center" : "flex-start",
+        padding: { xs: "12px 10px", sm: "16px", md: "24px 20px" },
         margin: "0 auto",
-        maxWidth: "1200px",
+        maxWidth: "1260px",
+        width: "100%",
+        gap: { xs: 2.5, md: 3 },
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
       }}
     >
-      {/* Left Column: Personal Profile Card */}
+      {/* Left Column: Personal Profile Card - centered on tablet/mobile, fixed on desktop */}
       <Box
         sx={{
-          width: isMobile ? "100%" : isTablet ? "45%" : "35%",
-          padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
+          width: isTabletOrMobile ? "100%" : { md: "340px", lg: "360px" },
+          maxWidth: isTabletOrMobile ? { xs: "100%", sm: "580px" } : "none",
+          flexShrink: 0,
           boxSizing: "border-box",
         }}
       >
         <ProfileCard />
       </Box>
 
-      {/* Right Column: Navigation & Project Showcase */}
+      {/* Right Column: Navigation & Project Showcase - dynamically expands */}
       <Box
         sx={{
-          width: isMobile ? "100%" : isTablet ? "55%" : "65%",
-          padding: isMobile ? "10px" : isTablet ? "15px" : "20px",
+          flex: 1,
+          minWidth: 0,
+          width: isTabletOrMobile ? "100%" : "auto",
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
@@ -75,37 +88,26 @@ const Project = ({ toggleDarkMode }) => {
         <Menubar toggleDarkMode={toggleDarkMode} />
 
         <Box
+          id="main-projects-container"
           sx={{
             marginTop: "20px",
-            padding: { xs: "18px", sm: "24px" },
+            padding: { xs: "20px 16px", sm: "24px 28px" },
             border: `1px solid ${theme.palette.divider}`,
             borderRadius: "16px",
-            boxShadow: sectionShadow,
+            boxShadow: mainContainerShadow,
             backgroundColor: theme.palette.background.paper,
             transition: "box-shadow 0.3s ease, transform 0.3s ease",
+            "&:hover": {
+              boxShadow: mainContainerHoverShadow,
+              transform: "translateY(-2px)",
+            },
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            <Typography variant="h4" sx={{ marginRight: 2, fontWeight: 700, fontSize: { xs: "1.5rem", sm: "2rem" } }}>
-              Portfolio Projects
-            </Typography>
-            {!isMobile && (
-              <Box
-                component="hr"
-                sx={{
-                  flexGrow: 1,
-                  border: 0,
-                  borderTop: "2px solid",
-                  borderColor: "currentColor",
-                  margin: 0,
-                  opacity: 0.2,
-                }}
-              />
-            )}
-          </Box>
+          {/* Managed Section Header matching all other views */}
+          <SectionHeader title="Portfolio Projects" />
 
           {isLoading ? (
-            <Box sx={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 2.5 }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 2.5, mt: 1 }}>
               {[1, 2, 3, 4].map((n) => (
                 <Skeleton key={n} variant="rectangular" height={260} sx={{ borderRadius: 3 }} />
               ))}
@@ -116,6 +118,7 @@ const Project = ({ toggleDarkMode }) => {
                 display: "grid",
                 gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
                 gap: 2.5,
+                mt: 1,
               }}
             >
               {projects.map((proj) => {
@@ -135,8 +138,8 @@ const Project = ({ toggleDarkMode }) => {
                       padding: "16px",
                       borderRadius: "14px",
                       bgcolor: theme.palette.background.default,
-                      border: `1px solid ${isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"}`,
-                      boxShadow: sectionShadow,
+                      border: `1px solid ${theme.palette.divider}`,
+                      boxShadow: cardShadow,
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
                       "&:hover": {
                         transform: "translateY(-3px)",
@@ -155,7 +158,7 @@ const Project = ({ toggleDarkMode }) => {
                           objectFit: "cover",
                           borderRadius: "10px",
                           mb: 1.5,
-                          border: `1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"}`,
+                          border: `1px solid ${theme.palette.divider}`,
                         }}
                       />
 
@@ -171,8 +174,9 @@ const Project = ({ toggleDarkMode }) => {
                             sx={{
                               fontSize: "0.7rem",
                               fontWeight: 600,
-                              bgcolor: isDarkMode ? "rgba(129, 140, 248, 0.15)" : "rgba(99, 102, 241, 0.1)",
+                              bgcolor: isDarkMode ? "rgba(129, 140, 248, 0.15)" : "rgba(79, 70, 229, 0.1)",
                               color: isDarkMode ? "#a5b4fc" : "#4338ca",
+                              borderRadius: "6px",
                             }}
                           />
                         )}
@@ -206,18 +210,18 @@ const Project = ({ toggleDarkMode }) => {
                             sx={{
                               fontSize: "0.7rem",
                               borderRadius: "6px",
-                              borderColor: isDarkMode ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)",
+                              borderColor: theme.palette.divider,
                             }}
                           />
                         ))}
                       </Box>
                     </div>
 
-                    {/* External Project Links */}
+                    {/* Neumorphic External Project Links */}
                     <Box sx={{ display: "flex", gap: 1.2, mt: 2.5 }}>
                       {proj.projectLink && (
                         <Button
-                          variant="contained"
+                          variant="text"
                           size="small"
                           href={proj.projectLink}
                           target="_blank"
@@ -226,9 +230,20 @@ const Project = ({ toggleDarkMode }) => {
                           sx={{
                             flex: 1,
                             textTransform: "none",
-                            borderRadius: "8px",
-                            fontWeight: 600,
-                            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                            borderRadius: "10px",
+                            fontWeight: 700,
+                            bgcolor: theme.palette.background.paper,
+                            color: isDarkMode ? "#818cf8" : "#4f46e5",
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: isDarkMode
+                              ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
+                              : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`,
+                            "&:hover": {
+                              transform: "translateY(-1px)",
+                              boxShadow: isDarkMode
+                                ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+                                : `6px 6px 14px ${theme.palette.grey[400]}, -6px -6px 14px ${theme.palette.grey[100]}`,
+                            },
                           }}
                         >
                           Live App
@@ -236,7 +251,7 @@ const Project = ({ toggleDarkMode }) => {
                       )}
                       {proj.gitRepoLink && (
                         <Button
-                          variant="outlined"
+                          variant="text"
                           size="small"
                           href={proj.gitRepoLink}
                           target="_blank"
@@ -245,8 +260,20 @@ const Project = ({ toggleDarkMode }) => {
                           sx={{
                             flex: proj.projectLink ? "0 0 auto" : 1,
                             textTransform: "none",
-                            borderRadius: "8px",
-                            fontWeight: 600,
+                            borderRadius: "10px",
+                            fontWeight: 700,
+                            bgcolor: theme.palette.background.paper,
+                            color: theme.palette.text.primary,
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: isDarkMode
+                              ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
+                              : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`,
+                            "&:hover": {
+                              transform: "translateY(-1px)",
+                              boxShadow: isDarkMode
+                                ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+                                : `6px 6px 14px ${theme.palette.grey[400]}, -6px -6px 14px ${theme.palette.grey[100]}`,
+                            },
                           }}
                         >
                           Code
@@ -268,4 +295,4 @@ const Project = ({ toggleDarkMode }) => {
   );
 };
 
-export default Project;
+export default React.memo(Project);

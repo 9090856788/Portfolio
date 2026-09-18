@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React from "react";
 import {
   Box,
@@ -14,7 +13,12 @@ import {
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSkills, fetchTimeline, fetchSoftware } from "../api/portfolioApi";
+import SubHeading from "./SubHeading";
 
+/**
+ * ResumeForm component.
+ * Displays structured Education, Experience, Technical Skills, and Tools.
+ */
 const ResumeForm = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -77,24 +81,24 @@ const ResumeForm = () => {
           },
         ];
 
+  const cardShadow = isDarkMode
+    ? `6px 6px 14px ${theme.palette.grey[900]}, -6px -6px 14px ${theme.palette.grey[800]}`
+    : `6px 6px 14px ${theme.palette.grey[300]}, -6px -6px 14px ${theme.palette.grey[100]}`;
+
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         width: "100%",
-        padding: "10px",
-        backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
       }}
     >
-      {/* Education & Experience Section */}
-      <Grid container spacing={3} sx={{ marginBottom: "24px" }}>
+      {/* Education & Experience Columns */}
+      <Grid container spacing={3} sx={{ mb: 2 }}>
         {/* Education Section */}
         <Grid item xs={12} sm={6}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            🎓 Education
-          </Typography>
+          <SubHeading title="Education" sx={{ mt: 1, mb: 2 }} />
           {timelineLoading ? (
             <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
           ) : (
@@ -102,30 +106,26 @@ const ResumeForm = () => {
               <Card
                 key={item._id}
                 sx={{
-                  marginBottom: "12px",
-                  backgroundColor: theme.palette.background.paper,
+                  mb: 2,
+                  backgroundColor: theme.palette.background.default,
+                  border: `1px solid ${theme.palette.divider}`,
                   borderRadius: "12px",
-                  boxShadow: isDarkMode
-                    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-                    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
-                  transition: "all 0.3s ease",
+                  boxShadow: cardShadow,
+                  transition: "all 0.25s ease",
                   "&:hover": {
                     transform: "translateY(-2px)",
-                    boxShadow: isDarkMode
-                      ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                      : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
                   },
                 }}
               >
                 <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                  <Typography variant="subtitle1" fontWeight="bold">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: "0.98rem" }}>
                     {item.title}
                   </Typography>
-                  <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? "#a5b4fc" : "#4f46e5", mt: 0.3 }}>
                     {item.company} ({item.period || `${item.timeline?.from || ""} - ${item.timeline?.to || ""}`})
                   </Typography>
                   {item.description && (
-                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.8, lineHeight: 1.5 }}>
                       {item.description}
                     </Typography>
                   )}
@@ -137,9 +137,7 @@ const ResumeForm = () => {
 
         {/* Experience Section */}
         <Grid item xs={12} sm={6}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            💼 Experience
-          </Typography>
+          <SubHeading title="Experience" sx={{ mt: 1, mb: 2 }} />
           {timelineLoading ? (
             <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
           ) : (
@@ -147,30 +145,26 @@ const ResumeForm = () => {
               <Card
                 key={item._id}
                 sx={{
-                  marginBottom: "12px",
-                  backgroundColor: theme.palette.background.paper,
+                  mb: 2,
+                  backgroundColor: theme.palette.background.default,
+                  border: `1px solid ${theme.palette.divider}`,
                   borderRadius: "12px",
-                  boxShadow: isDarkMode
-                    ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`
-                    : `8px 8px 16px ${theme.palette.grey[300]}, -8px -8px 16px ${theme.palette.grey[100]}`,
-                  transition: "all 0.3s ease",
+                  boxShadow: cardShadow,
+                  transition: "all 0.25s ease",
                   "&:hover": {
                     transform: "translateY(-2px)",
-                    boxShadow: isDarkMode
-                      ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
-                      : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`,
                   },
                 }}
               >
                 <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                  <Typography variant="subtitle1" fontWeight="bold">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: "0.98rem" }}>
                     {item.title}
                   </Typography>
-                  <Typography variant="body2" color="primary" sx={{ fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? "#a5b4fc" : "#4f46e5", mt: 0.3 }}>
                     {item.company} ({item.period || `${item.timeline?.from || ""} - ${item.timeline?.to || ""}`})
                   </Typography>
                   {item.description && (
-                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.8, lineHeight: 1.5 }}>
                       {item.description}
                     </Typography>
                   )}
@@ -183,9 +177,7 @@ const ResumeForm = () => {
 
       {/* Technical Skills with Proficiency */}
       <Box sx={{ mb: 3, width: "100%" }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          ⚡ Technical Proficiency
-        </Typography>
+        <SubHeading title="Technical Proficiency" sx={{ mt: 2, mb: 2 }} />
         {skillsLoading ? (
           <Skeleton variant="rectangular" height={80} sx={{ borderRadius: 2 }} />
         ) : (
@@ -200,22 +192,23 @@ const ResumeForm = () => {
               <Box
                 key={skill._id}
                 sx={{
-                  p: 1.5,
-                  borderRadius: "10px",
-                  bgcolor: theme.palette.background.paper,
-                  border: `1px solid ${isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
+                  p: 1.8,
+                  borderRadius: "12px",
+                  bgcolor: theme.palette.background.default,
+                  border: `1px solid ${theme.palette.divider}`,
+                  boxShadow: cardShadow,
                 }}
               >
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.8 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     {skill.svg?.url && (
-                      <img src={skill.svg.url} alt="" style={{ width: 18, height: 18 }} />
+                      <img src={skill.svg.url} alt="" style={{ width: 20, height: 20 }} />
                     )}
-                    <Typography variant="body2" fontWeight={600}>
+                    <Typography variant="body2" sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
                       {skill.title}
                     </Typography>
                   </Box>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700 }}>
                     {skill.proficiency}%
                   </Typography>
                 </Box>
@@ -226,6 +219,10 @@ const ResumeForm = () => {
                     height: 6,
                     borderRadius: 3,
                     bgcolor: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+                    "& .MuiLinearProgress-bar": {
+                      borderRadius: 3,
+                      bgcolor: isDarkMode ? "#818cf8" : "#4f46e5",
+                    },
                   }}
                 />
               </Box>
@@ -235,10 +232,8 @@ const ResumeForm = () => {
       </Box>
 
       {/* Software Applications & Tools */}
-      <Box sx={{ width: "100%" }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          🛠️ Tools & Technologies
-        </Typography>
+      <Box sx={{ width: "100%", mb: 1 }}>
+        <SubHeading title="Tools & Technologies" sx={{ mt: 2, mb: 2 }} />
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.2 }}>
           {((software && software.length > 0) ? software.map((s) => s.name) : [
             "VS Code",
@@ -255,15 +250,17 @@ const ResumeForm = () => {
               sx={{
                 bgcolor: theme.palette.background.default,
                 color: theme.palette.text.primary,
-                borderRadius: "7px",
+                borderRadius: "8px",
+                border: `1px solid ${theme.palette.divider}`,
                 boxShadow: isDarkMode
-                  ? `8px 8px 15px ${theme.palette.grey[900]}, -8px -8px 15px ${theme.palette.grey[800]}`
-                  : `8px 8px 15px ${theme.palette.grey[300]}, -8px -8px 15px ${theme.palette.grey[100]}`,
-                transition: "all 0.3s ease",
+                  ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
+                  : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`,
+                transition: "all 0.25s ease",
                 "&:hover": {
                   transform: "translateY(-2px)",
                 },
                 fontSize: "0.85rem",
+                fontWeight: 600,
                 padding: "8px 14px",
               }}
             />
@@ -274,4 +271,4 @@ const ResumeForm = () => {
   );
 };
 
-export default ResumeForm;
+export default React.memo(ResumeForm);

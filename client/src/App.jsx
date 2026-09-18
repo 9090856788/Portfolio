@@ -9,16 +9,45 @@ import Contact from "./pages/Contact.jsx";
 import Footer from "./components/Footer.jsx";
 
 const App = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("portfolio_theme_mode");
+    return saved ? saved === "dark" : false;
+  });
 
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
+      primary: {
+        main: darkMode ? "#818cf8" : "#4f46e5",
+      },
+    },
+    typography: {
+      fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      h4: {
+        fontWeight: 700,
+        letterSpacing: "-0.02em",
+      },
+      h5: {
+        fontWeight: 700,
+        letterSpacing: "-0.015em",
+      },
+      h6: {
+        fontWeight: 600,
+        letterSpacing: "-0.01em",
+      },
+      button: {
+        textTransform: "none",
+        fontWeight: 600,
+      },
     },
   });
 
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
+    setDarkMode((prevMode) => {
+      const next = !prevMode;
+      localStorage.setItem("portfolio_theme_mode", next ? "dark" : "light");
+      return next;
+    });
   };
 
   return (

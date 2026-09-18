@@ -21,6 +21,7 @@ import {
   ChevronRight,
   ExternalLink,
   Sparkles,
+  FileCode2,
 } from "lucide-react";
 
 /**
@@ -254,6 +255,32 @@ const AdminSidebar = () => {
 
       {/* Bottom Profile & Actions */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {/* Swagger API Documentation link */}
+        <a
+          href="/api/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: isCollapsed ? "10px" : "10px 14px",
+            borderRadius: "10px",
+            color: "#c084fc",
+            textDecoration: "none",
+            fontSize: "0.85rem",
+            fontWeight: 500,
+            background: "rgba(168, 85, 247, 0.08)",
+            border: "1px solid rgba(168, 85, 247, 0.2)",
+            justifyContent: isCollapsed ? "center" : "flex-start",
+            transition: "background 0.2s ease, border-color 0.2s ease",
+          }}
+          title={isCollapsed ? "Swagger API Docs" : ""}
+        >
+          <FileCode2 size={17} />
+          {!isCollapsed && <span>Swagger API Docs</span>}
+        </a>
+
         {/* Visit Public Portfolio */}
         <a
           href="/"

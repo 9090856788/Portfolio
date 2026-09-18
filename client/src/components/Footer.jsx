@@ -1,14 +1,12 @@
-/* eslint-disable no-unused-vars */
 import React from "react";
-import { Box, Typography, Link, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 
 /**
  * Public Footer component
- * Clean, lightweight footer displaying rights and Swagger API reference.
+ * Simple, clean copyright notice without administrative or API documentation links.
  */
 const Footer = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDarkMode = theme.palette.mode === "dark";
 
   const softShadow = isDarkMode
@@ -21,18 +19,16 @@ const Footer = () => {
       id="portfolio-footer"
       sx={{
         width: "100%",
-        maxWidth: "1200px",
+        maxWidth: "1260px",
         margin: "24px auto 16px auto",
-        padding: isMobile ? "14px 18px" : "18px 24px",
+        padding: { xs: "12px 16px", sm: "16px 24px" },
         backgroundColor: isDarkMode ? "rgba(25, 28, 40, 0.85)" : "rgba(255, 255, 255, 0.85)",
         backdropFilter: "blur(8px)",
         color: isDarkMode ? "#94a3b8" : "#64748b",
         textAlign: "center",
         display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "center",
-        gap: 1.5,
         boxShadow: softShadow,
         borderRadius: "16px",
         border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"}`,
@@ -40,28 +36,10 @@ const Footer = () => {
       }}
     >
       <Typography variant="body2" sx={{ fontSize: "0.88rem", fontWeight: 500 }}>
-        © {new Date().getFullYear()} Kanhu Charan Sahoo. Built with React & Node.js.
+        © {new Date().getFullYear()} Kanhu Charan Sahoo. All rights reserved.
       </Typography>
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-        <Link
-          href="/api/docs"
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="hover"
-          sx={{
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            color: isDarkMode ? "#818cf8" : "#4f46e5",
-            transition: "opacity 0.2s ease",
-            "&:hover": { opacity: 0.85 },
-          }}
-        >
-          Swagger API Documentation
-        </Link>
-      </Box>
     </Box>
   );
 };
 
-export default Footer;
+export default React.memo(Footer);
