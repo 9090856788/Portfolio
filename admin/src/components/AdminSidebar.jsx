@@ -20,14 +20,17 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  Sparkles,
+  Code2,
+  Crown,
   FileCode2,
+  MoreVertical,
 } from "lucide-react";
 
 /**
- * Premium auto-resizing collapsible Admin Sidebar
- * Features smooth Framer Motion transitions, tooltip feedback,
- * active indicator glow, and compact mini mode.
+ * Premium Neumorphic Admin Sidebar matching the user's demo screens.
+ * Seamlessly adapts to light and dark theme modes with soft dual shadows,
+ * glowing active navigation indicators, collapsed mini-mode,
+ * and quick access to Pro insights and user session.
  */
 const AdminSidebar = () => {
   const dispatch = useDispatch();
@@ -48,41 +51,41 @@ const AdminSidebar = () => {
   const handleLogout = async () => {
     await adminLogout();
     dispatch(logoutSuccess());
-    dispatch(setToast({ type: "info", message: "Logged out successfully" }));
+    dispatch(setToast({ type: "info", message: "Signed out successfully" }));
   };
 
   return (
     <motion.aside
       id="admin-sidebar"
-      animate={{ width: isCollapsed ? 82 : 264 }}
+      animate={{ width: isCollapsed ? 84 : 272 }}
       transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
       style={{
         height: "100vh",
         position: "sticky",
         top: 0,
         zIndex: 40,
-        background: "rgba(18, 22, 38, 0.88)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderRight: "1px solid rgba(255, 255, 255, 0.07)",
-        boxShadow: "4px 0 24px rgba(0, 0, 0, 0.35)",
+        background: "var(--admin-sidebar-bg)",
+        borderRight: "var(--admin-border)",
+        boxShadow: "var(--admin-card-shadow)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: "20px 12px",
+        padding: "20px 14px",
         userSelect: "none",
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "auto",
+        transition: "background 0.3s ease, border-color 0.3s ease",
       }}
     >
-      {/* Top Brand Section */}
+      {/* Top Brand & Workspace Identifier */}
       <div>
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: isCollapsed ? "center" : "space-between",
-            padding: isCollapsed ? "4px 0" : "4px 8px",
-            marginBottom: 24,
+            padding: isCollapsed ? "4px 0" : "4px 6px",
+            marginBottom: 26,
           }}
         >
           <div
@@ -95,35 +98,51 @@ const AdminSidebar = () => {
             onClick={() => dispatch(setActiveTab("dashboard"))}
           >
             <div
+              className="btn-neumorph"
               style={{
-                width: 38,
-                height: 38,
-                minWidth: 38,
-                borderRadius: 10,
-                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                width: 40,
+                height: 40,
+                minWidth: 40,
+                borderRadius: 12,
+                background: "var(--admin-accent-gradient)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#ffffff",
-                boxShadow: "0 0 16px rgba(99, 102, 241, 0.45)",
+                boxShadow: "0 4px 16px rgba(99, 102, 241, 0.4)",
+                padding: 0,
+                border: "none",
               }}
             >
-              <Sparkles size={20} />
+              <Code2 size={22} strokeWidth={2.4} />
             </div>
 
             <AnimatePresence>
               {!isCollapsed && (
                 <motion.div
-                  initial={{ opacity: 0, x: -10 }}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 0, x: -8 }}
+                  transition={{ duration: 0.18 }}
                   style={{ whiteSpace: "nowrap" }}
                 >
-                  <div style={{ fontWeight: 700, fontSize: "0.98rem", color: "#f8fafc", letterSpacing: "-0.01em" }}>
+                  <div
+                    style={{
+                      fontWeight: 800,
+                      fontSize: "1.05rem",
+                      color: "var(--admin-text-primary)",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
                     Kanhu Studio
                   </div>
-                  <div style={{ fontSize: "0.75rem", color: "#818cf8", fontWeight: 500 }}>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--admin-accent)",
+                      fontWeight: 600,
+                    }}
+                  >
                     Admin Workspace
                   </div>
                 </motion.div>
@@ -131,22 +150,17 @@ const AdminSidebar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Toggle Collapse Button on Desktop */}
+          {/* Toggle Collapse Button */}
           {!isCollapsed && (
             <button
               onClick={() => dispatch(toggleSidebarCollapsed())}
+              className="btn-neumorph"
               style={{
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "8px",
-                color: "#94a3b8",
-                width: 28,
-                height: 28,
-                display: "flex",
-                alignItems: "center",
+                width: 30,
+                height: 30,
+                padding: 0,
+                borderRadius: 8,
                 justifyContent: "center",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
               }}
               title="Collapse Sidebar"
             >
@@ -155,22 +169,18 @@ const AdminSidebar = () => {
           )}
         </div>
 
-        {/* Collapsed Expand Trigger Icon */}
+        {/* Expand button when collapsed */}
         {isCollapsed && (
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
             <button
               onClick={() => dispatch(toggleSidebarCollapsed())}
+              className="btn-neumorph"
               style={{
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "8px",
-                color: "#94a3b8",
-                width: 32,
-                height: 32,
-                display: "flex",
-                alignItems: "center",
+                width: 34,
+                height: 34,
+                padding: 0,
+                borderRadius: 10,
                 justifyContent: "center",
-                cursor: "pointer",
               }}
               title="Expand Sidebar"
             >
@@ -186,201 +196,147 @@ const AdminSidebar = () => {
             const isActive = activeTab === item.id;
 
             return (
-              <motion.div
+              <div
                 key={item.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => dispatch(setActiveTab(item.id))}
+                className={isActive ? "btn-neumorph-primary" : "btn-neumorph"}
                 style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: isCollapsed ? "11px" : "11px 14px",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  color: isActive ? "#ffffff" : "#94a3b8",
-                  background: isActive
-                    ? "linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.08) 100%)"
-                    : "transparent",
-                  border: isActive
-                    ? "1px solid rgba(99, 102, 241, 0.35)"
-                    : "1px solid transparent",
+                  width: "100%",
                   justifyContent: isCollapsed ? "center" : "flex-start",
-                  transition: "all 0.2s ease",
+                  padding: isCollapsed ? "11px 0" : "11px 14px",
+                  borderRadius: 14,
+                  fontSize: "0.88rem",
+                  fontWeight: isActive ? 700 : 600,
+                  boxShadow: isActive
+                    ? "var(--admin-active-nav-shadow)"
+                    : "var(--admin-card-shadow-sm)",
+                  color: isActive ? "#ffffff" : "var(--admin-text-secondary)",
                 }}
                 title={isCollapsed ? item.label : ""}
               >
-                {/* Active Indicator Bar */}
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTabIndicator"
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: "20%",
-                      bottom: "20%",
-                      width: 4,
-                      borderRadius: "0 4px 4px 0",
-                      background: "#6366f1",
-                      boxShadow: "0 0 10px #6366f1",
-                    }}
-                  />
-                )}
-
-                <Icon size={20} style={{ color: isActive ? "#818cf8" : "inherit" }} />
-
+                <Icon size={19} strokeWidth={isActive ? 2.4 : 2} />
                 <AnimatePresence>
                   {!isCollapsed && (
                     <motion.span
-                      initial={{ opacity: 0, x: -8 }}
+                      initial={{ opacity: 0, x: -6 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -8 }}
-                      transition={{ duration: 0.18 }}
-                      style={{
-                        fontSize: "0.9rem",
-                        fontWeight: isActive ? 600 : 500,
-                        whiteSpace: "nowrap",
-                      }}
+                      exit={{ opacity: 0, x: -6 }}
+                      transition={{ duration: 0.16 }}
+                      style={{ whiteSpace: "nowrap" }}
                     >
                       {item.label}
                     </motion.span>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             );
           })}
         </nav>
       </div>
 
-      {/* Bottom Profile & Actions */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {/* Swagger API Documentation link */}
-        <a
-          href="/api/docs"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: isCollapsed ? "10px" : "10px 14px",
-            borderRadius: "10px",
-            color: "#c084fc",
-            textDecoration: "none",
-            fontSize: "0.85rem",
-            fontWeight: 500,
-            background: "rgba(168, 85, 247, 0.08)",
-            border: "1px solid rgba(168, 85, 247, 0.2)",
-            justifyContent: isCollapsed ? "center" : "flex-start",
-            transition: "background 0.2s ease, border-color 0.2s ease",
-          }}
-          title={isCollapsed ? "Swagger API Docs" : ""}
-        >
-          <FileCode2 size={17} />
-          {!isCollapsed && <span>Swagger API Docs</span>}
-        </a>
-
-        {/* Visit Public Portfolio */}
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: isCollapsed ? "10px" : "10px 14px",
-            borderRadius: "10px",
-            color: "#60a5fa",
-            textDecoration: "none",
-            fontSize: "0.85rem",
-            fontWeight: 500,
-            background: "rgba(59, 130, 246, 0.08)",
-            border: "1px solid rgba(59, 130, 246, 0.18)",
-            justifyContent: isCollapsed ? "center" : "flex-start",
-          }}
-          title={isCollapsed ? "View Live Portfolio" : ""}
-        >
-          <ExternalLink size={17} />
-          {!isCollapsed && <span>View Live Site</span>}
-        </a>
-
-        {/* User Card */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: isCollapsed ? "8px" : "10px",
-            borderRadius: "12px",
-            background: "rgba(255, 255, 255, 0.03)",
-            border: "1px solid rgba(255, 255, 255, 0.05)",
-            justifyContent: isCollapsed ? "center" : "flex-start",
-          }}
-        >
+      {/* Bottom Pro Card, Quick Links & User Pill */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
+        {/* Upgrade to Pro Card (As in demo screenshots) */}
+        {!isCollapsed && (
           <div
+            className="neumorph-card-sm"
             style={{
-              width: 34,
-              height: 34,
-              minWidth: 34,
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-              color: "#ffffff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "0.85rem",
-              fontWeight: 700,
+              padding: "14px 16px",
+              background: "linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(168, 85, 247, 0.14) 100%)",
+              border: "1px solid rgba(99, 102, 241, 0.28)",
+              borderRadius: 14,
             }}
           >
-            {(user?.fullName || "K")[0]}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <Crown size={17} color="#fbbf24" />
+              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--admin-text-primary)" }}>
+                Upgrade to Pro
+              </span>
+            </div>
+            <p style={{ fontSize: "0.75rem", color: "var(--admin-text-muted)", lineHeight: 1.4, margin: 0 }}>
+              Unlock advanced analytics and insights.
+            </p>
+          </div>
+        )}
+
+        {/* User Card Pill */}
+        <div
+          className="neumorph-inset-sm"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: isCollapsed ? "8px" : "10px 12px",
+            borderRadius: 14,
+            justifyContent: isCollapsed ? "center" : "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                minWidth: 34,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.85rem",
+                fontWeight: 700,
+              }}
+            >
+              {(user?.fullName || "K")[0]}
+            </div>
+
+            {!isCollapsed && (
+              <div style={{ overflow: "hidden", minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: "0.84rem",
+                    fontWeight: 700,
+                    color: "var(--admin-text-primary)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {user?.fullName || "Kanhu Charan Sahoo"}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.72rem",
+                    color: "var(--admin-text-muted)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {user?.email || "kanhucharansahoo595@gmail.com"}
+                </div>
+              </div>
+            )}
           </div>
 
           {!isCollapsed && (
-            <div style={{ overflow: "hidden", flexGrow: 1 }}>
-              <div
-                style={{
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  color: "#e2e8f0",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {user?.fullName || "Kanhu Charan Sahoo"}
-              </div>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  color: "#94a3b8",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {user?.email || "kanhucharansahoo595@gmail.com"}
-              </div>
-            </div>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--admin-text-muted)",
+                cursor: "pointer",
+                padding: 4,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              title="Sign Out"
+            >
+              <LogOut size={16} />
+            </button>
           )}
-
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#ef4444",
-              cursor: "pointer",
-              padding: 4,
-              display: isCollapsed ? "none" : "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            title="Sign Out"
-          >
-            <LogOut size={16} />
-          </button>
         </div>
       </div>
     </motion.aside>

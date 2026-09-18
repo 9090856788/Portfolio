@@ -18,9 +18,19 @@ const authSlice = createSlice({
     activeTab: "dashboard",
     // Auto-resizing / collapsible sidebar state
     isSidebarCollapsed: localStorage.getItem("portfolio_admin_sidebar_collapsed") === "true",
+    // Admin theme mode: 'dark' (default) or 'light'
+    themeMode: localStorage.getItem("portfolio_admin_theme") || "dark",
     toast: null,
   },
   reducers: {
+    toggleThemeMode: (state) => {
+      state.themeMode = state.themeMode === "dark" ? "light" : "dark";
+      localStorage.setItem("portfolio_admin_theme", state.themeMode);
+    },
+    setThemeMode: (state, action) => {
+      state.themeMode = action.payload;
+      localStorage.setItem("portfolio_admin_theme", action.payload);
+    },
     loginSuccess: (state, action) => {
       state.token = action.payload.token;
       state.user = action.payload.user;
@@ -61,6 +71,8 @@ export const {
   setUser,
   setActiveTab,
   toggleSidebarCollapsed,
+  toggleThemeMode,
+  setThemeMode,
   setToast,
   clearToast,
 } = authSlice.actions;

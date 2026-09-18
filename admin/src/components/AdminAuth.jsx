@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { loginSuccess, setToast } from "../redux/store";
+import { loginSuccess, setToast, toggleThemeMode } from "../redux/store";
 import {
   adminLogin,
   adminRegister,
@@ -22,6 +22,8 @@ import {
   Eye,
   EyeOff,
   Code2,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 /**
@@ -34,6 +36,11 @@ import {
  */
 const AdminAuth = () => {
   const dispatch = useDispatch();
+  const themeMode = useSelector((state) => state.auth?.themeMode || "dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", themeMode);
+  }, [themeMode]);
 
   // Mode: "login" | "register" | "forgot" | "reset"
   const [mode, setMode] = useState("login");
@@ -185,29 +192,56 @@ const AdminAuth = () => {
 
   return (
     <div
+      data-theme={themeMode}
       style={{
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
-        background: "radial-gradient(circle at 50% 20%, #15192d 0%, #0a0c14 100%)",
+        background: "var(--admin-bg)",
+        position: "relative",
       }}
     >
+      {/* Theme Switcher in Top Right */}
+      <button
+        onClick={() => dispatch(toggleThemeMode())}
+        className="btn-neumorph"
+        style={{
+          position: "absolute",
+          top: 24,
+          right: 24,
+          padding: "8px 14px",
+          gap: 8,
+          fontSize: "0.85rem",
+          fontWeight: 600,
+        }}
+        title="Toggle Theme"
+      >
+        {themeMode === "dark" ? (
+          <>
+            <Sun size={16} color="#fbbf24" />
+            <span>Light</span>
+          </>
+        ) : (
+          <>
+            <Moon size={16} color="#6366f1" />
+            <span>Dark</span>
+          </>
+        )}
+      </button>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
+        className="neumorph-card"
         style={{
           width: "100%",
           maxWidth: "440px",
-          background: "rgba(22, 27, 46, 0.75)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
           borderRadius: "24px",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.15)",
           overflow: "hidden",
+          padding: 0,
         }}
       >
         {/* Top Brand Banner */}

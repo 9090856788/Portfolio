@@ -1,25 +1,93 @@
-/* Premium Glassmorphic & Modern Theme for Admin Studio */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* Premium Neumorphic Design System for Admin Studio - Supporting Light & Dark Modes */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
-:root {
-  --bg-primary: #0a0c14;
-  --bg-secondary: #101424;
-  --bg-card: rgba(22, 27, 46, 0.75);
-  --bg-card-hover: rgba(28, 35, 60, 0.9);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(99, 102, 241, 0.35);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #4f46e5;
-  --accent-glow: rgba(99, 102, 241, 0.25);
-  --accent-success: #10b981;
-  --accent-danger: #ef4444;
-  --accent-warning: #f59e0b;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+:root,
+[data-theme="dark"] {
+  --admin-bg: #0b0e17;
+  --admin-bg-page: #0b0e17;
+  --admin-sidebar-bg: #0f1322;
+  --admin-header-bg: rgba(15, 19, 34, 0.82);
+  
+  /* Neumorphic Extrusion (raised card) */
+  --admin-card-bg: #14192b;
+  --admin-card-bg-elevated: #171d32;
+  --admin-card-shadow: 7px 7px 20px rgba(0, 0, 0, 0.55), -5px -5px 16px rgba(45, 55, 88, 0.22);
+  --admin-card-shadow-hover: 9px 9px 26px rgba(0, 0, 0, 0.65), -6px -6px 20px rgba(55, 68, 108, 0.3);
+  --admin-card-shadow-sm: 4px 4px 12px rgba(0, 0, 0, 0.45), -3px -3px 10px rgba(45, 55, 88, 0.18);
+  
+  /* Neumorphic Inset (sunken wells, inputs, slider tracks) */
+  --admin-inset-bg: #0c0f1a;
+  --admin-inset-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.65), inset -2px -2px 5px rgba(45, 55, 88, 0.18);
+  --admin-inset-shadow-sm: inset 2px 2px 4px rgba(0, 0, 0, 0.55), inset -1px -1px 3px rgba(45, 55, 88, 0.15);
+  
+  /* Borders & Dividers */
+  --admin-border: 1px solid rgba(255, 255, 255, 0.07);
+  --admin-border-subtle: 1px solid rgba(255, 255, 255, 0.04);
+  --admin-border-accent: rgba(99, 102, 241, 0.4);
+  
+  /* Typography */
+  --admin-text-primary: #f8fafc;
+  --admin-text-secondary: #94a3b8;
+  --admin-text-muted: #64748b;
+  
+  /* Accents & Gradients */
+  --admin-accent: #6366f1;
+  --admin-accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --admin-accent-glow: 0 0 20px rgba(99, 102, 241, 0.35);
+  --admin-active-nav-bg: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --admin-active-nav-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+  
+  --admin-tag-bg: rgba(30, 38, 62, 0.7);
+  --admin-tag-color: #cbd5e1;
+  --admin-tag-border: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* Modal & Backdrop */
+  --admin-modal-bg: #14192b;
+  --admin-modal-overlay: rgba(5, 7, 13, 0.75);
+}
+
+[data-theme="light"] {
+  --admin-bg: #edf2f7;
+  --admin-bg-page: #edf2f7;
+  --admin-sidebar-bg: #f3f6fa;
+  --admin-header-bg: rgba(243, 246, 250, 0.85);
+  
+  /* Neumorphic Extrusion (raised card) */
+  --admin-card-bg: #f0f4f9;
+  --admin-card-bg-elevated: #ffffff;
+  --admin-card-shadow: 7px 7px 18px rgba(166, 180, 200, 0.55), -7px -7px 18px rgba(255, 255, 255, 0.95);
+  --admin-card-shadow-hover: 9px 9px 24px rgba(166, 180, 200, 0.7), -9px -9px 24px rgba(255, 255, 255, 1);
+  --admin-card-shadow-sm: 4px 4px 10px rgba(166, 180, 200, 0.45), -4px -4px 10px rgba(255, 255, 255, 0.9);
+  
+  /* Neumorphic Inset (sunken wells, inputs, slider tracks) */
+  --admin-inset-bg: #e6ebf2;
+  --admin-inset-shadow: inset 3px 3px 6px rgba(166, 180, 200, 0.45), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  --admin-inset-shadow-sm: inset 2px 2px 4px rgba(166, 180, 200, 0.35), inset -2px -2px 4px rgba(255, 255, 255, 0.85);
+  
+  /* Borders & Dividers */
+  --admin-border: 1px solid rgba(255, 255, 255, 0.8);
+  --admin-border-subtle: 1px solid rgba(166, 180, 200, 0.25);
+  --admin-border-accent: rgba(99, 102, 241, 0.35);
+  
+  /* Typography */
+  --admin-text-primary: #1e293b;
+  --admin-text-secondary: #475569;
+  --admin-text-muted: #8e9cae;
+  
+  /* Accents & Gradients */
+  --admin-accent: #4f46e5;
+  --admin-accent-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --admin-accent-glow: 0 0 20px rgba(79, 70, 229, 0.25);
+  --admin-active-nav-bg: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --admin-active-nav-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+  
+  --admin-tag-bg: #e2e8f0;
+  --admin-tag-color: #334155;
+  --admin-tag-border: 1px solid rgba(166, 180, 200, 0.3);
+
+  /* Modal & Backdrop */
+  --admin-modal-bg: #f4f7fb;
+  --admin-modal-overlay: rgba(30, 41, 59, 0.4);
 }
 
 * {
@@ -30,118 +98,115 @@
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--admin-bg);
+  color: var(--admin-text-primary);
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.06) 0%, transparent 40%);
-  background-attachment: fixed;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Glass Card */
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+/* Neumorphic Raised Card */
+.neumorph-card {
+  background: var(--admin-card-bg);
+  border-radius: 18px;
+  box-shadow: var(--admin-card-shadow);
+  border: var(--admin-border);
   padding: 24px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
   transition: all 0.25s ease;
 }
 
-.glass-card:hover {
-  border-color: var(--border-accent);
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6), 0 0 15px rgba(99, 102, 241, 0.1);
+.neumorph-card-sm {
+  background: var(--admin-card-bg);
+  border-radius: 14px;
+  box-shadow: var(--admin-card-shadow-sm);
+  border: var(--admin-border);
+  padding: 16px;
+  transition: all 0.25s ease;
 }
 
-/* Typography & Badges */
-.page-title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.02em;
+.neumorph-card:hover {
+  box-shadow: var(--admin-card-shadow-hover);
 }
 
-.page-desc {
+/* Neumorphic Inset Well */
+.neumorph-inset {
+  background: var(--admin-inset-bg);
+  border-radius: 14px;
+  box-shadow: var(--admin-inset-shadow);
+  border: var(--admin-border-subtle);
+  transition: all 0.25s ease;
+}
+
+.neumorph-inset-sm {
+  background: var(--admin-inset-bg);
+  border-radius: 10px;
+  box-shadow: var(--admin-inset-shadow-sm);
+  border: var(--admin-border-subtle);
+}
+
+/* Interactive Neumorphic Buttons */
+.btn-neumorph {
+  background: var(--admin-card-bg);
+  color: var(--admin-text-primary);
+  box-shadow: var(--admin-card-shadow-sm);
+  border: var(--admin-border);
+  border-radius: 12px;
+  padding: 9px 18px;
+  font-weight: 600;
   font-size: 0.88rem;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.badge {
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  gap: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.badge-primary {
-  background: rgba(99, 102, 241, 0.15);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+.btn-neumorph:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--admin-card-shadow);
 }
 
-.badge-success {
-  background: rgba(16, 185, 129, 0.15);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+.btn-neumorph:active {
+  transform: translateY(1px);
+  box-shadow: var(--admin-inset-shadow-sm);
 }
 
-/* Modern Action Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #ffffff;
+.btn-neumorph-primary {
+  background: var(--admin-accent-gradient);
+  color: #ffffff !important;
   border: none;
+  border-radius: 12px;
   padding: 10px 20px;
-  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.4);
+  transition: all 0.22s ease;
+  white-space: nowrap;
 }
 
-.btn-primary:hover {
+.btn-neumorph-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.55);
 }
 
-.btn-outline {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  padding: 9px 18px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 0.88rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
+.btn-neumorph-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
 }
 
-.btn-outline:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.btn-danger {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
+.btn-neumorph-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
+  border-radius: 10px;
+  padding: 7px 12px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -149,39 +214,231 @@ body {
   transition: all 0.2s ease;
 }
 
-.btn-danger:hover {
-  background: rgba(239, 68, 68, 0.25);
+.btn-neumorph-danger:hover {
+  background: rgba(239, 68, 68, 0.22);
   border-color: rgba(239, 68, 68, 0.5);
 }
 
-/* Form Inputs */
+/* Neumorphic Input & Textarea */
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .form-label {
-  display: block;
-  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #cbd5e1;
-  margin-bottom: 6px;
+  color: var(--admin-text-secondary);
+  margin-bottom: 8px;
 }
 
-.form-control {
+.neumorph-input {
   width: 100%;
-  padding: 11px 14px;
-  background: rgba(15, 18, 28, 0.8);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: #ffffff;
+  padding: 12px 16px;
+  background: var(--admin-inset-bg);
+  box-shadow: var(--admin-inset-shadow);
+  border: var(--admin-border-subtle);
+  border-radius: 12px;
+  color: var(--admin-text-primary);
   font-size: 0.92rem;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.22s ease;
 }
 
-.form-control:focus {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+.neumorph-input:focus {
+  border-color: var(--admin-border-accent);
+  box-shadow: var(--admin-inset-shadow), 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.neumorph-input::placeholder {
+  color: var(--admin-text-muted);
+}
+
+/* Filter Pills / Tabs */
+.filter-pill {
+  padding: 7px 16px;
+  border-radius: 9999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--admin-text-secondary);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.filter-pill:hover {
+  color: var(--admin-text-primary);
+}
+
+.filter-pill.active {
+  background: var(--admin-accent-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+/* Stat Card */
+.stat-card-neumorph {
+  background: var(--admin-card-bg);
+  border-radius: 16px;
+  box-shadow: var(--admin-card-shadow);
+  border: var(--admin-border);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card-neumorph:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--admin-card-shadow-hover);
+}
+
+/* Progress Track */
+.progress-track-neumorph {
+  height: 10px;
+  background: var(--admin-inset-bg);
+  box-shadow: var(--admin-inset-shadow-sm);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill-neumorph {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Badges */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badge-live {
+  background: rgba(16, 185, 129, 0.16);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.badge-dev {
+  background: rgba(245, 158, 11, 0.16);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.badge-draft {
+  background: rgba(148, 163, 184, 0.16);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.badge-featured {
+  background: rgba(139, 92, 246, 0.18);
+  color: #a855f7;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+
+/* Scenic Hero Banners */
+.scenic-banner {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(20, 24, 48, 0.95) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: var(--admin-card-shadow);
+  padding: 28px 36px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-theme="light"] .scenic-banner {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Modal Overlay & Card */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--admin-modal-overlay);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.modal-content-neumorph {
+  background: var(--admin-modal-bg);
+  border-radius: 20px;
+  box-shadow: var(--admin-card-shadow-hover);
+  border: var(--admin-border);
+  padding: 32px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Layout Grid Utilities */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1180px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-4, .grid-3, .grid-2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Custom Scrollbars */
@@ -191,14 +448,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(10, 12, 20, 0.5);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(148, 163, 184, 0.45);
 }

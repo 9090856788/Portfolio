@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { clearToast } from "./redux/store";
+import { clearToast, toggleSidebarCollapsed } from "./redux/store";
 import AdminSidebar from "./components/AdminSidebar";
+import AdminHeader from "./components/AdminHeader";
 import AdminAuth from "./components/AdminAuth";
 import Dashboard from "./pages/Dashboard";
 import ManageProjects from "./pages/ManageProjects";
@@ -15,14 +16,20 @@ import "./style.css";
 
 /**
  * Main Admin Application shell.
- * Coordinates view state, authentication guard, collapsible layout,
- * and floating toast notifications.
+ * Coordinates view state, authentication guard, neumorphic theme mode (Light/Dark),
+ * collapsible layout, and floating toast notifications.
  */
 export default function App() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const activeTab = useSelector((state) => state.auth.activeTab);
+  const themeMode = useSelector((state) => state.auth.themeMode);
   const toast = useSelector((state) => state.auth.toast);
+
+  // Sync theme mode attribute to document for root CSS variables
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", themeMode);
+  }, [themeMode]);
 
   // If user is unauthenticated, present the modern Admin Login / Register / OTP Portal
   if (!isAuthenticated) {
@@ -52,12 +59,14 @@ export default function App() {
 
   return (
     <div
+      data-theme={themeMode}
       style={{
         display: "flex",
         minHeight: "100vh",
-        background: "#0d111d",
-        color: "#f8fafc",
+        background: "var(--admin-bg)",
+        color: "var(--admin-text-primary)",
         overflowX: "hidden",
+        transition: "background-color 0.3s ease, color 0.3s ease",
       }}
     >
       {/* Auto-resizing Collapsible Sidebar */}
@@ -68,18 +77,22 @@ export default function App() {
         style={{
           flex: 1,
           minWidth: 0,
-          padding: "28px 36px",
-          background: "radial-gradient(ellipse at 80% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 60%)",
+          padding: "24px 36px 40px",
+          background: "var(--admin-bg)",
           overflowY: "auto",
+          transition: "background 0.3s ease",
         }}
       >
+        {/* Global Admin Header with Neumorphic Search, Theme Switcher & Profile */}
+        <AdminHeader onToggleSidebar={() => dispatch(toggleSidebarCollapsed())} />
+
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
             {renderActiveView()}
           </motion.div>

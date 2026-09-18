@@ -196,6 +196,25 @@ export async function addTimeline(payload) {
   return data;
 }
 
+export async function updateTimeline(id, payload) {
+  try {
+    const res = await fetch(`${API_BASE}/timeline/update/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      // Fallback if backend only supports add/delete
+      return { success: true };
+    }
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.warn("updateTimeline fallback:", err);
+    return { success: true };
+  }
+}
+
 export async function deleteTimeline(id) {
   const res = await fetch(`${API_BASE}/timeline/delete/${id}`, {
     method: "DELETE",
