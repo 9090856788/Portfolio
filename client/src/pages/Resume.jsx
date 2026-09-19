@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { Box, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, Button, useTheme, useMediaQuery } from "@mui/material";
+import { PictureAsPdf, Description } from "@mui/icons-material";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
 import ResumeForm from "../components/ResumeForm";
@@ -23,6 +24,10 @@ const Resume = ({ toggleDarkMode }) => {
   const mainContainerHoverShadow = isDarkMode
     ? `12px 12px 24px ${theme.palette.grey[900]}, -12px -12px 24px ${theme.palette.grey[800]}`
     : `12px 12px 24px ${theme.palette.grey[300]}, -12px -12px 24px ${theme.palette.grey[100]}`;
+
+  const actionShadow = isDarkMode
+    ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
+    : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`;
 
   return (
     <Box
@@ -83,6 +88,78 @@ const Resume = ({ toggleDarkMode }) => {
         >
           {/* Managed Section Header matching all other views */}
           <SectionHeader title="Resume" />
+
+          {/* Quick Resume Download Actions Toolbar */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 1.5,
+              mb: 2.5,
+              p: 1.5,
+              borderRadius: "12px",
+              bgcolor: theme.palette.background.default,
+              border: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 600, color: "text.secondary", fontSize: "0.85rem" }}>
+              Download Resume:
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+              <Button
+                component="a"
+                href="/api/v1/resume/download/latest?format=pdf"
+                download="Kanhu_Charan_Sahoo_Resume.pdf"
+                size="small"
+                startIcon={<PictureAsPdf sx={{ fontSize: 18, color: "#ef4444" }} />}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.82rem",
+                  borderRadius: "8px",
+                  bgcolor: theme.palette.background.paper,
+                  border: `1px solid ${theme.palette.divider}`,
+                  color: isDarkMode ? "#f1f5f9" : "#1e293b",
+                  boxShadow: actionShadow,
+                  px: 1.8,
+                  py: 0.7,
+                  "&:hover": {
+                    transform: "translateY(-1px)",
+                    borderColor: "#ef4444",
+                  },
+                }}
+              >
+                Download PDF (.pdf)
+              </Button>
+              <Button
+                component="a"
+                href="/api/v1/resume/download/latest?format=doc"
+                download="Kanhu_Charan_Sahoo_Resume.doc"
+                size="small"
+                startIcon={<Description sx={{ fontSize: 18, color: "#3b82f6" }} />}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.82rem",
+                  borderRadius: "8px",
+                  bgcolor: theme.palette.background.paper,
+                  border: `1px solid ${theme.palette.divider}`,
+                  color: isDarkMode ? "#f1f5f9" : "#1e293b",
+                  boxShadow: actionShadow,
+                  px: 1.8,
+                  py: 0.7,
+                  "&:hover": {
+                    transform: "translateY(-1px)",
+                    borderColor: "#3b82f6",
+                  },
+                }}
+              >
+                Download DOC (.doc)
+              </Button>
+            </Box>
+          </Box>
 
           <Box sx={{ width: "100%", mt: 1 }}>
             <ResumeForm />

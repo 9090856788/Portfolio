@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
 import { toggleThemeMode, logoutSuccess, setToast, setActiveTab } from "../redux/store";
-import { adminLogout } from "../api/adminApi";
+import { adminLogout, fetchAdminProfile } from "../api/adminApi";
 import {
   Search,
   Sun,
@@ -25,6 +26,17 @@ const AdminHeader = ({ onToggleSidebar }) => {
   const dispatch = useDispatch();
   const themeMode = useSelector((state) => state.auth.themeMode);
   const user = useSelector((state) => state.auth.user);
+
+  const { data: profile } = useQuery({
+    queryKey: ["adminProfile"],
+    queryFn: fetchAdminProfile,
+    staleTime: 60000,
+  });
+
+  const displayName = profile?.fullName || user?.fullName || "Admin";
+  const displayEmail = profile?.email || user?.email || "admin@gmail.com";
+  const displayInitial = (displayName || displayEmail || "A")[0]?.toUpperCase() || "A";
+
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -243,7 +255,7 @@ const AdminHeader = ({ onToggleSidebar }) => {
                 fontSize: "0.95rem",
               }}
             >
-              {user?.fullName?.charAt(0) || "K"}
+              {displayInitial}
             </div>
           </div>
 
@@ -264,10 +276,10 @@ const AdminHeader = ({ onToggleSidebar }) => {
             >
               <div style={{ padding: "4px 6px 8px", borderBottom: "1px solid var(--admin-border-subtle)" }}>
                 <div style={{ fontSize: "0.88rem", fontWeight: 700 }}>
-                  {user?.fullName || "Kanhu Charan Sahoo"}
+                  {displayName}
                 </div>
                 <div style={{ fontSize: "0.74rem", color: "var(--admin-text-muted)" }}>
-                  Admin Workspace
+                  {displayEmail}
                 </div>
               </div>
               <button

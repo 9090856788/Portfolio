@@ -6,35 +6,31 @@ class ErrorHandler extends Error {
 }
 
 export const errorMiddleware = (err, req, res, next) => {
-    err.message = err.message || "Internal Server Error";
-    err.statusCode = err.statusCode || 500;
+    let statusCode = err.statusCode || 500;
+    let message = err.message || "Internal Server Error";
 
     if (err.code === 11000) {
-        const message = `Duplicate ${Object.keys(err.keyValue)} Entered`,
-            err = new ErrorHandler(message, 400);
-    }
-    if (err.name === "JsonWebTokenError") {
-        const message = `Json Web Token is invalid, Try again!`;
-        err = new ErrorHandler(message, 400);
-    }
-    if (err.name === "TokenExpiredError") {
-        const message = `Json Web Token is expired, Try again!`;
-        err = new ErrorHandler(message, 400);
-    }
-    if (err.name === "CastError") {
-        const message = `Invalid ${err.path}`,
-            err = new ErrorHandler(message, 400);
-    }
-
-    const errorMessage = err.errors
-        ? Object.values(err.errors)
+        const field = Object.keys(err.keyValue || { email: "email" }).join(", ");
+        message = `An account with this ${field} already exists. Please log in instead.`;
+        statusCode = 400;
+    } else if (err.name === "JsonWebTokenError") {
+        message = "Session token is invalid. Please log in again.";
+        statusCode = 401;
+    } else if (err.name === "TokenExpiredError") {
+        message = "Session token has expired. Please log in again.";
+        statusCode = 401;
+    } else if (err.name === "CastError") {
+        message = `Resource not found with invalid identifier: ${err.path}`;
+        statusCode = 404;
+    } else if (err.errors) {
+        message = Object.values(err.errors)
             .map((error) => error.message)
-            .join(" ")
-        : err.message;
+            .join(" ");
+    }
 
-    return res.status(err.statusCode).json({
+    return res.status(statusCode).json({
         success: false,
-        message: errorMessage,
+        message: message,
     });
 };
 

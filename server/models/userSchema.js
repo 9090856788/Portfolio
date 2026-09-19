@@ -7,18 +7,22 @@ const userSchema = new mongoose.Schema({
     fullName: {
         type: String,
         required: [true, "Full Name Required!"],
+        default: "Administrator",
     },
     email: {
         type: String,
         required: [true, "Email Required!"],
+        unique: true,
+        trim: true,
+        lowercase: true,
     },
     phone: {
-        type: Number,
-        required: [true, "Phone Number is Required!"],
+        type: String,
+        default: "",
     },
     aboutMe: {
         type: String,
-        required: [true, "About me field is Required!"],
+        default: "",
     },
     password: {
         type: String,
@@ -28,32 +32,40 @@ const userSchema = new mongoose.Schema({
     avatar: {
         public_id: {
             type: String,
-            required: true,
+            default: "",
         },
         url: {
             type: String,
-            required: true,
+            default: "",
         },
     },
     resume: {
         public_id: {
             type: String,
-            required: true,
+            default: "",
         },
         url: {
             type: String,
-            required: true,
+            default: "",
         },
     },
     portfolioURL: {
         type: String,
-        required: [true, "Portfolio URL is Required!"],
+        default: "",
     },
     githubURL: String,
     instagramURL: String,
     facebookURL: String,
     twitterURL: String,
     linkedInURL: String,
+    role: {
+        type: String,
+        default: "",
+    },
+    location: {
+        type: String,
+        default: "",
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 });

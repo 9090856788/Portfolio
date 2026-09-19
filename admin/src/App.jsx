@@ -11,6 +11,7 @@ import ManageSkills from "./pages/ManageSkills";
 import ManageTimeline from "./pages/ManageTimeline";
 import ManageSoftware from "./pages/ManageSoftware";
 import MessagesInbox from "./pages/MessagesInbox";
+import ResumeBuilderPage from "./pages/resume/ResumeBuilderPage";
 import { X, CheckCircle2, AlertCircle, Info } from "lucide-react";
 import "./style.css";
 
@@ -48,6 +49,8 @@ export default function App() {
         return <ManageTimeline />;
       case "software":
         return <ManageSoftware />;
+      case "resume":
+        return <ResumeBuilderPage />;
       case "messages":
         return <MessagesInbox />;
       case "profile":

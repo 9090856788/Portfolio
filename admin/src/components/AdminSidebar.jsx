@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   setActiveTab,
@@ -7,7 +8,7 @@ import {
   logoutSuccess,
   setToast,
 } from "../redux/store";
-import { adminLogout } from "../api/adminApi";
+import { adminLogout, fetchAdminProfile } from "../api/adminApi";
 import {
   LayoutDashboard,
   FolderGit2,
@@ -23,6 +24,7 @@ import {
   Code2,
   Crown,
   FileCode2,
+  FileText,
   MoreVertical,
 } from "lucide-react";
 
@@ -38,12 +40,23 @@ const AdminSidebar = () => {
   const isCollapsed = useSelector((state) => state.auth.isSidebarCollapsed);
   const user = useSelector((state) => state.auth.user);
 
+  const { data: profile } = useQuery({
+    queryKey: ["adminProfile"],
+    queryFn: fetchAdminProfile,
+    staleTime: 60000,
+  });
+
+  const displayName = profile?.fullName || user?.fullName || "Admin";
+  const displayEmail = profile?.email || user?.email || "admin@gmail.com";
+  const displayInitial = (displayName || displayEmail || "A")[0]?.toUpperCase() || "A";
+
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "projects", label: "Projects", icon: FolderGit2 },
     { id: "skills", label: "Skills", icon: Cpu },
     { id: "timeline", label: "Experience & Edu", icon: GraduationCap },
     { id: "software", label: "Software Tools", icon: Layers },
+    { id: "resume", label: "Create Custom Resume", icon: FileText },
     { id: "messages", label: "Inquiries & Mail", icon: Mail },
     { id: "profile", label: "Profile Settings", icon: UserCheck },
   ];
@@ -287,7 +300,7 @@ const AdminSidebar = () => {
                 fontWeight: 700,
               }}
             >
-              {(user?.fullName || "K")[0]}
+              {displayInitial}
             </div>
 
             {!isCollapsed && (
@@ -302,7 +315,7 @@ const AdminSidebar = () => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {user?.fullName || "Kanhu Charan Sahoo"}
+                  {displayName}
                 </div>
                 <div
                   style={{
@@ -313,7 +326,7 @@ const AdminSidebar = () => {
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {user?.email || "kanhucharansahoo595@gmail.com"}
+                  {displayEmail}
                 </div>
               </div>
             )}

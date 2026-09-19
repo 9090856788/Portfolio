@@ -18,10 +18,10 @@ import {
   Email,
   LocationOn,
   Download,
+  Person,
 } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserProfile } from "../api/portfolioApi";
-import profileImg from "../img/Kanhu.jpg";
 
 /**
  * ProfileCard component
@@ -38,18 +38,18 @@ const ProfileCard = () => {
     queryFn: fetchUserProfile,
   });
 
-  const avatarSrc = user?.avatar?.url || profileImg;
-  const fullName = user?.fullName || "Kanhu Charan Sahoo";
-  const roleTitle = user?.role || "Frontend Developer & UI/UX Specialist";
-  const phone = user?.phone || "+91 9090856788";
-  const email = user?.email || "kanhucharansahoo595@gmail.com";
-  const location = user?.location || "Bhubaneswar, Odisha, India";
+  const avatarSrc = user?.avatar?.url || "";
+  const fullName = user?.fullName || "Admin";
+  const roleTitle = user?.role || "Developer & Engineer";
+  const phone = user?.phone || "Not specified";
+  const email = user?.email || "admin@gmail.com";
+  const location = user?.location || "Not specified";
   const resumeUrl = user?.resume?.url || "";
 
   const socialMediaLinks = [
     {
       name: "LinkedIn",
-      url: user?.linkedInURL || "https://linkedin.com/in/kanhucharansahoo",
+      url: user?.linkedInURL || "https://linkedin.com",
       icon: <LinkedIn fontSize="small" />,
       color: "#0077b5",
     },
@@ -61,34 +61,29 @@ const ProfileCard = () => {
     },
     {
       name: "GitHub",
-      url: user?.githubURL || "https://github.com/9090856788",
+      url: user?.githubURL || "https://github.com",
       icon: <GitHub fontSize="small" />,
       color: isDarkMode ? "#f8fafc" : "#1e293b",
     },
   ];
 
-  // Handles resume download or falls back to generating a contact summary file
+  // Handles resume download - downloads PDF format by default as requested
   const handleResumeDownload = () => {
-    if (resumeUrl && resumeUrl.startsWith("http")) {
+    if (resumeUrl && resumeUrl.startsWith("http") && !resumeUrl.includes("sample-resume")) {
       window.open(resumeUrl, "_blank", "noopener,noreferrer");
-    } else {
-      const summaryContent = [
-        `Candidate: ${fullName}`,
-        `Title: ${roleTitle}`,
-        `Email: ${email}`,
-        `Phone: ${phone}`,
-        `Location: ${location}`,
-        `Portfolio: ${user?.portfolioURL || window.location.origin}`,
-      ].join("\n");
+      return;
+    }
 
-      const blob = new Blob([summaryContent], { type: "text/plain;charset=utf-8" });
+    try {
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${fullName.replace(/\s+/g, "_")}_Profile.txt`;
+      link.href = "/api/v1/resume/download/latest?format=pdf";
+      link.download = `${fullName.replace(/\s+/g, "_")}_Resume.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
+    } catch (err) {
+      console.warn("Falling back to opening PDF in new tab", err);
+      window.open("/api/v1/resume/download/latest?format=pdf", "_blank");
     }
   };
 
@@ -138,16 +133,37 @@ const ProfileCard = () => {
             : `6px 6px 14px ${theme.palette.grey[300]}, -6px -6px 14px ${theme.palette.grey[100]}`,
         }}
       >
-        <Avatar
-          alt={fullName}
-          src={avatarSrc}
-          sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            border: `2px solid ${isDarkMode ? "rgba(129, 140, 248, 0.4)" : "rgba(79, 70, 229, 0.3)"}`,
-          }}
-        />
+        {avatarSrc ? (
+          <Avatar
+            alt={fullName}
+            src={avatarSrc}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              border: `2px solid ${isDarkMode ? "rgba(129, 140, 248, 0.4)" : "rgba(79, 70, 229, 0.3)"}`,
+            }}
+          />
+        ) : (
+          <Avatar
+            sx={{
+              width: "100%",
+              height: "100%",
+              bgcolor: isDarkMode ? "#1e293b" : "#f1f5f9",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: `2px solid ${isDarkMode ? "rgba(129, 140, 248, 0.4)" : "rgba(79, 70, 229, 0.3)"}`,
+            }}
+          >
+            <Person
+              sx={{
+                fontSize: { xs: 55, sm: 70, md: 85 },
+                color: isDarkMode ? "#64748b" : "#94a3b8",
+              }}
+            />
+          </Avatar>
+        )}
       </Box>
 
       {/* Name and Designation */}

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, CssBaseline, createTheme, Box } from "@mui/material";
@@ -7,6 +6,22 @@ import Resume from "./pages/Resume.jsx";
 import Project from "./pages/Project.jsx";
 import Contact from "./pages/Contact.jsx";
 import Footer from "./components/Footer.jsx";
+
+function AdminRedirect() {
+  React.useEffect(() => {
+    window.location.href = "/admin/";
+  }, []);
+  return (
+    <Box sx={{ py: 12, textAlign: "center" }}>
+      <h3>Opening Admin Workspace...</h3>
+      <p style={{ marginTop: 8 }}>
+        <a href="/admin/" style={{ color: "#4f46e5", textDecoration: "underline" }}>
+          Click here if you are not redirected automatically
+        </a>
+      </p>
+    </Box>
+  );
+}
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -82,6 +97,10 @@ const App = () => {
                 exact
                 path="/contact"
                 element={<Contact toggleDarkMode={toggleDarkMode} />}
+              />
+              <Route
+                path="/admin*"
+                element={<AdminRedirect />}
               />
             </Routes>
           </Box>

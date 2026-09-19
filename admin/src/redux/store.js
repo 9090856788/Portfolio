@@ -7,14 +7,8 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     token: storedToken || null,
-    // Authenticated if token exists or defaults to true for demo session
-    isAuthenticated: Boolean(storedToken),
-    user: storedUser || {
-      fullName: "Kanhu Charan Sahoo",
-      email: "kanhucharansahoo595@gmail.com",
-      phone: "+91 9090856788",
-      role: "Frontend Developer & UI/UX",
-    },
+    isAuthenticated: Boolean(storedToken && storedUser),
+    user: storedUser || null,
     activeTab: "dashboard",
     // Auto-resizing / collapsible sidebar state
     isSidebarCollapsed: localStorage.getItem("portfolio_admin_sidebar_collapsed") === "true",

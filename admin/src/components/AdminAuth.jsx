@@ -24,19 +24,24 @@ import {
   Code2,
   Sun,
   Moon,
+  Sparkles,
 } from "lucide-react";
 
 /**
- * AdminAuthModal / Portal
+ * AdminAuth Portal
  * Handles:
  * 1. Admin Sign In
  * 2. Create Admin Credentials (Register)
  * 3. Mobile Number OTP Forgot Password
  * 4. Verify OTP & Reset Password
+ *
+ * Implements high-contrast dynamic styling for Light & Dark mode,
+ * vanishing placeholders on input focus, and test admin account autofill.
  */
 const AdminAuth = () => {
   const dispatch = useDispatch();
   const themeMode = useSelector((state) => state.auth?.themeMode || "dark");
+  const isDark = themeMode === "dark";
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", themeMode);
@@ -49,11 +54,11 @@ const AdminAuth = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [infoMsg, setInfoMsg] = useState("");
 
-  // Form Fields
+  // Form Fields - Default empty so placeholders display
   const [formData, setFormData] = useState({
-    fullName: "Kanhu Charan Sahoo",
-    email: "kanhucharansahoo595@gmail.com",
-    phone: "+91 9090856788",
+    fullName: "",
+    email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     otp: "",
@@ -61,6 +66,28 @@ const AdminAuth = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrorMsg("");
+  };
+
+  // Vanishing placeholder on focus
+  const handleFocus = (e) => {
+    e.target.dataset.originalPlaceholder = e.target.placeholder;
+    e.target.placeholder = "";
+  };
+
+  const handleBlur = (e) => {
+    if (!e.target.value && e.target.dataset.originalPlaceholder) {
+      e.target.placeholder = e.target.dataset.originalPlaceholder;
+    }
+  };
+
+  // Fill default test credentials
+  const fillTestCredentials = () => {
+    setFormData((prev) => ({
+      ...prev,
+      email: "admin@gmail.com",
+      password: "admin123",
+    }));
     setErrorMsg("");
   };
 
@@ -77,12 +104,12 @@ const AdminAuth = () => {
       const res = await adminLogin(formData.email, formData.password);
       dispatch(
         loginSuccess({
-          token: res.token || "demo_admin_jwt_token_2026",
+          token: res.token || "admin_jwt_token_active",
           user: res.user || {
-            fullName: "Kanhu Charan Sahoo",
+            fullName: "Admin",
             email: formData.email,
-            phone: "+91 9090856788",
-            role: "Frontend Developer",
+            phone: "",
+            role: "Administrator",
           },
         })
       );
@@ -113,18 +140,18 @@ const AdminAuth = () => {
     setErrorMsg("");
     try {
       const res = await adminRegister({
-        fullName: formData.fullName,
+        fullName: formData.fullName || "Admin",
         email: formData.email,
-        phone: formData.phone,
+        phone: formData.phone || "",
         password: formData.password,
       });
       dispatch(
         loginSuccess({
-          token: res.token || "demo_admin_jwt_token_2026",
+          token: res.token || "admin_jwt_token_active",
           user: res.user || {
-            fullName: formData.fullName,
+            fullName: formData.fullName || "Admin",
             email: formData.email,
-            phone: formData.phone,
+            phone: formData.phone || "",
             role: "Administrator",
           },
         })
@@ -148,8 +175,7 @@ const AdminAuth = () => {
     setErrorMsg("");
     try {
       const res = await sendMobileOtp(formData.phone);
-      setInfoMsg(`OTP dispatched to ${formData.phone}. Use code: ${res.otpCode || "Check SMS"}`);
-      // Auto-populate for seamless local testing
+      setInfoMsg(`OTP dispatched to ${formData.phone}. Use code: ${res.otpCode || "123456"}`);
       if (res.otpCode) {
         setFormData((prev) => ({ ...prev, otp: res.otpCode }));
       }
@@ -179,78 +205,126 @@ const AdminAuth = () => {
         phone: formData.phone,
         otp: formData.otp,
         newPassword: formData.password,
-        confirmNewPassword: formData.confirmPassword,
+        confirmPassword: formData.confirmPassword,
       });
-      setInfoMsg("Password reset successfully! Please sign in with your new password.");
+      dispatch(
+        setToast({
+          type: "success",
+          message: "Password reset successful! Sign in with your new credentials.",
+        })
+      );
       setMode("login");
+      setFormData((prev) => ({ ...prev, password: "", confirmPassword: "", otp: "" }));
     } catch (err) {
-      setErrorMsg(err.message || "Failed to reset password.");
+      setErrorMsg(err.message || "Failed to reset password. Verify your OTP.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Theme styling palette
+  const themeStyles = {
+    pageBg: isDark ? "#090d16" : "#f1f5f9",
+    cardBg: isDark ? "#141824" : "#ffffff",
+    cardBorder: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #e2e8f0",
+    cardShadow: isDark
+      ? "20px 20px 60px #080a10, -10px -10px 40px #1a2030"
+      : "0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)",
+    bannerBorder: isDark ? "1px solid rgba(255, 255, 255, 0.07)" : "1px solid #f1f5f9",
+    headingColor: isDark ? "#ffffff" : "#0f172a",
+    subheadingColor: isDark ? "#94a3b8" : "#475569",
+    labelColor: isDark ? "#cbd5e1" : "#1e293b",
+    inputBg: isDark ? "rgba(15, 18, 28, 0.85)" : "#f8fafc",
+    inputBorder: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid #cbd5e1",
+    inputColor: isDark ? "#ffffff" : "#0f172a",
+    inputFocusBorder: isDark ? "rgba(99, 102, 241, 0.8)" : "#4f46e5",
+    iconColor: isDark ? "#64748b" : "#64748b",
+    footerText: isDark ? "#94a3b8" : "#64748b",
+    accentLink: isDark ? "#818cf8" : "#4f46e5",
+    themeButtonBg: isDark ? "#1e293b" : "#ffffff",
+    themeButtonBorder: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid #cbd5e1",
+    themeButtonText: isDark ? "#f8fafc" : "#1e293b",
+    pillBg: isDark ? "rgba(99, 102, 241, 0.15)" : "#e0e7ff",
+    pillBorder: isDark ? "rgba(99, 102, 241, 0.3)" : "#c7d2fe",
+    pillText: isDark ? "#a5b4fc" : "#4338ca",
+  };
+
   return (
     <div
-      data-theme={themeMode}
       style={{
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
-        background: "var(--admin-bg)",
+        background: themeStyles.pageBg,
         position: "relative",
+        transition: "background-color 0.25s ease",
       }}
     >
-      {/* Theme Switcher in Top Right */}
+      {/* Theme Switcher Button at Top Right */}
       <button
+        type="button"
         onClick={() => dispatch(toggleThemeMode())}
-        className="btn-neumorph"
         style={{
           position: "absolute",
           top: 24,
           right: 24,
-          padding: "8px 14px",
+          display: "flex",
+          alignItems: "center",
           gap: 8,
+          padding: "8px 14px",
+          borderRadius: 12,
+          background: themeStyles.themeButtonBg,
+          border: themeStyles.themeButtonBorder,
+          color: themeStyles.themeButtonText,
           fontSize: "0.85rem",
           fontWeight: 600,
+          cursor: "pointer",
+          boxShadow: isDark
+            ? "4px 4px 10px #06080d, -4px -4px 10px #1a2233"
+            : "0 2px 6px rgba(0,0,0,0.06)",
+          transition: "all 0.2s ease",
         }}
-        title="Toggle Theme"
+        title="Toggle Light / Dark Mode"
       >
-        {themeMode === "dark" ? (
+        {isDark ? (
           <>
             <Sun size={16} color="#fbbf24" />
-            <span>Light</span>
+            <span>Light Mode</span>
           </>
         ) : (
           <>
-            <Moon size={16} color="#6366f1" />
-            <span>Dark</span>
+            <Moon size={16} color="#4f46e5" />
+            <span>Dark Mode</span>
           </>
         )}
       </button>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="neumorph-card"
+        transition={{ duration: 0.3 }}
         style={{
           width: "100%",
           maxWidth: "440px",
-          borderRadius: "24px",
+          borderRadius: "22px",
+          background: themeStyles.cardBg,
+          border: themeStyles.cardBorder,
+          boxShadow: themeStyles.cardShadow,
           overflow: "hidden",
-          padding: 0,
+          transition: "background-color 0.25s ease, border 0.25s ease",
         }}
       >
-        {/* Top Brand Banner */}
+        {/* Card Header */}
         <div
           style={{
-            padding: "32px 32px 24px 32px",
+            padding: "32px 32px 22px 32px",
             textAlign: "center",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-            background: "linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%)",
+            borderBottom: themeStyles.bannerBorder,
+            background: isDark
+              ? "linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%)"
+              : "linear-gradient(180deg, rgba(79, 70, 229, 0.04) 0%, transparent 100%)",
           }}
         >
           <div
@@ -259,11 +333,11 @@ const AdminAuth = () => {
               height: 52,
               borderRadius: "16px",
               background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-              margin: "0 auto 16px auto",
+              margin: "0 auto 14px auto",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 0 20px rgba(99, 102, 241, 0.4)",
+              boxShadow: "0 4px 18px rgba(99, 102, 241, 0.35)",
               color: "#ffffff",
             }}
           >
@@ -273,17 +347,20 @@ const AdminAuth = () => {
             style={{
               fontSize: "1.45rem",
               fontWeight: 700,
-              color: "#ffffff",
+              color: themeStyles.headingColor,
               letterSpacing: "-0.02em",
+              margin: 0,
             }}
           >
             Portfolio Admin Studio
           </h1>
           <p
             style={{
-              fontSize: "0.85rem",
-              color: "#94a3b8",
-              marginTop: "4px",
+              fontSize: "0.86rem",
+              color: themeStyles.subheadingColor,
+              marginTop: "6px",
+              marginBottom: 0,
+              lineHeight: 1.4,
             }}
           >
             {mode === "login" && "Sign in to manage portfolio content & inquiries"}
@@ -295,7 +372,7 @@ const AdminAuth = () => {
 
         {/* Form Container */}
         <div style={{ padding: "28px 32px" }}>
-          {/* Error / Alert notification banner */}
+          {/* Notifications Alert Banner */}
           <AnimatePresence mode="wait">
             {errorMsg && (
               <motion.div
@@ -308,14 +385,15 @@ const AdminAuth = () => {
                   gap: "10px",
                   padding: "10px 14px",
                   borderRadius: "10px",
-                  background: "rgba(239, 68, 68, 0.12)",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                  color: "#fca5a5",
+                  background: isDark ? "rgba(239, 68, 68, 0.15)" : "#fee2e2",
+                  border: isDark ? "1px solid rgba(239, 68, 68, 0.35)" : "1px solid #fca5a5",
+                  color: isDark ? "#fca5a5" : "#b91c1c",
                   fontSize: "0.85rem",
+                  fontWeight: 500,
                   marginBottom: "18px",
                 }}
               >
-                <AlertCircle size={16} />
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
                 <span>{errorMsg}</span>
               </motion.div>
             )}
@@ -330,14 +408,15 @@ const AdminAuth = () => {
                   gap: "10px",
                   padding: "10px 14px",
                   borderRadius: "10px",
-                  background: "rgba(16, 185, 129, 0.12)",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
-                  color: "#6ee7b7",
+                  background: isDark ? "rgba(16, 185, 129, 0.15)" : "#d1fae5",
+                  border: isDark ? "1px solid rgba(16, 185, 129, 0.35)" : "1px solid #6ee7b7",
+                  color: isDark ? "#6ee7b7" : "#047857",
                   fontSize: "0.85rem",
+                  fontWeight: 500,
                   marginBottom: "18px",
                 }}
               >
-                <CheckCircle2 size={16} />
+                <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
                 <span>{infoMsg}</span>
               </motion.div>
             )}
@@ -346,28 +425,82 @@ const AdminAuth = () => {
           {/* VIEW: LOGIN */}
           {mode === "login" && (
             <form onSubmit={handleLogin}>
+              {/* Quick Fill Test Admin Badge */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  background: themeStyles.pillBg,
+                  border: `1px solid ${themeStyles.pillBorder}`,
+                  color: themeStyles.pillText,
+                  fontSize: "0.78rem",
+                  fontWeight: 600,
+                  marginBottom: 18,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Sparkles size={14} />
+                  <span>Test Admin: admin@gmail.com</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={fillTestCredentials}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "inherit",
+                    textDecoration: "underline",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  Fill
+                </button>
+              </div>
+
               <div style={{ marginBottom: "16px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-login-email"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   Email Address
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Mail size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Mail
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-login-email"
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="kanhu@example.com"
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder="admin@gmail.com"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
+                      transition: "border-color 0.2s ease, background 0.2s ease",
                     }}
                   />
                 </div>
@@ -375,7 +508,14 @@ const AdminAuth = () => {
 
               <div style={{ marginBottom: "18px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1" }}>
+                  <label
+                    htmlFor="admin-login-password"
+                    style={{
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      color: themeStyles.labelColor,
+                    }}
+                  >
                     Password
                   </label>
                   <button
@@ -388,8 +528,9 @@ const AdminAuth = () => {
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#818cf8",
+                      color: themeStyles.accentLink,
                       fontSize: "0.8rem",
+                      fontWeight: 600,
                       cursor: "pointer",
                       padding: 0,
                     }}
@@ -398,23 +539,31 @@ const AdminAuth = () => {
                   </button>
                 </div>
                 <div style={{ position: "relative" }}>
-                  <Lock size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Lock
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-login-password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 42px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
+                      transition: "border-color 0.2s ease, background 0.2s ease",
                     }}
                   />
                   <button
@@ -426,9 +575,10 @@ const AdminAuth = () => {
                       top: 12,
                       background: "none",
                       border: "none",
-                      color: "#64748b",
+                      color: themeStyles.iconColor,
                       cursor: "pointer",
                     }}
+                    title={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -453,13 +603,21 @@ const AdminAuth = () => {
                   justifyContent: "center",
                   gap: 8,
                   boxShadow: "0 4px 15px rgba(99, 102, 241, 0.35)",
+                  transition: "opacity 0.2s ease",
                 }}
               >
                 <span>{loading ? "Authenticating..." : "Sign In to Studio"}</span>
                 <ArrowRight size={18} />
               </button>
 
-              <div style={{ textAlign: "center", marginTop: 20, fontSize: "0.85rem", color: "#94a3b8" }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontSize: "0.85rem",
+                  color: themeStyles.footerText,
+                }}
+              >
                 Need to create admin account?{" "}
                 <button
                   type="button"
@@ -471,7 +629,7 @@ const AdminAuth = () => {
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#818cf8",
+                    color: themeStyles.accentLink,
                     fontWeight: 600,
                     cursor: "pointer",
                     padding: 0,
@@ -487,81 +645,128 @@ const AdminAuth = () => {
           {mode === "register" && (
             <form onSubmit={handleRegister}>
               <div style={{ marginBottom: "14px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-reg-fullname"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   Full Name
                 </label>
                 <div style={{ position: "relative" }}>
-                  <User size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <User
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-reg-fullname"
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    placeholder="Kanhu Charan Sahoo"
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder="e.g. Admin User"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
               </div>
 
               <div style={{ marginBottom: "14px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-reg-email"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   Email Address
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Mail size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Mail
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-reg-email"
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="kanhu@example.com"
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder="e.g. admin@gmail.com"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
               </div>
 
               <div style={{ marginBottom: "14px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
-                  Mobile Number (For OTP Verification)
+                <label
+                  htmlFor="admin-reg-phone"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
+                  Mobile Number (Optional)
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Smartphone size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Smartphone
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-reg-phone"
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+91 9090856788"
-                    required
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder="e.g. +91 9876543210"
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
@@ -569,48 +774,74 @@ const AdminAuth = () => {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 18 }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                  <label
+                    htmlFor="admin-reg-pass"
+                    style={{
+                      display: "block",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      color: themeStyles.labelColor,
+                      marginBottom: 6,
+                    }}
+                  >
                     Password
                   </label>
                   <input
+                    id="admin-reg-pass"
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 12px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                  <label
+                    htmlFor="admin-reg-confpass"
+                    style={{
+                      display: "block",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      color: themeStyles.labelColor,
+                      marginBottom: 6,
+                    }}
+                  >
                     Confirm
                   </label>
                   <input
+                    id="admin-reg-confpass"
                     type="password"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 12px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
@@ -633,13 +864,21 @@ const AdminAuth = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 8,
+                  boxShadow: "0 4px 15px rgba(16, 185, 129, 0.35)",
                 }}
               >
                 <span>{loading ? "Creating Account..." : "Create Admin Credentials"}</span>
                 <ShieldCheck size={18} />
               </button>
 
-              <div style={{ textAlign: "center", marginTop: 18, fontSize: "0.85rem", color: "#94a3b8" }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: 18,
+                  fontSize: "0.85rem",
+                  color: themeStyles.footerText,
+                }}
+              >
                 Already have credentials?{" "}
                 <button
                   type="button"
@@ -651,7 +890,7 @@ const AdminAuth = () => {
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#818cf8",
+                    color: themeStyles.accentLink,
                     fontWeight: 600,
                     cursor: "pointer",
                     padding: 0,
@@ -666,32 +905,55 @@ const AdminAuth = () => {
           {/* VIEW: FORGOT PASSWORD (REQUEST OTP) */}
           {mode === "forgot" && (
             <form onSubmit={handleSendOtp}>
-              <p style={{ fontSize: "0.88rem", color: "#94a3b8", lineHeight: 1.5, marginBottom: 18 }}>
+              <p
+                style={{
+                  fontSize: "0.88rem",
+                  color: themeStyles.subheadingColor,
+                  lineHeight: 1.5,
+                  marginBottom: 18,
+                }}
+              >
                 Enter your registered mobile phone number. We will dispatch a 6-digit verification code to verify your identity.
               </p>
 
               <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-forgot-phone"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   Registered Mobile Number
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Smartphone size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Smartphone
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-forgot-phone"
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+91 9090856788"
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder="e.g. +91 9876543210"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
@@ -714,6 +976,7 @@ const AdminAuth = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 8,
+                  boxShadow: "0 4px 15px rgba(245, 158, 11, 0.35)",
                 }}
               >
                 <span>{loading ? "Sending OTP..." : "Send Verification OTP"}</span>
@@ -731,11 +994,12 @@ const AdminAuth = () => {
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#94a3b8",
+                    color: themeStyles.footerText,
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
                     fontSize: "0.85rem",
+                    fontWeight: 500,
                     cursor: "pointer",
                   }}
                 >
@@ -749,84 +1013,132 @@ const AdminAuth = () => {
           {mode === "reset" && (
             <form onSubmit={handleResetPassword}>
               <div style={{ marginBottom: "14px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-reset-otp"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   Enter 6-Digit OTP
                 </label>
                 <div style={{ position: "relative" }}>
-                  <KeyRound size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <KeyRound
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-reset-otp"
                     type="text"
                     name="otp"
                     value={formData.otp}
                     onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     placeholder="123456"
                     maxLength={6}
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "1rem",
-                      fontWeight: 600,
+                      fontWeight: 700,
                       letterSpacing: "4px",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
               </div>
 
               <div style={{ marginBottom: "14px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-reset-newpass"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   New Password
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Lock size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Lock
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-reset-newpass"
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
               </div>
 
               <div style={{ marginBottom: "18px" }}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#cbd5e1", marginBottom: 6 }}>
+                <label
+                  htmlFor="admin-reset-confpass"
+                  style={{
+                    display: "block",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    color: themeStyles.labelColor,
+                    marginBottom: 6,
+                  }}
+                >
                   Confirm New Password
                 </label>
                 <div style={{ position: "relative" }}>
-                  <Lock size={18} style={{ position: "absolute", left: 14, top: 13, color: "#64748b" }} />
+                  <Lock
+                    size={18}
+                    style={{ position: "absolute", left: 14, top: 12, color: themeStyles.iconColor }}
+                  />
                   <input
+                    id="admin-reset-confpass"
                     type="password"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     placeholder="••••••••"
                     required
                     style={{
                       width: "100%",
                       padding: "11px 14px 11px 42px",
-                      background: "rgba(15, 18, 28, 0.8)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: themeStyles.inputBg,
+                      border: themeStyles.inputBorder,
                       borderRadius: "12px",
-                      color: "#ffffff",
+                      color: themeStyles.inputColor,
                       fontSize: "0.92rem",
                       outline: "none",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
@@ -849,6 +1161,7 @@ const AdminAuth = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 8,
+                  boxShadow: "0 4px 15px rgba(16, 185, 129, 0.35)",
                 }}
               >
                 <span>{loading ? "Resetting Password..." : "Verify OTP & Reset"}</span>
@@ -866,11 +1179,12 @@ const AdminAuth = () => {
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#94a3b8",
+                    color: themeStyles.footerText,
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
                     fontSize: "0.85rem",
+                    fontWeight: 500,
                     cursor: "pointer",
                   }}
                 >

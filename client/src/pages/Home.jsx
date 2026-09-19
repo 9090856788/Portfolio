@@ -31,9 +31,7 @@ const Home = ({ toggleDarkMode }) => {
   const aboutBullets = user?.aboutMe
     ? user.aboutMe.split("\n\n").filter(Boolean)
     : [
-        "As a Frontend developer passionate about creating seamless web experiences & developing robust and problem-solving skills and proven experience in creating and designing software in a test-driven environment.",
-        "My expertise spans front-end development, where I have good hands-on experience with HTML, CSS, JavaScript, TypeScript, ReactJs, NextJs, Material UI, and modern CSS for crafting sleek user interfaces.",
-        "On the server side, my focus revolves around the reliable functioning of applications using Node.js and Express.js with MongoDB.",
+        "Welcome to my personal developer portfolio! Manage all biography, skills, milestones, projects and profile photos in real time via the Admin Studio.",
       ];
 
   const mainContainerShadow = isDarkMode
