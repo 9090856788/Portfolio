@@ -1,21 +1,27 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const DEFAULT_MONGO_URI = "mongodb+srv://appseralabs_db_user:appseralabs@portfolio.ofiupum.mongodb.net/portfolio?retryWrites=true&w=majority";
 
 const dbConnection = () => {
-    mongoose.set('bufferCommands', false);
-    const mongoUri = process.env.MONGODB_URL || process.env.MONGO_URI || DEFAULT_MONGO_URI;
-    
+    const mongoUri =
+        process.env.MONGODB_URI ||
+        process.env.MONGO_URI ||
+        process.env.MONGODB_URL ||
+        DEFAULT_MONGO_URI;
+
     mongoose
         .connect(mongoUri, {
-            serverSelectionTimeoutMS: 10000,
+            serverSelectionTimeoutMS: 15000,
         })
         .then(() => {
             console.log(`[MongoDB] Connected successfully to database: ${mongoose.connection.name || 'portfolio'}`);
         })
         .catch((err) => {
             console.warn(
-                `[MongoDB] Connection warning (fallback data store active): `,
+                `[MongoDB] Connection notice: `,
                 err.message
             );
         });

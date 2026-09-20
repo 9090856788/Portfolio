@@ -329,7 +329,7 @@ const Dashboard = () => {
           </div>
 
           <a
-            href="/"
+            href={profile?.username || authUser?.username ? `/portfolio/${profile?.username || authUser?.username}` : "/portfolio"}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-neumorph"

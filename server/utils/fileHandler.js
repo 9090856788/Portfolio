@@ -1,19 +1,32 @@
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
 
+function getCloudinaryConfig() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (cloudName && apiKey && apiSecret) {
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    });
+    return true;
+  }
+  return false;
+}
+
 export async function processUploadedFile(file, folder = "portfolio") {
   if (!file) return null;
 
-  // Check if Cloudinary is fully configured
-  const hasCloudinary =
-    Boolean(process.env.CLOUDINARY_NAME) &&
-    Boolean(process.env.CLOUDINARY_API_KEY) &&
-    Boolean(process.env.CLOUDINARY_API_SECRET);
+  const hasCloudinary = getCloudinaryConfig();
 
   if (hasCloudinary && file.tempFilePath && fs.existsSync(file.tempFilePath)) {
     try {
       const result = await cloudinary.uploader.upload(file.tempFilePath, {
         folder: `PORTFOLIO_${folder.toUpperCase()}`,
+        resource_type: "auto",
       });
       return {
         public_id: result.public_id,
@@ -48,5 +61,19 @@ export async function processUploadedFile(file, folder = "portfolio") {
   } catch (err) {
     console.error("Error reading file buffer:", err);
     return null;
+  }
+}
+
+export async function deleteUploadedFile(public_id) {
+  if (!public_id || public_id.startsWith("default_") || public_id.startsWith("local_")) {
+    return;
+  }
+  const hasCloudinary = getCloudinaryConfig();
+  if (hasCloudinary) {
+    try {
+      await cloudinary.uploader.destroy(public_id);
+    } catch (err) {
+      console.warn("Cloudinary asset deletion warning:", err.message);
+    }
   }
 }

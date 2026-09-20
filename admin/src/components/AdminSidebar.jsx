@@ -22,7 +22,6 @@ import {
   ChevronRight,
   ExternalLink,
   Code2,
-  Crown,
   FileCode2,
   FileText,
   MoreVertical,
@@ -247,31 +246,8 @@ const AdminSidebar = () => {
         </nav>
       </div>
 
-      {/* Bottom Pro Card, Quick Links & User Pill */}
+      {/* Quick Links & User Pill */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
-        {/* Upgrade to Pro Card (As in demo screenshots) */}
-        {!isCollapsed && (
-          <div
-            className="neumorph-card-sm"
-            style={{
-              padding: "14px 16px",
-              background: "linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(168, 85, 247, 0.14) 100%)",
-              border: "1px solid rgba(99, 102, 241, 0.28)",
-              borderRadius: 14,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <Crown size={17} color="#fbbf24" />
-              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--admin-text-primary)" }}>
-                Upgrade to Pro
-              </span>
-            </div>
-            <p style={{ fontSize: "0.75rem", color: "var(--admin-text-muted)", lineHeight: 1.4, margin: 0 }}>
-              Unlock advanced analytics and insights.
-            </p>
-          </div>
-        )}
-
         {/* Public Portfolio & Home Links */}
         {!isCollapsed && (
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
