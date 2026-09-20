@@ -117,21 +117,7 @@ export const DataStore = {
     const d = loadData();
     const cleanEmail = String(email || "").toLowerCase().trim();
     if (!d.admins || !Array.isArray(d.admins)) {
-      d.admins = [
-        {
-          _id: "admin-master",
-          username: "admin",
-          email: "admin@gmail.com",
-          password: "admin123",
-          fullName: "Admin",
-          phone: "",
-          role: "",
-          location: "",
-          aboutMe: "",
-          avatar: { public_id: "", url: "" },
-          resume: { public_id: "", url: "" },
-        },
-      ];
+      d.admins = [];
       saveData();
     }
 
@@ -143,7 +129,7 @@ export const DataStore = {
       return foundInAdmins;
     }
 
-    if (d.user && d.user.email && d.user.email.toLowerCase() === cleanEmail) {
+    if (d.user && d.user.email && d.user.email.toLowerCase() === cleanEmail && d.user.password) {
       if (!d.user.username) {
         d.user.username = d.user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
       }
@@ -151,7 +137,7 @@ export const DataStore = {
         _id: d.user._id,
         username: d.user.username,
         email: d.user.email,
-        password: d.user.password || "admin123",
+        password: d.user.password,
         fullName: d.user.fullName,
         phone: d.user.phone,
         role: d.user.role,
@@ -165,21 +151,7 @@ export const DataStore = {
   registerAdminUser: (userData) => {
     const d = loadData();
     if (!d.admins || !Array.isArray(d.admins)) {
-      d.admins = [
-        {
-          _id: "admin-master",
-          username: "admin",
-          email: "admin@gmail.com",
-          password: "admin123",
-          fullName: "Admin",
-          phone: "",
-          role: "",
-          location: "",
-          aboutMe: "",
-          avatar: { public_id: "", url: "" },
-          resume: { public_id: "", url: "" },
-        },
-      ];
+      d.admins = [];
     }
     const cleanEmail = String(userData.email || "").toLowerCase().trim();
     const existingIndex = d.admins.findIndex((a) => (a.email || "").toLowerCase() === cleanEmail);
@@ -405,22 +377,21 @@ export const DataStore = {
   // Resumes
   getResumes: (userId) => {
     const d = loadData();
-    if (!d.resumes || d.resumes.length === 0) {
-      d.resumes = getDefaultResumes();
-      saveData();
+    if (!d.resumes) {
+      d.resumes = [];
     }
     if (!userId) return d.resumes;
     const userResumes = d.resumes.filter((r) => !r.userId || String(r.userId) === String(userId));
-    return userResumes.length > 0 ? userResumes : d.resumes;
+    return userResumes;
   },
   getResumeById: (id) => {
     const d = loadData();
-    if (!d.resumes) d.resumes = getDefaultResumes();
+    if (!d.resumes) d.resumes = [];
     return d.resumes.find((r) => String(r._id) === String(id));
   },
   addResume: (resumeData) => {
     const d = loadData();
-    if (!d.resumes) d.resumes = getDefaultResumes();
+    if (!d.resumes) d.resumes = [];
     const newResume = {
       _id: "res-" + Date.now(),
       createdAt: new Date().toISOString(),

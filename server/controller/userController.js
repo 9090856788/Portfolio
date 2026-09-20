@@ -81,17 +81,17 @@ export const register = catchAsyncErrors(async (req, res, next) => {
             }
 
             const user = await User.create({
-                fullName: fullName || "Kanhu Charan Sahoo",
+                fullName: fullName || "Portfolio Owner",
                 email: cleanEmail,
-                phone: phone || "+91 9090856788",
-                aboutMe,
+                phone: phone || "",
+                aboutMe: aboutMe || "",
                 password,
-                portfolioURL,
-                githubURL,
-                instagramURL,
-                facebookURL,
-                twitterURL,
-                linkedInURL,
+                portfolioURL: portfolioURL || "",
+                githubURL: githubURL || "",
+                instagramURL: instagramURL || "",
+                facebookURL: facebookURL || "",
+                twitterURL: twitterURL || "",
+                linkedInURL: linkedInURL || "",
                 avatar: avatarData,
                 resume: resumeData,
             });
@@ -122,10 +122,10 @@ export const login = catchAsyncErrors(async (req, res, next) => {
             const user = await User.findOne({ email: cleanEmail }).select("+password");
             if (user) {
                 const isPasswordMatched = await user.comparePassword(password);
-                if (isPasswordMatched || (password === "admin123" && (cleanEmail === "admin@gmail.com" || cleanEmail === "kanhucharansahoo595@gmail.com"))) {
+                if (isPasswordMatched) {
                     DataStore.updateUser({
                         _id: user._id,
-                        fullName: user.fullName || "Admin",
+                        fullName: user.fullName || "Portfolio Owner",
                         email: user.email,
                         phone: user.phone || "",
                         role: user.role || "",
@@ -138,7 +138,7 @@ export const login = catchAsyncErrors(async (req, res, next) => {
                         twitterURL: user.twitterURL || "",
                         linkedInURL: user.linkedInURL || "",
                     });
-                    return generateJwtToken(user, "Welcome back, Admin!", 200, res);
+                    return generateJwtToken(user, "Welcome back!", 200, res);
                 }
                 return next(new ErrorHandler("Incorrect password. Please try again.", 401));
             }
@@ -150,19 +150,16 @@ export const login = catchAsyncErrors(async (req, res, next) => {
     // 2. Check DataStore Admin Registry
     const storeAdmin = DataStore.findAdminUser(cleanEmail);
     if (storeAdmin) {
-        const isMatched =
-            storeAdmin.password === password ||
-            (password === "admin123" && (cleanEmail === "admin@gmail.com" || cleanEmail === "kanhucharansahoo595@gmail.com")) ||
-            password === "demo123";
+        const isMatched = storeAdmin.password === password;
 
         if (!isMatched) {
             return next(new ErrorHandler("Incorrect password. Please try again.", 401));
         }
 
         const tokenPayload = {
-            _id: storeAdmin._id || "admin-master",
+            _id: storeAdmin._id || ("user-" + Date.now()),
             email: storeAdmin.email,
-            fullName: storeAdmin.fullName || "Admin",
+            fullName: storeAdmin.fullName || "Portfolio Owner",
             phone: storeAdmin.phone || "",
             role: storeAdmin.role || "",
             location: storeAdmin.location || "",
@@ -177,34 +174,17 @@ export const login = catchAsyncErrors(async (req, res, next) => {
         // If MongoDB is connected and user is missing in Mongo, sync to DB
         if (isDbConnected()) {
             User.create({
-                fullName: storeAdmin.fullName || "Admin",
+                fullName: storeAdmin.fullName || "Portfolio Owner",
                 email: cleanEmail,
                 phone: storeAdmin.phone || "",
                 password: password,
             }).catch(() => {});
         }
 
-        return generateJwtToken(tokenPayload, "Welcome back, Admin!", 200, res);
+        return generateJwtToken(tokenPayload, "Welcome back!", 200, res);
     }
 
-    // 3. Fallback for test master credentials
-    if (cleanEmail === "admin@gmail.com" && password === "admin123") {
-        const adminPayload = {
-            _id: "admin-master",
-            email: "admin@gmail.com",
-            fullName: "Admin",
-            phone: "",
-            role: "",
-            location: "",
-            aboutMe: "",
-            avatar: { public_id: "", url: "" },
-            resume: { public_id: "", url: "" },
-        };
-        DataStore.updateUser(adminPayload);
-        return generateJwtToken(adminPayload, "Welcome back, Admin!", 200, res);
-    }
-
-    return next(new ErrorHandler("No admin user found with this email.", 404));
+    return next(new ErrorHandler("No account found with this email. Please sign up first.", 404));
 });
 
 /**
@@ -324,6 +304,14 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         role: req.body.role,
         location: req.body.location,
     };
+
+    if (req.body.services !== undefined) {
+        try {
+            newUserData.services = typeof req.body.services === "string" ? JSON.parse(req.body.services) : req.body.services;
+        } catch {
+            newUserData.services = [];
+        }
+    }
 
     Object.keys(newUserData).forEach(
         (key) => newUserData[key] === undefined && delete newUserData[key]
@@ -452,7 +440,7 @@ export const getUserPortfolioDetails = catchAsyncErrors(async (req, res, next) =
     }
 
     if (isDbConnected()) {
-        const user = (await User.findOne({ email: "admin@gmail.com" })) || (await User.findOne());
+        const user = await User.findOne();
         if (user) {
             return res.status(200).json({
                 success: true,

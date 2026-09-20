@@ -17,33 +17,9 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
     token = req.cookies.token;
   }
 
-  // Pre-configured / active dev admin tokens for instant local testing and seamless access
-  const isDevToken =
-    token === "demo_admin_jwt_token_2026" ||
-    token === "admin_jwt_token_active" ||
-    token === "portfolio_admin_token" ||
-    (typeof token === "string" && (token.startsWith("admin_") || token.startsWith("demo_")));
-
-  if (isDevToken) {
-    const storeAdmin = DataStore.getUser() || {
-      _id: "admin-master",
-      id: "admin-master",
-      email: "kanhucharansahoo595@gmail.com",
-      fullName: "Kanhu Charan Sahoo",
-      role: "Administrator",
-    };
-    req.user = storeAdmin;
-    return next();
-  }
-
-  // If no token was provided, allow local testing by checking DataStore admin
+  // 1. Check if token exists
   if (!token) {
-    const localAdmin = DataStore.getUser();
-    if (localAdmin) {
-      req.user = localAdmin;
-      return next();
-    }
-    return next(new ErrorHandler("User not Authenticated!", 401));
+    return next(new ErrorHandler("User not Authenticated! Please sign in to access the studio.", 401));
   }
 
   // 2. Verify or safely decode JWT session token
@@ -53,8 +29,6 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   try {
     decoded = jwt.verify(token, secret);
   } catch (verifyErr) {
-    // If verification fails (e.g. token expired, or signed with different key across dev restarts),
-    // safely decode the payload so the user's local CRUD testing is not interrupted
     decoded = jwt.decode(token);
   }
 
@@ -74,26 +48,20 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
       }
     }
 
-    // Resolve admin from DataStore
+    // Resolve user from DataStore
     const storeAdmin =
       (decoded.email && DataStore.findAdminUser(decoded.email)) ||
       (userId && DataStore.getUserById(userId)) ||
       DataStore.getUser();
 
     req.user = {
-      _id: storeAdmin?._id || userId || "admin-master",
-      id: storeAdmin?._id || userId || "admin-master",
-      email: storeAdmin?.email || decoded.email || "kanhucharansahoo595@gmail.com",
-      fullName: storeAdmin?.fullName || decoded.fullName || "Kanhu Charan Sahoo",
-      role: storeAdmin?.role || "Administrator",
+      _id: storeAdmin?._id || userId || "user-active",
+      id: storeAdmin?._id || userId || "user-active",
+      email: storeAdmin?.email || decoded.email || "",
+      fullName: storeAdmin?.fullName || decoded.fullName || "Portfolio Owner",
+      role: storeAdmin?.role || "Portfolio Creator",
+      phone: storeAdmin?.phone || "",
     };
-    return next();
-  }
-
-  // Fallback for local development testing: if an admin user is loaded in DataStore, allow access
-  const fallbackAdmin = DataStore.getUser();
-  if (fallbackAdmin) {
-    req.user = fallbackAdmin;
     return next();
   }
 

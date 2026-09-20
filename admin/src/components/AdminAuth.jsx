@@ -93,15 +93,9 @@ const AdminAuth = () => {
     }
   };
 
-  // Fill default test credentials
-  const fillTestCredentials = () => {
-    setFormData((prev) => ({
-      ...prev,
-      email: "admin@gmail.com",
-      password: "admin123",
-    }));
-    setErrorMsg("");
-  };
+  // Registration Success Modal state
+  const [showRegSuccessModal, setShowRegSuccessModal] = useState(false);
+  const [registeredUserInfo, setRegisteredUserInfo] = useState(null);
 
   // 1. Handle Login
   const handleLogin = async (e) => {
@@ -118,14 +112,14 @@ const AdminAuth = () => {
         loginSuccess({
           token: res.token || "admin_jwt_token_active",
           user: res.user || {
-            fullName: "Admin",
+            fullName: formData.fullName || "User",
             email: formData.email,
-            phone: "",
-            role: "Administrator",
+            phone: formData.phone || "",
+            role: "Portfolio Owner",
           },
         })
       );
-      dispatch(setToast({ type: "success", message: "Welcome to Admin Studio!" }));
+      dispatch(setToast({ type: "success", message: "Welcome to your Portfolio & Resume Studio!" }));
     } catch (err) {
       setErrorMsg(err.message || "Invalid email or password.");
     } finally {
@@ -133,7 +127,7 @@ const AdminAuth = () => {
     }
   };
 
-  // 2. Handle Register (Create Admin)
+  // 2. Handle Register (User Registration)
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
@@ -151,26 +145,41 @@ const AdminAuth = () => {
     setLoading(true);
     setErrorMsg("");
     try {
-      const res = await adminRegister({
-        fullName: formData.fullName || "Admin",
-        email: formData.email,
-        phone: formData.phone || "",
+      const payload = {
+        fullName: formData.fullName || "User",
+        email: formData.email.trim(),
+        phone: formData.phone ? formData.phone.trim() : "",
         password: formData.password,
+      };
+
+      await adminRegister(payload);
+
+      // Save registered user details for prefilling login form & modal
+      setRegisteredUserInfo({
+        fullName: payload.fullName,
+        email: payload.email,
+        phone: payload.phone,
       });
+
+      // Clear password & confirmPassword, keep email, fullName, and phone prefilled for login
+      setFormData((prev) => ({
+        ...prev,
+        password: "",
+        confirmPassword: "",
+      }));
+
+      // Show success toast
       dispatch(
-        loginSuccess({
-          token: res.token || "admin_jwt_token_active",
-          user: res.user || {
-            fullName: formData.fullName || "Admin",
-            email: formData.email,
-            phone: formData.phone || "",
-            role: "Administrator",
-          },
+        setToast({
+          type: "success",
+          message: "Registration successful! You can now sign in to access your dashboard.",
         })
       );
-      dispatch(setToast({ type: "success", message: "Admin credentials established!" }));
+
+      // Open Success Modal
+      setShowRegSuccessModal(true);
     } catch (err) {
-      setErrorMsg(err.message || "Failed to create admin credentials.");
+      setErrorMsg(err.message || "Failed to complete registration. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -437,43 +446,6 @@ const AdminAuth = () => {
           {/* VIEW: LOGIN */}
           {mode === "login" && (
             <form onSubmit={handleLogin}>
-              {/* Quick Fill Test Admin Badge */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 12px",
-                  borderRadius: 10,
-                  background: themeStyles.pillBg,
-                  border: `1px solid ${themeStyles.pillBorder}`,
-                  color: themeStyles.pillText,
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                  marginBottom: 18,
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Sparkles size={14} />
-                  <span>Test Admin: admin@gmail.com</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={fillTestCredentials}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "inherit",
-                    textDecoration: "underline",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    padding: 0,
-                  }}
-                >
-                  Fill
-                </button>
-              </div>
-
               <div style={{ marginBottom: "16px" }}>
                 <label
                   htmlFor="admin-login-email"
@@ -500,7 +472,7 @@ const AdminAuth = () => {
                     onChange={handleChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    placeholder="admin@gmail.com"
+                    placeholder="name@example.com"
                     required
                     style={{
                       width: "100%",
@@ -630,7 +602,7 @@ const AdminAuth = () => {
                   color: themeStyles.footerText,
                 }}
               >
-                Need to create admin account?{" "}
+                Don't have an account yet?{" "}
                 <button
                   type="button"
                   onClick={() => {
@@ -647,7 +619,7 @@ const AdminAuth = () => {
                     padding: 0,
                   }}
                 >
-                  Create Admin
+                  Create Account
                 </button>
               </div>
             </form>
@@ -682,7 +654,7 @@ const AdminAuth = () => {
                     onChange={handleChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    placeholder="e.g. Admin User"
+                    placeholder="e.g. John Doe"
                     required
                     style={{
                       width: "100%",
@@ -725,7 +697,7 @@ const AdminAuth = () => {
                     onChange={handleChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    placeholder="e.g. admin@gmail.com"
+                    placeholder="e.g. user@example.com"
                     required
                     style={{
                       width: "100%",
@@ -879,7 +851,7 @@ const AdminAuth = () => {
                   boxShadow: "0 4px 15px rgba(16, 185, 129, 0.35)",
                 }}
               >
-                <span>{loading ? "Creating Account..." : "Create Admin Credentials"}</span>
+                <span>{loading ? "Creating Account..." : "Create Account"}</span>
                 <ShieldCheck size={18} />
               </button>
 
@@ -891,7 +863,7 @@ const AdminAuth = () => {
                   color: themeStyles.footerText,
                 }}
               >
-                Already have credentials?{" "}
+                Already have an account?{" "}
                 <button
                   type="button"
                   onClick={() => {
@@ -1207,6 +1179,148 @@ const AdminAuth = () => {
           )}
         </div>
       </motion.div>
+
+      {/* Registration Success Confirmation Modal */}
+      <AnimatePresence>
+        {showRegSuccessModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.65)",
+              backdropFilter: "blur(6px)",
+              zIndex: 100,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              style={{
+                width: "100%",
+                maxWidth: "460px",
+                background: themeStyles.cardBg,
+                border: themeStyles.cardBorder,
+                borderRadius: "20px",
+                padding: "32px 28px",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.45)",
+                textAlign: "center",
+                position: "relative",
+              }}
+            >
+              {/* Success Icon */}
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 20px",
+                  color: "#ffffff",
+                  boxShadow: "0 8px 24px rgba(16, 185, 129, 0.35)",
+                }}
+              >
+                <CheckCircle2 size={36} strokeWidth={2.5} />
+              </div>
+
+              {/* Title */}
+              <h2
+                style={{
+                  fontSize: "1.35rem",
+                  fontWeight: 700,
+                  color: themeStyles.headingColor,
+                  margin: "0 0 10px",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Registration Successful!
+              </h2>
+
+              {/* Description */}
+              <p
+                style={{
+                  fontSize: "0.92rem",
+                  color: themeStyles.subheadingColor,
+                  lineHeight: 1.5,
+                  margin: "0 0 20px",
+                }}
+              >
+                Registration successful! Now you can sign in to access your dashboard for creating your Portfolio.
+              </p>
+
+              {/* Account Summary */}
+              {registeredUserInfo && (
+                <div
+                  style={{
+                    background: isDark ? "rgba(255, 255, 255, 0.04)" : "#f8fafc",
+                    border: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #e2e8f0",
+                    borderRadius: "12px",
+                    padding: "12px 16px",
+                    marginBottom: "24px",
+                    textAlign: "left",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <div style={{ color: themeStyles.labelColor, fontWeight: 600, marginBottom: 4 }}>
+                    Account Details:
+                  </div>
+                  <div style={{ color: themeStyles.subheadingColor, display: "flex", flexDirection: "column", gap: 3 }}>
+                    <div><span style={{ fontWeight: 500, color: themeStyles.labelColor }}>Name:</span> {registeredUserInfo.fullName}</div>
+                    <div><span style={{ fontWeight: 500, color: themeStyles.labelColor }}>Email:</span> {registeredUserInfo.email}</div>
+                    {registeredUserInfo.phone && (
+                      <div><span style={{ fontWeight: 500, color: themeStyles.labelColor }}>Phone:</span> {registeredUserInfo.phone}</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Redirect to Sign In Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRegSuccessModal(false);
+                  setMode("login");
+                  setErrorMsg("");
+                  setInfoMsg("Registration successful. Enter your password to sign in.");
+                }}
+                style={{
+                  width: "100%",
+                  padding: "13px 20px",
+                  borderRadius: "12px",
+                  border: "none",
+                  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  boxShadow: "0 6px 20px rgba(99, 102, 241, 0.4)",
+                }}
+              >
+                <span>Sign In to Access Dashboard</span>
+                <ArrowRight size={18} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

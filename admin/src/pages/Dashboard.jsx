@@ -120,6 +120,7 @@ const Dashboard = () => {
         ...prev,
         fullName: authUser.fullName || "",
         email: authUser.email || "",
+        phone: authUser.phone || "",
       }));
     }
   }, [profile, authUser]);

@@ -12,9 +12,9 @@ import {
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import SendIcon from "@mui/icons-material/Send";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { sendContactMessage } from "../api/portfolioApi";
+import { sendContactMessage, fetchUserProfile } from "../api/portfolioApi";
 
 /**
  * ContactForm component.
@@ -25,6 +25,15 @@ const ContactForm = () => {
   const { username } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDarkMode = theme.palette.mode === "dark";
+
+  const { data: user } = useQuery({
+    queryKey: ["portfolioUser", username],
+    queryFn: () => fetchUserProfile(username),
+  });
+
+  const userEmail = user?.email?.trim() || "";
+  const userPhone = user?.phone?.trim() || "";
+  const hasBadges = Boolean(userEmail || userPhone);
 
   const [formData, setFormData] = useState({
     senderName: "",
@@ -70,115 +79,136 @@ const ContactForm = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      {/* Phone & Email Section */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-          gap: 2,
-          padding: 2,
-          borderRadius: "14px",
-          bgcolor: theme.palette.background.default,
-          border: `1px solid ${theme.palette.divider}`,
-          boxShadow: isDarkMode
-            ? `inset 3px 3px 8px ${theme.palette.grey[900]}, inset -3px -3px 8px ${theme.palette.grey[800]}`
-            : `inset 3px 3px 8px ${theme.palette.grey[300]}, inset -3px -3px 8px ${theme.palette.grey[100]}`,
-          mb: 3,
-        }}
-      >
-        {/* Email Quick Badge */}
+      {/* Phone & Email Section - only show if configured in admin */}
+      {hasBadges && (
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
+            display: "grid",
+            gridTemplateColumns: userEmail && userPhone && !isMobile ? "1fr 1fr" : "1fr",
             gap: 2,
             padding: 2,
-            borderRadius: "12px",
-            bgcolor: theme.palette.background.paper,
+            borderRadius: "14px",
+            bgcolor: theme.palette.background.default,
             border: `1px solid ${theme.palette.divider}`,
-            boxShadow: cardShadow,
+            boxShadow: isDarkMode
+              ? `inset 3px 3px 8px ${theme.palette.grey[900]}, inset -3px -3px 8px ${theme.palette.grey[800]}`
+              : `inset 3px 3px 8px ${theme.palette.grey[300]}, inset -3px -3px 8px ${theme.palette.grey[100]}`,
+            mb: 3,
           }}
         >
-          <Box
-            sx={{
-              width: 42,
-              height: 42,
-              borderRadius: "10px",
-              bgcolor: theme.palette.background.default,
-              border: `1px solid ${theme.palette.divider}`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <EmailIcon sx={{ color: "#ef4444", fontSize: 24 }} />
-          </Box>
-          <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography variant="caption" sx={{ textTransform: "uppercase", fontWeight: 700, color: "text.secondary", letterSpacing: "0.04em", display: "block", mb: 0.2 }}>
-              Email Address
-            </Typography>
-            <Typography
-              component="a"
-              href="mailto:kanhucharansahoo595@gmail.com"
-              variant="body2"
+          {/* Email Quick Badge */}
+          {userEmail && (
+            <Box
               sx={{
-                fontWeight: 600,
-                color: "text.primary",
-                textDecoration: "none",
-                wordBreak: "break-word",
-                overflowWrap: "anywhere",
-                lineHeight: 1.35,
-                display: "block",
-                transition: "color 0.2s ease",
-                "&:hover": {
-                  color: isDarkMode ? "#a5b4fc" : "#4f46e5",
-                },
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                padding: 2,
+                borderRadius: "12px",
+                bgcolor: theme.palette.background.paper,
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: cardShadow,
               }}
             >
-              kanhucharansahoo595@gmail.com
-            </Typography>
-          </Box>
-        </Box>
+              <Box
+                sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: "10px",
+                  bgcolor: theme.palette.background.default,
+                  border: `1px solid ${theme.palette.divider}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <EmailIcon sx={{ color: "#ef4444", fontSize: 24 }} />
+              </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="caption" sx={{ textTransform: "uppercase", fontWeight: 700, color: "text.secondary", letterSpacing: "0.04em", display: "block", mb: 0.2 }}>
+                  Email Address
+                </Typography>
+                <Typography
+                  component="a"
+                  href={`mailto:${userEmail}`}
+                  variant="body2"
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.primary",
+                    textDecoration: "none",
+                    wordBreak: "break-word",
+                    overflowWrap: "anywhere",
+                    lineHeight: 1.35,
+                    display: "block",
+                    transition: "color 0.2s ease",
+                    "&:hover": {
+                      color: isDarkMode ? "#a5b4fc" : "#4f46e5",
+                    },
+                  }}
+                >
+                  {userEmail}
+                </Typography>
+              </Box>
+            </Box>
+          )}
 
-        {/* Phone Quick Badge */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            padding: 2,
-            borderRadius: "12px",
-            bgcolor: theme.palette.background.paper,
-            border: `1px solid ${theme.palette.divider}`,
-            boxShadow: cardShadow,
-          }}
-        >
-          <Box
-            sx={{
-              width: 42,
-              height: 42,
-              borderRadius: "10px",
-              bgcolor: theme.palette.background.default,
-              border: `1px solid ${theme.palette.divider}`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <PhoneIcon sx={{ color: "#3b82f6", fontSize: 24 }} />
-          </Box>
-          <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography variant="caption" sx={{ textTransform: "uppercase", fontWeight: 700, color: "text.secondary", letterSpacing: "0.04em" }}>
-              Direct Contact
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600, color: "text.primary" }}>
-              +91 9090856788
-            </Typography>
-          </Box>
+          {/* Phone Quick Badge */}
+          {userPhone && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                padding: 2,
+                borderRadius: "12px",
+                bgcolor: theme.palette.background.paper,
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: cardShadow,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: "10px",
+                  bgcolor: theme.palette.background.default,
+                  border: `1px solid ${theme.palette.divider}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <PhoneIcon sx={{ color: "#3b82f6", fontSize: 24 }} />
+              </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="caption" sx={{ textTransform: "uppercase", fontWeight: 700, color: "text.secondary", letterSpacing: "0.04em" }}>
+                  Direct Contact
+                </Typography>
+                <Typography
+                  component="a"
+                  href={`tel:${userPhone}`}
+                  variant="body2"
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.primary",
+                    textDecoration: "none",
+                    lineHeight: 1.35,
+                    display: "block",
+                    transition: "color 0.2s ease",
+                    "&:hover": {
+                      color: isDarkMode ? "#a5b4fc" : "#4f46e5",
+                    },
+                  }}
+                >
+                  {userPhone}
+                </Typography>
+              </Box>
+            </Box>
+          )}
         </Box>
-      </Box>
+      )}
 
       {/* Form Card */}
       <Box
