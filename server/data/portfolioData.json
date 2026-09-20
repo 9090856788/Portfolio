@@ -1,15 +1,15 @@
 {
   "user": {
     "_id": "admin-master",
-    "fullName": "Kanhu Charan Sahoo",
+    "fullName": "Admin",
     "email": "admin@gmail.com",
     "phone": "",
     "aboutMe": "",
     "role": "",
     "location": "",
     "avatar": {
-      "public_id": "avatar_1789824314058",
-      "url": "/src/img/Kanhu.jpg"
+      "public_id": "",
+      "url": ""
     },
     "resume": {
       "public_id": "",
@@ -28,20 +28,43 @@
       "_id": "admin-master",
       "email": "admin@gmail.com",
       "password": "admin123",
-      "fullName": "Kanhu Charan Sahoo",
+      "fullName": "Admin",
       "phone": "",
       "role": "",
       "location": "",
       "aboutMe": "",
       "avatar": {
-        "public_id": "avatar_1789824314058",
-        "url": "/src/img/Kanhu.jpg"
+        "public_id": "",
+        "url": ""
       },
       "resume": {
         "public_id": "",
         "url": ""
       },
-      "username": "admin"
+      "username": "admin",
+      "portfolioURL": "",
+      "githubURL": "",
+      "twitterURL": "",
+      "linkedInURL": ""
+    },
+    {
+      "_id": "admin-1789899217993",
+      "username": "sunita",
+      "fullName": "Sunita Mandal",
+      "email": "sunita@143",
+      "phone": "6370036862",
+      "password": "Sunita143",
+      "role": "",
+      "location": "",
+      "aboutMe": "",
+      "avatar": {
+        "public_id": "",
+        "url": ""
+      },
+      "resume": {
+        "public_id": "",
+        "url": ""
+      }
     }
   ],
   "projects": [],

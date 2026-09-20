@@ -1,6 +1,5 @@
 {
-  "name": "Kanhu Charan Sahoo Portfolio",
-  "description": "MakeYourCV - Multi-user SaaS Resume & Portfolio platform featuring customizable ATS-friendly resumes, multiple professional templates, portfolio website builder, and interactive admin studio.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "name": "Portfolio",
+  "description": "Multi-user SaaS Resume & Portfolio platform featuring customizable ATS-friendly resumes, multiple professional templates, portfolio website builder, and interactive admin studio.",
+  "requestFramePermissions": []
 }

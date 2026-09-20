@@ -32,9 +32,7 @@ const Home = ({ toggleDarkMode }) => {
   // Split bio text into paragraphs/bullets
   const aboutBullets = user?.aboutMe
     ? user.aboutMe.split("\n\n").filter(Boolean)
-    : [
-        "Welcome to my personal developer portfolio! Manage all biography, skills, milestones, projects and profile photos in real time via the Admin Studio.",
-      ];
+    : []
 
   const mainContainerShadow = isDarkMode
     ? `8px 8px 16px ${theme.palette.grey[900]}, -8px -8px 16px ${theme.palette.grey[800]}`

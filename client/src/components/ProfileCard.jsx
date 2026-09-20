@@ -44,8 +44,8 @@ const ProfileCard = () => {
   });
 
   const avatarSrc = user?.avatar?.url || "";
-  const fullName = user?.fullName || "Admin";
-  const roleTitle = user?.role || "Developer & Engineer";
+  const fullName = user?.fullName || "Not specified";
+  const roleTitle = user?.role || "Not specified";
   const phone = user?.phone || "Not specified";
   const email = user?.email || "admin@gmail.com";
   const location = user?.location || "Not specified";
@@ -54,19 +54,19 @@ const ProfileCard = () => {
   const socialMediaLinks = [
     {
       name: "LinkedIn",
-      url: user?.linkedInURL || "https://linkedin.com",
+      url: user?.linkedInURL,
       icon: <LinkedIn fontSize="small" />,
       color: "#0077b5",
     },
     {
       name: "Twitter",
-      url: user?.twitterURL || "https://twitter.com",
+      url: user?.twitterURL,
       icon: <Twitter fontSize="small" />,
       color: "#1da1f2",
     },
     {
       name: "GitHub",
-      url: user?.githubURL || "https://github.com",
+      url: user?.githubURL,
       icon: <GitHub fontSize="small" />,
       color: isDarkMode ? "#f8fafc" : "#1e293b",
     },
