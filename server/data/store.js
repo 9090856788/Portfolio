@@ -41,16 +41,74 @@ export const DataStore = {
   // User / Profile
   getUser: () => {
     const d = loadData();
+    if (d.user && !d.user.username) {
+      d.user.username = (d.user.email || "admin").split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
     return d.user;
+  },
+  getUserByUsername: (username) => {
+    const d = loadData();
+    const clean = String(username || "").toLowerCase().trim();
+    if (!clean) return d.user;
+
+    const foundAdmin = (d.admins || []).find(
+      (a) =>
+        (a.username && a.username.toLowerCase() === clean) ||
+        (a.email && a.email.split("@")[0].toLowerCase() === clean)
+    );
+    if (foundAdmin) return foundAdmin;
+
+    if (
+      d.user &&
+      ((d.user.username && d.user.username.toLowerCase() === clean) ||
+        (d.user.email && d.user.email.split("@")[0].toLowerCase() === clean))
+    ) {
+      return d.user;
+    }
+
+    return null;
+  },
+  getUserById: (id) => {
+    const d = loadData();
+    if (!id) return d.user;
+    const found = (d.admins || []).find((a) => String(a._id) === String(id));
+    if (found) return found;
+    return d.user && String(d.user._id) === String(id) ? d.user : d.user;
   },
   updateUser: (updates) => {
     const d = loadData();
     d.user = {
       ...d.user,
       ...updates,
-      avatar: updates.avatar ? updates.avatar : d.user.avatar,
-      resume: updates.resume ? updates.resume : d.user.resume,
     };
+    if ("avatar" in updates) {
+      d.user.avatar = updates.avatar || { public_id: "", url: "" };
+    }
+    if ("resume" in updates) {
+      d.user.resume = updates.resume || { public_id: "", url: "" };
+    }
+    if (d.user.email && !d.user.username) {
+      d.user.username = d.user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+    // Also sync the matching admin entry in d.admins so getUserByUsername and getUserById remain synced
+    if (Array.isArray(d.admins)) {
+      d.admins = d.admins.map((a) => {
+        const isMatch =
+          (d.user._id && String(a._id) === String(d.user._id)) ||
+          (d.user.email && a.email && a.email.toLowerCase() === d.user.email.toLowerCase()) ||
+          a.username === "admin" ||
+          a.username === d.user.username;
+        if (isMatch) {
+          return {
+            ...a,
+            ...updates,
+            avatar: "avatar" in updates ? (updates.avatar || { public_id: "", url: "" }) : a.avatar,
+            resume: "resume" in updates ? (updates.resume || { public_id: "", url: "" }) : a.resume,
+          };
+        }
+        return a;
+      });
+    }
     saveData();
     return d.user;
   },
@@ -62,6 +120,7 @@ export const DataStore = {
       d.admins = [
         {
           _id: "admin-master",
+          username: "admin",
           email: "admin@gmail.com",
           password: "admin123",
           fullName: "Admin",
@@ -77,11 +136,20 @@ export const DataStore = {
     }
 
     const foundInAdmins = d.admins.find((a) => (a.email || "").toLowerCase() === cleanEmail);
-    if (foundInAdmins) return foundInAdmins;
+    if (foundInAdmins) {
+      if (!foundInAdmins.username) {
+        foundInAdmins.username = foundInAdmins.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+      }
+      return foundInAdmins;
+    }
 
     if (d.user && d.user.email && d.user.email.toLowerCase() === cleanEmail) {
+      if (!d.user.username) {
+        d.user.username = d.user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+      }
       return {
         _id: d.user._id,
+        username: d.user.username,
         email: d.user.email,
         password: d.user.password || "admin123",
         fullName: d.user.fullName,
@@ -100,6 +168,7 @@ export const DataStore = {
       d.admins = [
         {
           _id: "admin-master",
+          username: "admin",
           email: "admin@gmail.com",
           password: "admin123",
           fullName: "Admin",
@@ -114,8 +183,11 @@ export const DataStore = {
     }
     const cleanEmail = String(userData.email || "").toLowerCase().trim();
     const existingIndex = d.admins.findIndex((a) => (a.email || "").toLowerCase() === cleanEmail);
+    const generatedUsername = userData.username || cleanEmail.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+
     const newAdmin = {
       _id: existingIndex >= 0 ? d.admins[existingIndex]._id : "admin-" + Date.now(),
+      username: generatedUsername,
       fullName: userData.fullName || "Admin",
       email: cleanEmail,
       phone: userData.phone || "",
@@ -133,8 +205,9 @@ export const DataStore = {
       d.admins.push(newAdmin);
     }
 
-    if (d.user) {
+    if (d.user && (!d.user.email || d.user.email === cleanEmail)) {
       d.user._id = newAdmin._id;
+      d.user.username = newAdmin.username;
       d.user.fullName = newAdmin.fullName;
       d.user.email = newAdmin.email;
       d.user.phone = newAdmin.phone;
@@ -330,13 +403,15 @@ export const DataStore = {
   },
 
   // Resumes
-  getResumes: () => {
+  getResumes: (userId) => {
     const d = loadData();
     if (!d.resumes || d.resumes.length === 0) {
       d.resumes = getDefaultResumes();
       saveData();
     }
-    return d.resumes;
+    if (!userId) return d.resumes;
+    const userResumes = d.resumes.filter((r) => !r.userId || String(r.userId) === String(userId));
+    return userResumes.length > 0 ? userResumes : d.resumes;
   },
   getResumeById: (id) => {
     const d = loadData();

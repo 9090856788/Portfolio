@@ -24,6 +24,7 @@ router.put("/update/password", isAuthenticated, updatePassword);
 
 // Public Portfolio Profile
 router.get("/profile/portfolio", getUserPortfolioDetails);
+router.get("/portfolio/:username", getUserPortfolioDetails);
 
 // Mobile OTP-based Password Reset & Forgot Password
 router.post("/password/forgot", sendPhoneOtp);

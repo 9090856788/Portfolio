@@ -329,26 +329,51 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         (key) => newUserData[key] === undefined && delete newUserData[key]
     );
 
+    // Avatar handling: Uploaded file > Explicit removal / clear > Valid URL string
+    const isRemovingAvatar =
+        req.body.removeAvatar === "true" ||
+        req.body.removeAvatar === true ||
+        req.body.avatarAction === "remove" ||
+        (req.body.avatarUrl === "" && !req.files?.avatar);
+
     if (req.files && req.files.avatar) {
         const avatarResult = await processUploadedFile(req.files.avatar, "avatar");
-        if (avatarResult) newUserData.avatar = avatarResult;
-    }
-
-    if (req.body.avatarUrl) {
+        if (avatarResult) {
+            newUserData.avatar = avatarResult;
+        }
+    } else if (isRemovingAvatar) {
+        newUserData.avatar = {
+            public_id: "",
+            url: "",
+        };
+    } else if (req.body.avatarUrl && typeof req.body.avatarUrl === "string" && req.body.avatarUrl.trim() !== "") {
         newUserData.avatar = {
             public_id: "avatar_" + Date.now(),
-            url: req.body.avatarUrl,
+            url: req.body.avatarUrl.trim(),
         };
     }
 
+    // Resume handling: Uploaded file > Explicit removal / clear > Valid URL string
+    const isRemovingResume =
+        req.body.removeResume === "true" ||
+        req.body.removeResume === true ||
+        req.body.resumeAction === "remove" ||
+        (req.body.resumeUrl === "" && !req.files?.resume);
+
     if (req.files && req.files.resume) {
         const resumeResult = await processUploadedFile(req.files.resume, "resume");
-        if (resumeResult) newUserData.resume = resumeResult;
-    }
-    if (req.body.resumeUrl) {
+        if (resumeResult) {
+            newUserData.resume = resumeResult;
+        }
+    } else if (isRemovingResume) {
+        newUserData.resume = {
+            public_id: "",
+            url: "",
+        };
+    } else if (req.body.resumeUrl && typeof req.body.resumeUrl === "string" && req.body.resumeUrl.trim() !== "") {
         newUserData.resume = {
             public_id: "resume_" + Date.now(),
-            url: req.body.resumeUrl,
+            url: req.body.resumeUrl.trim(),
         };
     }
 
@@ -360,6 +385,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
                 runValidators: true,
                 useFindAndModify: false,
             });
+            DataStore.updateUser(newUserData);
             return res.status(200).json({
                 success: true,
                 message: "Profile Updated!",
@@ -411,9 +437,20 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 /**
- * Get user profile details for portfolio client application
+ * Get user profile details for portfolio client application (supports /profile/portfolio and /portfolio/:username)
  */
 export const getUserPortfolioDetails = catchAsyncErrors(async (req, res, next) => {
+    const username = req.params.username || req.query.username;
+    if (username) {
+        const userByUsername = DataStore.getUserByUsername ? DataStore.getUserByUsername(username) : null;
+        if (userByUsername) {
+            return res.status(200).json({
+                success: true,
+                user: userByUsername,
+            });
+        }
+    }
+
     if (isDbConnected()) {
         const user = (await User.findOne({ email: "admin@gmail.com" })) || (await User.findOne());
         if (user) {

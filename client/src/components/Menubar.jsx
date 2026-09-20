@@ -35,19 +35,49 @@ const Menubar = ({ toggleDarkMode }) => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Client-facing public menu items only (No Admin)
+  // Determine current portfolio base path (/portfolio or /portfolio/:username)
+  const isPortfolio = location.pathname.startsWith("/portfolio");
+  const pathParts = location.pathname.split("/").filter(Boolean);
+  const reservedPortfolioPaths = ["resume", "project", "works", "contact"];
+  const usernameParam =
+    isPortfolio &&
+    pathParts.length >= 2 &&
+    !reservedPortfolioPaths.includes(pathParts[1])
+      ? pathParts[1]
+      : null;
+
+  const basePrefix = usernameParam ? `/portfolio/${usernameParam}` : isPortfolio ? "/portfolio" : "";
+
+  // Client-facing public menu items
   const menuItems = [
-    { icon: <HomeIcon fontSize="small" />, label: "Home", path: "/" },
-    { icon: <DescriptionIcon fontSize="small" />, label: "Resume", path: "/resume" },
-    { icon: <WorkIcon fontSize="small" />, label: "Works", path: "/project" },
-    { icon: <ContactMailIcon fontSize="small" />, label: "Contact", path: "/contact" },
+    { icon: <HomeIcon fontSize="small" />, label: "Home", path: basePrefix || "/portfolio" },
+    { icon: <DescriptionIcon fontSize="small" />, label: "Resume", path: `${basePrefix}/resume` },
+    { icon: <WorkIcon fontSize="small" />, label: "Works", path: `${basePrefix}/project` },
+    { icon: <ContactMailIcon fontSize="small" />, label: "Contact", path: `${basePrefix}/contact` },
   ];
 
   const handleDrawerToggle = () => {
     setDrawerOpen((prev) => !prev);
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    if (location.pathname === path) return true;
+    if (
+      (path === "/portfolio" || path === basePrefix) &&
+      (location.pathname === "/portfolio" ||
+        location.pathname === "/portfolio/" ||
+        (basePrefix && (location.pathname === `${basePrefix}/` || location.pathname === basePrefix)))
+    ) {
+      return true;
+    }
+    if (
+      (path === `${basePrefix}/project` || path === "/project") &&
+      (location.pathname === `${basePrefix}/works` || location.pathname === "/works")
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   // Neumorphic shadow aligned with theme
   const containerShadow = isDarkMode
@@ -175,6 +205,30 @@ const Menubar = ({ toggleDarkMode }) => {
       >
         {isDarkMode ? <Brightness7 fontSize="small" /> : <Brightness4 fontSize="small" />}
       </IconButton>
+
+      {/* MakeYourCV SaaS Portal link */}
+      <Box
+        id="btn-nav-makeyourcv"
+        onClick={() => navigate("/")}
+        sx={{
+          display: { xs: "none", md: "inline-flex" },
+          alignItems: "center",
+          gap: 0.8,
+          cursor: "pointer",
+          padding: "6px 14px",
+          ml: 1,
+          borderRadius: "10px",
+          background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+          color: "#ffffff",
+          fontWeight: 700,
+          fontSize: "0.82rem",
+          boxShadow: "0 2px 10px rgba(99, 102, 241, 0.3)",
+          transition: "transform 0.15s ease",
+          "&:hover": { transform: "scale(1.02)" },
+        }}
+      >
+        MakeYourCV
+      </Box>
 
       {/* Mobile Drawer */}
       <Drawer

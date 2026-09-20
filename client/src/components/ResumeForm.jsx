@@ -12,6 +12,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import { fetchSkills, fetchTimeline, fetchSoftware } from "../api/portfolioApi";
 import SubHeading from "./SubHeading";
 
@@ -21,22 +22,23 @@ import SubHeading from "./SubHeading";
  */
 const ResumeForm = () => {
   const theme = useTheme();
+  const { username } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDarkMode = theme.palette.mode === "dark";
 
   const { data: skills, isLoading: skillsLoading } = useQuery({
-    queryKey: ["skills"],
-    queryFn: fetchSkills,
+    queryKey: ["skills", username],
+    queryFn: () => fetchSkills(username),
   });
 
   const { data: timeline, isLoading: timelineLoading } = useQuery({
-    queryKey: ["timeline"],
-    queryFn: fetchTimeline,
+    queryKey: ["timeline", username],
+    queryFn: () => fetchTimeline(username),
   });
 
   const { data: software } = useQuery({
-    queryKey: ["software"],
-    queryFn: fetchSoftware,
+    queryKey: ["software", username],
+    queryFn: () => fetchSoftware(username),
   });
 
   // Separate education and experience

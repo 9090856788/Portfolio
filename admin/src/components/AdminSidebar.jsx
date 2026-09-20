@@ -147,7 +147,7 @@ const AdminSidebar = () => {
                       letterSpacing: "-0.02em",
                     }}
                   >
-                    Kanhu Studio
+                    MakeYourCV
                   </div>
                   <div
                     style={{
@@ -156,7 +156,7 @@ const AdminSidebar = () => {
                       fontWeight: 600,
                     }}
                   >
-                    Admin Workspace
+                    Resume & Studio
                   </div>
                 </motion.div>
               )}
@@ -269,6 +269,51 @@ const AdminSidebar = () => {
             <p style={{ fontSize: "0.75rem", color: "var(--admin-text-muted)", lineHeight: 1.4, margin: 0 }}>
               Unlock advanced analytics and insights.
             </p>
+          </div>
+        )}
+
+        {/* Public Portfolio & Home Links */}
+        {!isCollapsed && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <a
+              href="/portfolio"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "8px 12px",
+                borderRadius: 10,
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                color: "var(--admin-accent)",
+                textDecoration: "none",
+                background: "rgba(99, 102, 241, 0.08)",
+                border: "1px solid rgba(99, 102, 241, 0.2)",
+              }}
+            >
+              <span>View Public Portfolio</span>
+              <ExternalLink size={14} />
+            </a>
+            <a
+              href="/"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "8px 12px",
+                borderRadius: 10,
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                color: "var(--admin-text-muted)",
+                textDecoration: "none",
+                background: "transparent",
+              }}
+            >
+              <span>MakeYourCV Home</span>
+              <ExternalLink size={14} />
+            </a>
           </div>
         )}
 

@@ -19,8 +19,11 @@ import {
   LocationOn,
   Download,
   Person,
+  Share,
+  Check,
 } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import { fetchUserProfile } from "../api/portfolioApi";
 
 /**
@@ -32,10 +35,12 @@ import { fetchUserProfile } from "../api/portfolioApi";
 const ProfileCard = () => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
+  const { username } = useParams();
+  const [copiedLink, setCopiedLink] = React.useState(false);
 
   const { data: user, isLoading } = useQuery({
-    queryKey: ["portfolioUser"],
-    queryFn: fetchUserProfile,
+    queryKey: ["portfolioUser", username],
+    queryFn: () => fetchUserProfile(username),
   });
 
   const avatarSrc = user?.avatar?.url || "";
@@ -461,6 +466,37 @@ const ProfileCard = () => {
         }}
       >
         Download Resume
+      </Button>
+
+      {/* Share Portfolio Button */}
+      <Button
+        id="btn-share-portfolio"
+        variant="text"
+        fullWidth
+        startIcon={copiedLink ? <Check sx={{ fontSize: 18 }} /> : <Share sx={{ fontSize: 18 }} />}
+        onClick={() => {
+          const shareUrl = window.location.origin + (username ? `/portfolio/${username}` : "/portfolio");
+          navigator.clipboard.writeText(shareUrl);
+          setCopiedLink(true);
+          setTimeout(() => setCopiedLink(false), 2000);
+        }}
+        sx={{
+          mt: 1.2,
+          py: 0.9,
+          borderRadius: "14px",
+          bgcolor: theme.palette.background.paper,
+          color: copiedLink ? "#10b981" : isDarkMode ? "#cbd5e1" : "#64748b",
+          border: `1px solid ${theme.palette.divider}`,
+          fontWeight: 600,
+          fontSize: "0.82rem",
+          textTransform: "none",
+          transition: "all 0.2s ease",
+          "&:hover": {
+            bgcolor: isDarkMode ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.03)",
+          },
+        }}
+      >
+        {copiedLink ? "Link Copied!" : "Share Portfolio Link"}
       </Button>
     </Box>
   );

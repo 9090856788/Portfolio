@@ -242,21 +242,33 @@ const AdminHeader = ({ onToggleSidebar }) => {
             }}
             title={user?.fullName || "Admin Profile"}
           >
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#ffffff",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-              }}
-            >
-              {displayInitial}
-            </div>
+            {profile?.avatar?.url ? (
+              <img
+                src={profile.avatar.url}
+                alt={displayName}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                }}
+              >
+                {displayInitial}
+              </div>
+            )}
           </div>
 
           {profileDropdownOpen && (

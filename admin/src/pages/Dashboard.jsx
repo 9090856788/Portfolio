@@ -92,6 +92,8 @@ const Dashboard = () => {
 
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [avatarRemoved, setAvatarRemoved] = useState(false);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [statusNotice, setStatusNotice] = useState(null);
 
   useEffect(() => {
@@ -111,6 +113,8 @@ const Dashboard = () => {
         avatarUrl: profile.avatar?.url || "",
       });
       setAvatarPreview(profile.avatar?.url || "");
+      setAvatarRemoved(false);
+      setAvatarFile(null);
     } else if (authUser) {
       setFormData((prev) => ({
         ...prev,
@@ -134,11 +138,19 @@ const Dashboard = () => {
 
   const updateMutation = useMutation({
     mutationFn: updateAdminProfile,
-    onSuccess: () => {
+    onSuccess: (data) => {
       setStatusNotice({
         type: "success",
-        text: "Profile and photo updated successfully! Changes are live on your portfolio.",
+        text: "Profile updated successfully! Changes are live on your portfolio.",
       });
+      setAvatarFile(null);
+      setAvatarRemoved(false);
+      const updatedAvatarUrl = data?.user?.avatar?.url || "";
+      setAvatarPreview(updatedAvatarUrl);
+      setFormData((prev) => ({
+        ...prev,
+        avatarUrl: updatedAvatarUrl,
+      }));
       queryClient.invalidateQueries({ queryKey: ["adminProfile"] });
       queryClient.invalidateQueries({ queryKey: ["portfolioUser"] });
       setTimeout(() => setStatusNotice(null), 5000);
@@ -151,7 +163,52 @@ const Dashboard = () => {
   const handleAvatarFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setStatusNotice({
+          type: "error",
+          text: "Image file is too large. Please select an image under 10MB.",
+        });
+        e.target.value = "";
+        return;
+      }
       setAvatarFile(file);
+      setAvatarRemoved(false);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    e.target.value = "";
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      if (file.size > 10 * 1024 * 1024) {
+        setStatusNotice({
+          type: "error",
+          text: "Image file is too large. Please select an image under 10MB.",
+        });
+        return;
+      }
+      setAvatarFile(file);
+      setAvatarRemoved(false);
       const reader = new FileReader();
       reader.onload = () => {
         setAvatarPreview(reader.result);
@@ -163,6 +220,7 @@ const Dashboard = () => {
   const handleRemoveAvatar = () => {
     setAvatarFile(null);
     setAvatarPreview("");
+    setAvatarRemoved(true);
     setFormData((prev) => ({ ...prev, avatarUrl: "" }));
   };
 
@@ -183,22 +241,38 @@ const Dashboard = () => {
         avatarUrl: profile.avatar?.url || "",
       });
       setAvatarFile(null);
+      setAvatarRemoved(false);
       setAvatarPreview(profile.avatar?.url || "");
     }
   };
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
-    if (avatarFile) {
-      const payload = new FormData();
-      Object.keys(formData).forEach((k) => {
+    const payload = new FormData();
+    Object.keys(formData).forEach((k) => {
+      if (k === "avatarUrl") {
+        if (avatarRemoved) {
+          payload.append("avatarUrl", "");
+          payload.append("removeAvatar", "true");
+        } else if (!avatarFile && formData.avatarUrl) {
+          payload.append("avatarUrl", formData.avatarUrl);
+        }
+      } else {
         payload.append(k, formData[k] || "");
-      });
+      }
+    });
+
+    if (avatarFile) {
       payload.append("avatar", avatarFile);
-      updateMutation.mutate(payload);
-    } else {
-      updateMutation.mutate(formData);
+      payload.delete("avatarUrl");
     }
+
+    if (avatarRemoved) {
+      payload.append("removeAvatar", "true");
+      payload.set("avatarUrl", "");
+    }
+
+    updateMutation.mutate(payload);
   };
 
   const todayFormatted = new Intl.DateTimeFormat("en-US", {
@@ -711,6 +785,9 @@ const Dashboard = () => {
             >
               <div
                 className="neumorph-inset"
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
                 style={{
                   width: "100%",
                   aspectRatio: "1 / 1.15",
@@ -720,8 +797,16 @@ const Dashboard = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: 14,
-                  background: "var(--admin-bg)",
+                  marginBottom: 10,
+                  background: isDraggingOver ? "rgba(99, 102, 241, 0.12)" : "var(--admin-bg)",
+                  border: isDraggingOver
+                    ? "2px dashed var(--admin-accent)"
+                    : avatarFile
+                    ? "2px solid #10b981"
+                    : avatarRemoved
+                    ? "2px dashed #ef4444"
+                    : "1px solid transparent",
+                  transition: "all 0.2s ease",
                 }}
               >
                 {avatarPreview ? (
@@ -732,12 +817,58 @@ const Dashboard = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      opacity: avatarRemoved ? 0.3 : 1,
                     }}
                   />
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                    <User size={64} color="var(--admin-text-muted)" />
-                    <span style={{ fontSize: "0.75rem", color: "var(--admin-text-muted)" }}>Blank Profile Pic</span>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: 12 }}>
+                    <User size={56} color="var(--admin-text-muted)" />
+                    <span style={{ fontSize: "0.75rem", color: "var(--admin-text-muted)", textAlign: "center" }}>
+                      {isDraggingOver ? "Drop image here" : "No Profile Photo (Click below or drag & drop)"}
+                    </span>
+                  </div>
+                )}
+
+                {/* Staging indicator badge */}
+                {avatarFile && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      background: "rgba(16, 185, 129, 0.92)",
+                      color: "#fff",
+                      fontSize: "0.72rem",
+                      fontWeight: 600,
+                      padding: "4px 8px",
+                      borderRadius: 8,
+                      textAlign: "center",
+                      backdropFilter: "blur(4px)",
+                    }}
+                  >
+                    New Photo Staged
+                  </div>
+                )}
+
+                {avatarRemoved && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      background: "rgba(239, 68, 68, 0.92)",
+                      color: "#fff",
+                      fontSize: "0.72rem",
+                      fontWeight: 600,
+                      padding: "4px 8px",
+                      borderRadius: 8,
+                      textAlign: "center",
+                      backdropFilter: "blur(4px)",
+                    }}
+                  >
+                    Marked for Removal
                   </div>
                 )}
 
@@ -767,12 +898,13 @@ const Dashboard = () => {
                 </label>
               </div>
 
+              {/* Upload New Photo Button */}
               <label
                 className="btn-neumorph-primary"
                 style={{ width: "100%", justifyContent: "center", cursor: "pointer", marginBottom: 8 }}
               >
                 <Camera size={16} />
-                <span>Upload New Photo</span>
+                <span>{avatarFile ? "Change Staged Photo" : "Upload New Photo"}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -781,7 +913,22 @@ const Dashboard = () => {
                 />
               </label>
 
-              {avatarPreview && (
+              {/* Remove Photo or Undo Removal Button */}
+              {avatarRemoved ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAvatarRemoved(false);
+                    setAvatarPreview(profile?.avatar?.url || "");
+                    setFormData((prev) => ({ ...prev, avatarUrl: profile?.avatar?.url || "" }));
+                  }}
+                  className="btn-neumorph"
+                  style={{ width: "100%", justifyContent: "center", marginBottom: 8, color: "var(--admin-accent)" }}
+                >
+                  <RotateCcw size={15} />
+                  <span>Undo Remove</span>
+                </button>
+              ) : avatarPreview ? (
                 <button
                   type="button"
                   onClick={handleRemoveAvatar}
@@ -791,10 +938,10 @@ const Dashboard = () => {
                   <Trash2 size={15} />
                   <span>Remove Photo</span>
                 </button>
-              )}
+              ) : null}
 
               <div style={{ fontSize: "0.74rem", color: "var(--admin-text-muted)", textAlign: "center" }}>
-                Stored directly in MongoDB. Supports PNG, JPG or WEBP. Max 5MB.
+                Drag & drop or browse. PNG, JPG or WEBP up to 10MB.
               </div>
             </div>
 

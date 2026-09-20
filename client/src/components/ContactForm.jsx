@@ -13,6 +13,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import SendIcon from "@mui/icons-material/Send";
 import { useMutation } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import { sendContactMessage } from "../api/portfolioApi";
 
 /**
@@ -21,6 +22,7 @@ import { sendContactMessage } from "../api/portfolioApi";
  */
 const ContactForm = () => {
   const theme = useTheme();
+  const { username } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDarkMode = theme.palette.mode === "dark";
 
@@ -33,7 +35,7 @@ const ContactForm = () => {
   const [feedback, setFeedback] = useState(null);
 
   const mutation = useMutation({
-    mutationFn: sendContactMessage,
+    mutationFn: (data) => sendContactMessage(data, username),
     onSuccess: () => {
       setFeedback({
         type: "success",

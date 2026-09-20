@@ -2,6 +2,7 @@
 import React from "react";
 import { Box, Typography, useTheme, useMediaQuery, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
 import InfoCard from "../components/InfoCard";
@@ -17,14 +18,15 @@ import frontendImage from "../img/frontendImage.jpg";
  */
 const Home = ({ toggleDarkMode }) => {
   const theme = useTheme();
+  const { username } = useParams();
   // Stack layout vertically on mobile and tablet to give full width to the menubar and content
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isDarkMode = theme.palette.mode === "dark";
 
   const { data: user, isLoading } = useQuery({
-    queryKey: ["portfolioUser"],
-    queryFn: fetchUserProfile,
+    queryKey: ["portfolioUser", username],
+    queryFn: () => fetchUserProfile(username),
   });
 
   // Split bio text into paragraphs/bullets

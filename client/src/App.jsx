@@ -1,6 +1,8 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider, CssBaseline, createTheme, Box } from "@mui/material";
+import SaaSLandingPage from "./pages/SaaSLandingPage.jsx";
 import Home from "./pages/Home.jsx";
 import Resume from "./pages/Resume.jsx";
 import Project from "./pages/Project.jsx";
@@ -23,11 +25,141 @@ function AdminRedirect() {
   );
 }
 
+function AuthRedirect({ mode = "login" }) {
+  React.useEffect(() => {
+    window.location.href = `/admin/?mode=${mode}`;
+  }, [mode]);
+  return (
+    <Box sx={{ py: 12, textAlign: "center" }}>
+      <h3>Redirecting to {mode === "register" ? "Registration" : "Sign In"}...</h3>
+      <p style={{ marginTop: 8 }}>
+        <a href={`/admin/?mode=${mode}`} style={{ color: "#6366f1", textDecoration: "underline" }}>
+          Click here if you are not redirected automatically
+        </a>
+      </p>
+    </Box>
+  );
+}
+
+function MainLayout({ toggleDarkMode, darkMode }) {
+  const location = useLocation();
+  const isSaaSPage = location.pathname === "/";
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}
+    >
+      <Box sx={{ flex: "1" }}>
+        <Routes>
+          {/* SaaS Landing / Home Page */}
+          <Route
+            exact
+            path="/"
+            element={<SaaSLandingPage toggleDarkMode={toggleDarkMode} isDarkMode={darkMode} />}
+          />
+
+          {/* Client Portfolio Routes (base /portfolio) */}
+          <Route
+            exact
+            path="/portfolio"
+            element={<Home toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/resume"
+            element={<Resume toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/project"
+            element={<Project toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/works"
+            element={<Project toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/contact"
+            element={<Contact toggleDarkMode={toggleDarkMode} />}
+          />
+
+          {/* User-Specific Portfolio Routes (e.g. /portfolio/johndoe) */}
+          <Route
+            exact
+            path="/portfolio/:username"
+            element={<Home toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/:username/resume"
+            element={<Resume toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/:username/project"
+            element={<Project toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/:username/works"
+            element={<Project toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/:username/contact"
+            element={<Contact toggleDarkMode={toggleDarkMode} />}
+          />
+
+          {/* Direct legacy portfolio routes */}
+          <Route
+            exact
+            path="/resume"
+            element={<Resume toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/project"
+            element={<Project toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/works"
+            element={<Project toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/contact"
+            element={<Contact toggleDarkMode={toggleDarkMode} />}
+          />
+
+          {/* User Auth Routes */}
+          <Route path="/login" element={<AuthRedirect mode="login" />} />
+          <Route path="/register" element={<AuthRedirect mode="register" />} />
+
+          {/* Admin Dashboard */}
+          <Route path="/admin*" element={<AdminRedirect />} />
+        </Routes>
+      </Box>
+      {!isSaaSPage && <Footer />}
+    </Box>
+  );
+}
+
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("portfolio_theme_mode");
     return saved ? saved === "dark" : false;
   });
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   const theme = createTheme({
     palette: {
@@ -61,6 +193,7 @@ const App = () => {
     setDarkMode((prevMode) => {
       const next = !prevMode;
       localStorage.setItem("portfolio_theme_mode", next ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
       return next;
     });
   };
@@ -68,45 +201,9 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-        }}
-      >
-        <Router>
-          <Box sx={{ flex: "1" }}>
-            <Routes>
-              <Route
-                exact
-                path="/"
-                element={<Home toggleDarkMode={toggleDarkMode} />}
-              />
-              <Route
-                exact
-                path="/resume"
-                element={<Resume toggleDarkMode={toggleDarkMode} />}
-              />
-              <Route
-                exact
-                path="/project"
-                element={<Project toggleDarkMode={toggleDarkMode} />}
-              />
-              <Route
-                exact
-                path="/contact"
-                element={<Contact toggleDarkMode={toggleDarkMode} />}
-              />
-              <Route
-                path="/admin*"
-                element={<AdminRedirect />}
-              />
-            </Routes>
-          </Box>
-          <Footer />
-        </Router>
-      </Box>
+      <Router>
+        <MainLayout toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+      </Router>
     </ThemeProvider>
   );
 };

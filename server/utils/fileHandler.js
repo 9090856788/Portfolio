@@ -10,7 +10,7 @@ export async function processUploadedFile(file, folder = "portfolio") {
     Boolean(process.env.CLOUDINARY_API_KEY) &&
     Boolean(process.env.CLOUDINARY_API_SECRET);
 
-  if (hasCloudinary) {
+  if (hasCloudinary && file.tempFilePath && fs.existsSync(file.tempFilePath)) {
     try {
       const result = await cloudinary.uploader.upload(file.tempFilePath, {
         folder: `PORTFOLIO_${folder.toUpperCase()}`,
@@ -26,7 +26,18 @@ export async function processUploadedFile(file, folder = "portfolio") {
 
   // Fallback: convert to base64 Data URI
   try {
-    const fileBuffer = fs.readFileSync(file.tempFilePath);
+    let fileBuffer = null;
+    if (file.tempFilePath && fs.existsSync(file.tempFilePath)) {
+      fileBuffer = fs.readFileSync(file.tempFilePath);
+    } else if (file.data) {
+      fileBuffer = file.data;
+    }
+
+    if (!fileBuffer) {
+      console.warn("processUploadedFile: No file buffer available for upload");
+      return null;
+    }
+
     const mimeType = file.mimetype || "image/jpeg";
     const base64Data = fileBuffer.toString("base64");
     const dataUri = `data:${mimeType};base64,${base64Data}`;

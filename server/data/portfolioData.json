@@ -1,15 +1,15 @@
 {
   "user": {
     "_id": "admin-master",
-    "fullName": "Admin",
+    "fullName": "Kanhu Charan Sahoo",
     "email": "admin@gmail.com",
     "phone": "",
     "aboutMe": "",
     "role": "",
     "location": "",
     "avatar": {
-      "public_id": "",
-      "url": ""
+      "public_id": "avatar_1789824314058",
+      "url": "/src/img/Kanhu.jpg"
     },
     "resume": {
       "public_id": "",
@@ -20,130 +20,32 @@
     "portfolioURL": "",
     "githubURL": "",
     "twitterURL": "",
-    "linkedInURL": ""
+    "linkedInURL": "",
+    "username": "admin"
   },
   "admins": [
     {
       "_id": "admin-master",
       "email": "admin@gmail.com",
       "password": "admin123",
-      "fullName": "Admin",
+      "fullName": "Kanhu Charan Sahoo",
       "phone": "",
       "role": "",
       "location": "",
       "aboutMe": "",
       "avatar": {
-        "public_id": "",
-        "url": ""
+        "public_id": "avatar_1789824314058",
+        "url": "/src/img/Kanhu.jpg"
       },
       "resume": {
         "public_id": "",
         "url": ""
-      }
+      },
+      "username": "admin"
     }
   ],
-  "projects": [
-    {
-      "_id": "proj-1",
-      "title": "Full-Stack Portfolio System",
-      "description": "A comprehensive developer portfolio with an admin control panel, featuring neumorphic and glassmorphic UI elements, dynamic project management, and live content editing.",
-      "gitRepoLink": "https://github.com/9090856788/Portfolio",
-      "projectLink": "https://kanhucharansahoo.dev",
-      "technology": "React.js, Node.js, Express, MongoDB, MUI",
-      "stack": "MERN Stack",
-      "deploy": "Cloud Run / Vercel",
-      "projectBanner": {
-        "public_id": "proj_banner_1",
-        "url": "/src/img/frontendImage.jpg"
-      }
-    },
-    {
-      "_id": "proj-2",
-      "title": "Interactive Web Dashboard",
-      "description": "A modern analytics and data visualization dashboard with dark mode support, glassmorphic widgets, and responsive layouts across all screen resolutions.",
-      "gitRepoLink": "https://github.com/9090856788",
-      "projectLink": "https://github.com/9090856788",
-      "technology": "React, Redux Toolkit, TanStack Query, CSS",
-      "stack": "Frontend",
-      "deploy": "Live",
-      "projectBanner": {
-        "public_id": "proj_banner_2",
-        "url": "/src/img/freelancer.jpg"
-      }
-    },
-    {
-      "_id": "proj-3",
-      "title": "E-Commerce Experience",
-      "description": "Sleek, performant shopping interface with cart management, filters, responsive product galleries, and streamlined checkout.",
-      "gitRepoLink": "https://github.com/9090856788",
-      "projectLink": "https://github.com/9090856788",
-      "technology": "Next.js, TypeScript, Material UI",
-      "stack": "Full-Stack",
-      "deploy": "Live",
-      "projectBanner": {
-        "public_id": "proj_banner_3",
-        "url": "/src/img/frontendImage.jpg"
-      }
-    }
-  ],
-  "skills": [
-    {
-      "_id": "sk-4",
-      "title": "Next.js",
-      "proficiency": 82,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg"
-      }
-    },
-    {
-      "_id": "sk-5",
-      "title": "HTML5 & CSS3",
-      "proficiency": 95,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"
-      }
-    },
-    {
-      "_id": "sk-6",
-      "title": "Material UI (MUI)",
-      "proficiency": 88,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/materialui/materialui-original.svg"
-      }
-    },
-    {
-      "_id": "sk-7",
-      "title": "Redux Toolkit",
-      "proficiency": 86,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg"
-      }
-    },
-    {
-      "_id": "sk-8",
-      "title": "Node.js & Express",
-      "proficiency": 80,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
-      }
-    },
-    {
-      "_id": "sk-9",
-      "title": "MongoDB",
-      "proficiency": 78,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
-      }
-    },
-    {
-      "_id": "sk-10",
-      "title": "Git & GitHub",
-      "proficiency": 88,
-      "svg": {
-        "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
-      }
-    }
-  ],
+  "projects": [],
+  "skills": [],
   "software": [
     {
       "_id": "sw-1",
@@ -174,64 +76,8 @@
       }
     }
   ],
-  "timeline": [
-    {
-      "_id": "tl-1",
-      "title": "Frontend Developer",
-      "company": "Tech Solutions",
-      "period": "2023 - Present",
-      "description": "Developing responsive web applications, optimizing front-end performance, building reusable components, and translating UI/UX mockups into production-ready code.",
-      "timeline": {
-        "from": "2023",
-        "to": "Present"
-      }
-    },
-    {
-      "_id": "tl-2",
-      "title": "Web Development Intern",
-      "company": "Digital Innovations",
-      "period": "2022 - 2023",
-      "description": "Collaborated on React and JavaScript frontend modules, implemented interactive features, and assisted in API integrations.",
-      "timeline": {
-        "from": "2022",
-        "to": "2023"
-      }
-    },
-    {
-      "_id": "tl-3",
-      "title": "Bachelor of Technology",
-      "company": "Biju Patnaik University of Technology",
-      "period": "2019 - 2023",
-      "description": "Completed degree in Engineering with focus on computer science, data structures, and web technologies.",
-      "timeline": {
-        "from": "2019",
-        "to": "2023"
-      }
-    }
-  ],
-  "messages": [
-    {
-      "_id": "msg-1789763052317",
-      "createdAt": "2026-09-18T20:24:12.317Z",
-      "senderName": "Recruiter Test",
-      "subject": "Frontend Role Opportunity",
-      "message": "We reviewed your portfolio and would love to connect!"
-    },
-    {
-      "_id": "msg-1789756128102",
-      "createdAt": "2026-09-18T18:28:48.102Z",
-      "senderName": "Recruiter Alice",
-      "subject": "Exciting Frontend Opportunity",
-      "message": "Hi Kanhu, love your portfolio! Would love to connect regarding an engineering role."
-    },
-    {
-      "_id": "msg-1",
-      "senderName": "Sarah Jenkins",
-      "subject": "Frontend Opportunity",
-      "message": "Hi Kanhu, loved your portfolio and projects! Would you be open for a chat regarding a Senior Frontend role?",
-      "createdAt": "2026-09-18T18:27:34.522Z"
-    }
-  ],
+  "timeline": [],
+  "messages": [],
   "resumes": [
     {
       "_id": "res-1789762600758",

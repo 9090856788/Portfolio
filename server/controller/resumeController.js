@@ -4,7 +4,8 @@ import { DataStore } from "../data/store.js";
 
 // GET /api/v1/resume/all
 export const getAllResumes = catchAsyncErrors(async (req, res) => {
-  const resumes = DataStore.getResumes();
+  const userId = req.user?.id || req.user?._id;
+  const resumes = DataStore.getResumes(userId);
   res.status(200).json({
     success: true,
     count: resumes.length,
@@ -32,7 +33,8 @@ export const createResume = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Resume title is required", 400));
   }
 
-  const newResume = DataStore.addResume(req.body);
+  const userId = req.user?.id || req.user?._id;
+  const newResume = DataStore.addResume({ ...req.body, userId });
   res.status(201).json({
     success: true,
     message: "Resume created successfully",

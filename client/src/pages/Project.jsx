@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { GitHub, Launch } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import Menubar from "../components/Menubar";
 import ProfileCard from "../components/ProfileCard";
 import SectionHeader from "../components/SectionHeader";
@@ -23,6 +24,7 @@ import frontendImage from "../img/frontendImage.jpg";
  */
 const Project = ({ toggleDarkMode }) => {
   const theme = useTheme();
+  const { username } = useParams();
   // Responsive breakpoints: tablet/mobile stack for columns, mobile for inner grid
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -30,8 +32,8 @@ const Project = ({ toggleDarkMode }) => {
 
   // Fetch projects from backend store / database
   const { data: projects, isLoading } = useQuery({
-    queryKey: ["projects"],
-    queryFn: fetchProjects,
+    queryKey: ["projects", username],
+    queryFn: () => fetchProjects(username),
   });
 
   const mainContainerShadow = isDarkMode
