@@ -127,6 +127,27 @@ const AdminHeader = ({ onToggleSidebar }) => {
 
       {/* Right Controls & Quick Actions */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {/* Live Portfolio Quick Link */}
+        <a
+          href="/portfolio"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-neumorph"
+          style={{
+            textDecoration: "none",
+            fontSize: "0.82rem",
+            padding: "8px 14px",
+            borderRadius: 12,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+          title="Open live public portfolio"
+        >
+          <ExternalLink size={15} color="var(--admin-accent)" />
+          <span style={{ fontWeight: 600 }}>Live Portfolio</span>
+        </a>
+
         {/* Swagger API Quick Link */}
         <a
           href="/api/docs"

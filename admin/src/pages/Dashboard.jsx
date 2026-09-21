@@ -35,6 +35,10 @@ import {
   Layers,
   Wrench,
   FileCode,
+  Plus,
+  Sparkles,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 
 /**
@@ -95,6 +99,7 @@ const Dashboard = () => {
   const [avatarRemoved, setAvatarRemoved] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [statusNotice, setStatusNotice] = useState(null);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     if (profile) {
@@ -115,6 +120,11 @@ const Dashboard = () => {
       setAvatarPreview(profile.avatar?.url || "");
       setAvatarRemoved(false);
       setAvatarFile(null);
+      if (Array.isArray(profile.services)) {
+        setServices(profile.services);
+      } else {
+        setServices([]);
+      }
     } else if (authUser) {
       setFormData((prev) => ({
         ...prev,
@@ -225,6 +235,66 @@ const Dashboard = () => {
     setFormData((prev) => ({ ...prev, avatarUrl: "" }));
   };
 
+  const handleAddService = () => {
+    setServices((prev) => [
+      ...prev,
+      {
+        id: "srv-" + Date.now(),
+        title: "",
+        content: "",
+        imageSrc: "",
+      },
+    ]);
+  };
+
+  const handleUpdateService = (index, field, value) => {
+    setServices((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleRemoveService = (index) => {
+    setServices((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleServiceImageFile = (index, file) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setStatusNotice({
+        type: "error",
+        text: "Service image file is too large. Please select an image under 10MB.",
+      });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setServices((prev) => {
+        const copy = [...prev];
+        copy[index] = {
+          ...copy[index],
+          imageSrc: reader.result,
+          file: file,
+        };
+        return copy;
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveServiceImage = (index) => {
+    setServices((prev) => {
+      const copy = [...prev];
+      copy[index] = {
+        ...copy[index],
+        imageSrc: "",
+        file: null,
+      };
+      return copy;
+    });
+  };
+
   const handleReset = () => {
     if (profile) {
       setFormData({
@@ -244,6 +314,9 @@ const Dashboard = () => {
       setAvatarFile(null);
       setAvatarRemoved(false);
       setAvatarPreview(profile.avatar?.url || "");
+      if (Array.isArray(profile.services)) {
+        setServices(profile.services);
+      }
     }
   };
 
@@ -272,6 +345,15 @@ const Dashboard = () => {
       payload.append("removeAvatar", "true");
       payload.set("avatarUrl", "");
     }
+
+    const cleanServices = services.map(({ file, ...rest }) => rest);
+    payload.append("services", JSON.stringify(cleanServices));
+
+    services.forEach((srv, sIdx) => {
+      if (srv.file) {
+        payload.append(`service_image_${sIdx}`, srv.file);
+      }
+    });
 
     updateMutation.mutate(payload);
   };
@@ -1117,6 +1199,276 @@ const Dashboard = () => {
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                 />
+              </div>
+
+              {/* What I Do - Dynamic Profile & Role Offerings */}
+              <div
+                className="neumorph-card-sm"
+                style={{
+                  marginTop: 20,
+                  padding: "20px 22px",
+                  borderRadius: 16,
+                  background: "var(--admin-card-bg-elevated)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 10,
+                    marginBottom: 16,
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Sparkles size={18} color="var(--admin-accent)" />
+                      <h4
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          margin: 0,
+                          color: "var(--admin-text-primary)",
+                        }}
+                      >
+                        &quot;What I Do&quot; Dynamic Profiles ({services.length})
+                      </h4>
+                    </div>
+                    <p
+                      style={{
+                        fontSize: "0.78rem",
+                        color: "var(--admin-text-secondary)",
+                        margin: "4px 0 0",
+                      }}
+                    >
+                      Add and manage multiple profiles (e.g. Frontend Developer, Backend Engineer, Freelancer) displayed on your portfolio home page.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddService}
+                    className="btn-neumorph"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "6px 14px",
+                      fontSize: "0.8rem",
+                      color: "var(--admin-accent)",
+                    }}
+                  >
+                    <Plus size={14} />
+                    <span>Add Profile / Role</span>
+                  </button>
+                </div>
+
+                {services.length === 0 ? (
+                  <div
+                    className="neumorph-inset"
+                    style={{
+                      padding: "24px 16px",
+                      borderRadius: 12,
+                      textAlign: "center",
+                      color: "var(--admin-text-muted)",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    No profiles configured yet. Click &quot;Add Profile / Role&quot; above to add cards like Frontend Developer, Freelancer, etc.
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {services.map((srv, sIdx) => (
+                      <div
+                        key={srv.id || sIdx}
+                        className="neumorph-card"
+                        style={{
+                          padding: "16px 18px",
+                          borderRadius: 14,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 12,
+                          position: "relative",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "0.82rem",
+                              fontWeight: 700,
+                              color: "var(--admin-accent)",
+                            }}
+                          >
+                            Profile #{sIdx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveService(sIdx)}
+                            className="btn-neumorph"
+                            style={{
+                              padding: "4px 8px",
+                              color: "#ef4444",
+                              fontSize: "0.75rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 4,
+                            }}
+                            title="Remove this profile"
+                          >
+                            <Trash2 size={13} />
+                            <span>Remove</span>
+                          </button>
+                        </div>
+
+                        <div className="grid-2" style={{ gap: 12 }}>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label className="form-label" style={{ fontSize: "0.76rem" }}>
+                              Role Title (e.g. Frontend Developer, Freelancer) *
+                            </label>
+                            <input
+                              type="text"
+                              className="neumorph-input"
+                              placeholder="e.g. Frontend Developer"
+                              value={srv.title || ""}
+                              onChange={(e) =>
+                                handleUpdateService(sIdx, "title", e.target.value)
+                              }
+                              style={{ fontSize: "0.84rem", padding: "8px 12px" }}
+                            />
+                          </div>
+
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label className="form-label" style={{ fontSize: "0.76rem" }}>
+                              Role / Service Image
+                            </label>
+                            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                              {srv.imageSrc ? (
+                                <div
+                                  style={{
+                                    position: "relative",
+                                    width: 48,
+                                    height: 48,
+                                    borderRadius: 8,
+                                    overflow: "hidden",
+                                    border: "1px solid var(--admin-border)",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <img
+                                    src={srv.imageSrc}
+                                    alt={srv.title || "Service preview"}
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveServiceImage(sIdx)}
+                                    style={{
+                                      position: "absolute",
+                                      top: 1,
+                                      right: 1,
+                                      background: "rgba(0,0,0,0.7)",
+                                      color: "#fff",
+                                      border: "none",
+                                      borderRadius: "50%",
+                                      width: 16,
+                                      height: 16,
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      cursor: "pointer",
+                                      fontSize: "0.65rem",
+                                      padding: 0,
+                                    }}
+                                    title="Remove image"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ) : (
+                                <div
+                                  style={{
+                                    width: 48,
+                                    height: 48,
+                                    borderRadius: 8,
+                                    border: "1px dashed var(--admin-border)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    color: "var(--admin-text-muted)",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <ImageIcon size={20} />
+                                </div>
+                              )}
+
+                              <div style={{ display: "flex", gap: 6, flex: 1, minWidth: 180, alignItems: "center" }}>
+                                <label
+                                  className="btn-neumorph"
+                                  style={{
+                                    padding: "6px 10px",
+                                    fontSize: "0.76rem",
+                                    cursor: "pointer",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 5,
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <Upload size={13} />
+                                  <span>{srv.imageSrc ? "Change" : "Upload"}</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) handleServiceImageFile(sIdx, file);
+                                      e.target.value = "";
+                                    }}
+                                  />
+                                </label>
+                                <input
+                                  type="text"
+                                  className="neumorph-input"
+                                  placeholder="Or paste URL..."
+                                  value={srv.imageSrc && !srv.imageSrc.startsWith("data:") ? srv.imageSrc : ""}
+                                  onChange={(e) =>
+                                    handleUpdateService(sIdx, "imageSrc", e.target.value)
+                                  }
+                                  style={{ fontSize: "0.8rem", padding: "6px 10px", flex: 1 }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="form-group" style={{ margin: 0 }}>
+                          <label className="form-label" style={{ fontSize: "0.76rem" }}>
+                            Description / What you do *
+                          </label>
+                          <textarea
+                            className="neumorph-input"
+                            rows={2}
+                            placeholder="Describe your capabilities, technologies and what you deliver for clients..."
+                            value={srv.content || ""}
+                            onChange={(e) =>
+                              handleUpdateService(sIdx, "content", e.target.value)
+                            }
+                            style={{ fontSize: "0.84rem", padding: "8px 12px" }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}

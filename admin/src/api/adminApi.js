@@ -169,8 +169,15 @@ export async function adminLogout() {
 // ---------------- Profile & Photo Management ----------------
 
 export async function fetchAdminProfile() {
-  const data = await apiCall("/user/profile/portfolio");
-  return data.user;
+  try {
+    const data = await apiCall("/user/profile", {
+      headers: getAuthHeaders(),
+    });
+    return data.userProfileDetails || data.user;
+  } catch (err) {
+    const data = await apiCall("/user/profile/portfolio");
+    return data.user;
+  }
 }
 
 export async function updateAdminProfile(payload) {
@@ -316,6 +323,22 @@ export async function deleteMessage(id) {
   return await apiCall(`/message/delete/${id}`, {
     method: "DELETE",
     headers: getAuthHeaders(),
+  });
+}
+
+export async function replyToMessage(id, payload) {
+  return await apiCall(`/message/reply/${id}`, {
+    method: "POST",
+    headers: getAuthHeaders(false),
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateMessageStatus(id, payload) {
+  return await apiCall(`/message/status/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(false),
+    body: JSON.stringify(payload),
   });
 }
 

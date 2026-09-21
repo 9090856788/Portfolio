@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchMessages, deleteMessage } from "../api/adminApi";
+import {
+  fetchMessages,
+  deleteMessage,
+  replyToMessage,
+  updateMessageStatus,
+} from "../api/adminApi";
 import {
   Mail,
   Trash2,
@@ -17,15 +22,14 @@ import {
   Sparkles,
   Inbox,
   Reply,
+  ExternalLink,
 } from "lucide-react";
 
 /**
- * Visitor Messages Inbox matching Screenshot 6:
- * - 4 Metric Stat cards (Total Messages, New This Month, Awaiting Reply, Response Rate)
- * - Tabs (All, Unread, Replied, Important) + Sort selector
- * - Interactive Split 2-Column view: Left message list, Right detail viewer
- * - Quick reply template pills, attachments button, and direct reply composer
- * - Inspiring bottom banner: "Great opportunities often start with a single message."
+ * Visitor Messages Inbox:
+ * - Dynamic metrics based on actual messages
+ * - Empty state with generic notice when no messages are found
+ * - Real dynamic communication: sends replies via backend SMTP and stores thread history
  */
 const MessagesInbox = () => {
   const queryClient = useQueryClient();
@@ -41,32 +45,27 @@ const MessagesInbox = () => {
     queryFn: fetchMessages,
   });
 
-  // Sample enriched fallback messages if backend list is empty or minimal
+  // Purely dynamic messages from MongoDB / backend - no demo entries
   const messages = useMemo(() => {
-    if (rawMessages.length > 0) return rawMessages;
-    return [
-      {
-        _id: "demo-msg-1",
-        senderName: "Sarah Jenkins",
-        senderEmail: "sarah.j@techcorp.io",
-        subject: "Excited about your portfolio — Potential Frontend Lead Role",
-        message:
-          "Hi Kanhu,\n\nI was really impressed by your portfolio showcases and your component craftsmanship. We are currently looking for a talented Frontend Developer to lead our new client dashboard rebuild with React, TypeScript, and modern UI architectures.\n\nWould you be open to an introductory 20-minute chat sometime this week?\n\nBest regards,\nSarah Jenkins\nDirector of Engineering, TechCorp",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-        isUnread: true,
-      },
-      {
-        _id: "demo-msg-2",
-        senderName: "Alex Rivera",
-        senderEmail: "alex@designstudio.co",
-        subject: "Freelance Project: Modern SaaS Dashboard Redesign",
-        message:
-          "Hey Kanhu!\n\nLove the neumorphic attention to detail on your applications. We have a 6-week project to design and implement a high-converting web app. Are you taking on freelance projects currently?\n\nCheers,\nAlex",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 28).toISOString(),
-        isUnread: false,
-      },
-    ];
+    return Array.isArray(rawMessages) ? rawMessages : [];
   }, [rawMessages]);
+
+  const unreadCount = useMemo(
+    () => messages.filter((m) => m.isUnread).length,
+    [messages]
+  );
+  const awaitingReplyCount = useMemo(
+    () => messages.filter((m) => !m.replied).length,
+    [messages]
+  );
+  const repliedCount = useMemo(
+    () => messages.filter((m) => m.replied).length,
+    [messages]
+  );
+  const responseRate = useMemo(() => {
+    if (messages.length === 0) return "100%";
+    return `${Math.round((repliedCount / messages.length) * 100)}%`;
+  }, [messages, repliedCount]);
 
   const selectedMessage = useMemo(() => {
     if (selectedMessageId) {
@@ -88,14 +87,45 @@ const MessagesInbox = () => {
     },
   });
 
+  const replyMutation = useMutation({
+    mutationFn: ({ id, replyText, subject }) =>
+      replyToMessage(id, { replyText, subject }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["adminMessages"] });
+      setNotice({
+        type: "success",
+        text: data?.message || "Reply sent successfully!",
+      });
+      setReplyText("");
+      setTimeout(() => setNotice(null), 4000);
+    },
+    onError: (err) => {
+      setNotice({ type: "error", text: err.message || "Failed to send reply" });
+    },
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, updates }) => updateMessageStatus(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminMessages"] });
+    },
+  });
+
   const toggleStar = (id, e) => {
     if (e) e.stopPropagation();
+    const isStarred = starredIds.has(id);
     setStarredIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
+    statusMutation.mutate({ id, updates: { isStarred: !isStarred } });
+  };
+
+  const toggleReadStatus = (id, currentUnread, e) => {
+    if (e) e.stopPropagation();
+    statusMutation.mutate({ id, updates: { isUnread: !currentUnread } });
   };
 
   const handleQuickReply = (text) => {
@@ -104,14 +134,12 @@ const MessagesInbox = () => {
 
   const handleSendReply = () => {
     if (!replyText.trim() || !selectedMessage) return;
-    // Launch mailto for direct client communication
-    const mailto = `mailto:${selectedMessage.senderEmail}?subject=Re: ${encodeURIComponent(
-      selectedMessage.subject || "Your Inquiry"
-    )}&body=${encodeURIComponent(replyText)}`;
-    window.open(mailto, "_blank");
-    setNotice({ type: "success", text: "Opening email client with response..." });
-    setReplyText("");
-    setTimeout(() => setNotice(null), 4000);
+    const msgId = selectedMessage._id || selectedMessage.id;
+    replyMutation.mutate({
+      id: msgId,
+      replyText: replyText.trim(),
+      subject: selectedMessage.subject,
+    });
   };
 
   // Filtered List
@@ -120,6 +148,7 @@ const MessagesInbox = () => {
       .filter((msg) => {
         if (activeTab === "Unread") return msg.isUnread;
         if (activeTab === "Important") return starredIds.has(msg._id || msg.id);
+        if (activeTab === "Replied") return msg.replied;
         return true;
       })
       .filter((msg) => {
@@ -233,13 +262,13 @@ const MessagesInbox = () => {
                 {messages.length}
               </div>
               <div style={{ fontSize: "0.78rem", color: "var(--admin-text-muted)", marginTop: 4 }}>
-                Total Messages
+                Total Inquiries
               </div>
             </div>
           </div>
         </div>
 
-        {/* New This Month */}
+        {/* Unread Inquiries */}
         <div className="stat-card-neumorph">
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div
@@ -253,14 +282,14 @@ const MessagesInbox = () => {
                 color: "#10b981",
               }}
             >
-              <Sparkles size={20} />
+              <Mail size={20} />
             </div>
             <div>
               <div style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1 }}>
-                {messages.length || 6}
+                {unreadCount}
               </div>
               <div style={{ fontSize: "0.78rem", color: "var(--admin-text-muted)", marginTop: 4 }}>
-                New This Month
+                Unread Messages
               </div>
             </div>
           </div>
@@ -283,7 +312,9 @@ const MessagesInbox = () => {
               <Clock size={20} />
             </div>
             <div>
-              <div style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1 }}>2</div>
+              <div style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1 }}>
+                {awaitingReplyCount}
+              </div>
               <div style={{ fontSize: "0.78rem", color: "var(--admin-text-muted)", marginTop: 4 }}>
                 Awaiting Reply
               </div>
@@ -308,9 +339,11 @@ const MessagesInbox = () => {
               <MessageSquare size={20} />
             </div>
             <div>
-              <div style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1 }}>98%</div>
+              <div style={{ fontSize: "1.45rem", fontWeight: 800, lineHeight: 1 }}>
+                {responseRate}
+              </div>
               <div style={{ fontSize: "0.78rem", color: "#10b981", fontWeight: 700, marginTop: 4 }}>
-                Avg &lt; 2 hours
+                {repliedCount} of {messages.length} answered
               </div>
             </div>
           </div>
@@ -343,7 +376,13 @@ const MessagesInbox = () => {
             className={`filter-pill ${activeTab === "Unread" ? "active" : ""}`}
             onClick={() => setActiveTab("Unread")}
           >
-            Unread (1)
+            Unread ({unreadCount})
+          </button>
+          <button
+            className={`filter-pill ${activeTab === "Replied" ? "active" : ""}`}
+            onClick={() => setActiveTab("Replied")}
+          >
+            Replied ({repliedCount})
           </button>
           <button
             className={`filter-pill ${activeTab === "Important" ? "active" : ""}`}
@@ -382,8 +421,61 @@ const MessagesInbox = () => {
         </div>
       </div>
 
-      {/* Split 2-Column Inbox Workspace (Matching Screenshot 6) */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 24 }}>
+      {/* Dynamic Inbox Workspace or Empty State */}
+      {messages.length === 0 ? (
+        <div
+          className="neumorph-card"
+          style={{
+            padding: "60px 24px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            gap: 16,
+            borderRadius: 16,
+          }}
+        >
+          <div
+            className="neumorph-inset"
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--admin-accent)",
+            }}
+          >
+            <Inbox size={34} />
+          </div>
+          <div style={{ maxWidth: 440 }}>
+            <h3
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: 700,
+                margin: "0 0 8px 0",
+                color: "var(--admin-text-primary)",
+              }}
+            >
+              No Messages Yet
+            </h3>
+            <p
+              style={{
+                fontSize: "0.88rem",
+                color: "var(--admin-text-muted)",
+                lineHeight: 1.6,
+                margin: 0,
+              }}
+            >
+              Your inbox is clean. Any contact messages or inquiries submitted by visitors through your live portfolio will appear here dynamically.
+            </p>
+          </div>
+        </div>
+      ) : (
+        /* Split 2-Column Inbox Workspace */
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 24 }}>
         {/* Left Column: Messages List */}
         <div
           className="neumorph-card"
@@ -628,6 +720,63 @@ const MessagesInbox = () => {
                 {selectedMessage.message}
               </div>
 
+              {/* Threaded Reply History if Available */}
+              {Array.isArray(selectedMessage.replies) && selectedMessage.replies.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <div
+                    style={{
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      color: "var(--admin-accent)",
+                      marginBottom: 8,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    Reply History ({selectedMessage.replies.length})
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {selectedMessage.replies.map((rep, rIdx) => (
+                      <div
+                        key={rIdx}
+                        className="neumorph-card-sm"
+                        style={{
+                          padding: "12px 16px",
+                          borderRadius: 12,
+                          background: "var(--admin-card-bg-elevated)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            fontSize: "0.74rem",
+                            color: "var(--admin-text-muted)",
+                            marginBottom: 6,
+                          }}
+                        >
+                          <span style={{ fontWeight: 700, color: "var(--admin-accent)" }}>
+                            {rep.sentBy || "Admin"} (You)
+                          </span>
+                          <span>
+                            {rep.sentAt ? new Date(rep.sentAt).toLocaleString() : "Just now"}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "0.85rem",
+                            color: "var(--admin-text-primary)",
+                            whiteSpace: "pre-wrap",
+                          }}
+                        >
+                          {rep.text}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Quick Reply Pills */}
               <div style={{ marginBottom: 14 }}>
                 <div
@@ -669,11 +818,32 @@ const MessagesInbox = () => {
                 background: "var(--admin-card-bg-elevated)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <Reply size={15} color="var(--admin-accent)" />
-                <span style={{ fontSize: "0.82rem", fontWeight: 700 }}>
-                  Reply to {selectedMessage.senderName}
-                </span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Reply size={15} color="var(--admin-accent)" />
+                  <span style={{ fontSize: "0.82rem", fontWeight: 700 }}>
+                    Reply to {selectedMessage.senderName}
+                  </span>
+                </div>
+                {selectedMessage.senderEmail && (
+                  <a
+                    href={`mailto:${selectedMessage.senderEmail}?subject=Re: ${encodeURIComponent(
+                      selectedMessage.subject || "Your Inquiry"
+                    )}&body=${encodeURIComponent(replyText || "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      fontSize: "0.74rem",
+                      color: "var(--admin-accent)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Open in Mail Client <ExternalLink size={12} />
+                  </a>
+                )}
               </div>
 
               <textarea
@@ -685,24 +855,20 @@ const MessagesInbox = () => {
                 style={{ marginBottom: 12 }}
               />
 
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <button
-                  type="button"
-                  className="btn-neumorph"
-                  style={{ padding: "6px 10px" }}
-                  title="Attach file"
-                >
-                  <Paperclip size={15} />
-                </button>
-
+              <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 10 }}>
                 <button
                   type="button"
                   onClick={handleSendReply}
+                  disabled={replyMutation.isPending || !replyText.trim()}
                   className="btn-neumorph-primary"
-                  style={{ padding: "8px 18px", fontSize: "0.85rem" }}
+                  style={{
+                    padding: "8px 18px",
+                    fontSize: "0.85rem",
+                    opacity: replyMutation.isPending || !replyText.trim() ? 0.6 : 1,
+                  }}
                 >
                   <Send size={15} />
-                  <span>Send Response</span>
+                  <span>{replyMutation.isPending ? "Sending..." : "Send Response"}</span>
                 </button>
               </div>
             </div>
@@ -722,6 +888,7 @@ const MessagesInbox = () => {
           </div>
         )}
       </div>
+      )}
 
       {/* Inspiring Bottom Banner */}
       <div

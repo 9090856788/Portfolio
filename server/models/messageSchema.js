@@ -3,19 +3,46 @@ import mongoose from "mongoose";
 const messageSchema = new mongoose.Schema({
     senderName: {
         type: String,
-        minLength: [2, "Name Must Contain At Least 2 Characters!"],
+        required: [true, "Sender name is required"],
+        trim: true,
+    },
+    senderEmail: {
+        type: String,
+        trim: true,
+        default: "",
     },
     subject: {
         type: String,
-        minLength: [2, "Subject Must Contain At Least 2 Characters!"],
+        default: "Portfolio Inquiry",
+        trim: true,
     },
     message: {
         type: String,
-        minLength: [2, "Message Must Contain At Least 2 Characters!"],
+        required: [true, "Message is required"],
+        trim: true,
     },
+    isUnread: {
+        type: Boolean,
+        default: true,
+    },
+    isStarred: {
+        type: Boolean,
+        default: false,
+    },
+    replied: {
+        type: Boolean,
+        default: false,
+    },
+    replies: [
+        {
+            text: { type: String, required: true },
+            sentAt: { type: Date, default: Date.now },
+            sentBy: { type: String, default: "Admin" },
+        },
+    ],
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
 });
 

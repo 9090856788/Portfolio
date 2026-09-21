@@ -5,6 +5,7 @@ import { generateJwtToken } from "../utils/jwtToken.js";
 import { processUploadedFile } from "../utils/fileHandler.js";
 import { DataStore } from "../data/store.js";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
 
@@ -84,6 +85,8 @@ export const register = catchAsyncErrors(async (req, res, next) => {
                 fullName: fullName || "Portfolio Owner",
                 email: cleanEmail,
                 phone: phone || "",
+                role: role || "",
+                location: location || "",
                 aboutMe: aboutMe || "",
                 password,
                 portfolioURL: portfolioURL || "",
@@ -269,20 +272,49 @@ export const logout = catchAsyncErrors(async (req, res, next) => {
  * Get profile for authenticated user
  */
 export const myProfile = catchAsyncErrors(async (req, res, next) => {
-    if (isDbConnected() && req.user?.id) {
-        const userProfileDetails = await User.findById(req.user.id);
+    const userId = req.user?.id || req.user?._id;
+    const userEmail = req.user?.email;
+
+    if (isDbConnected()) {
+        let userProfileDetails = null;
+        if (userId && mongoose.isValidObjectId(userId)) {
+            userProfileDetails = await User.findById(userId);
+        }
+        if (!userProfileDetails && userEmail) {
+            userProfileDetails = await User.findOne({ email: String(userEmail).toLowerCase().trim() });
+        }
+        if (!userProfileDetails && userId) {
+            userProfileDetails = await User.findById(userId);
+        }
+
         if (userProfileDetails) {
             return res.status(200).json({
                 success: true,
                 userProfileDetails,
+                user: userProfileDetails,
             });
         }
     }
 
-    const userProfileDetails = DataStore.getUser();
+    // Resolve user from DataStore based on authenticated user credentials
+    let userProfileDetails = null;
+    if (userEmail) {
+        userProfileDetails = DataStore.findAdminUser(userEmail);
+    }
+    if (!userProfileDetails && userId) {
+        userProfileDetails = DataStore.getUserById(userId);
+    }
+    if (!userProfileDetails && req.user) {
+        userProfileDetails = req.user;
+    }
+    if (!userProfileDetails) {
+        userProfileDetails = DataStore.getUser();
+    }
+
     res.status(200).json({
         success: true,
         userProfileDetails,
+        user: userProfileDetails,
     });
 });
 
@@ -307,7 +339,21 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
 
     if (req.body.services !== undefined) {
         try {
-            newUserData.services = typeof req.body.services === "string" ? JSON.parse(req.body.services) : req.body.services;
+            let parsed = typeof req.body.services === "string" ? JSON.parse(req.body.services) : req.body.services;
+            if (Array.isArray(parsed)) {
+                for (let i = 0; i < parsed.length; i++) {
+                    const fileKey = `service_image_${i}`;
+                    if (req.files && req.files[fileKey]) {
+                        const uploadRes = await processUploadedFile(req.files[fileKey], "services");
+                        if (uploadRes && uploadRes.url) {
+                            parsed[i].imageSrc = uploadRes.url;
+                        }
+                    }
+                }
+                newUserData.services = parsed;
+            } else {
+                newUserData.services = [];
+            }
         } catch {
             newUserData.services = [];
         }
@@ -365,19 +411,39 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         };
     }
 
+    const userId = req.user?.id || req.user?._id;
+    const userEmail = req.user?.email || req.body.email;
+
     if (isDbConnected()) {
-        const userId = req.user?.id || (await User.findOne())?._id;
-        if (userId) {
-            const user = await User.findByIdAndUpdate(userId, newUserData, {
+        let user = null;
+        if (userId && mongoose.isValidObjectId(userId)) {
+            user = await User.findByIdAndUpdate(userId, newUserData, {
                 new: true,
                 runValidators: true,
                 useFindAndModify: false,
             });
+        }
+        if (!user && userEmail) {
+            user = await User.findOneAndUpdate(
+                { email: String(userEmail).toLowerCase().trim() },
+                newUserData,
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
+        if (!user) {
+            user = await User.findOneAndUpdate(
+                {},
+                newUserData,
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
+        if (user) {
             DataStore.updateUser(newUserData);
             return res.status(200).json({
                 success: true,
                 message: "Profile Updated!",
                 user,
+                userProfileDetails: user,
             });
         }
     }
@@ -387,6 +453,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         success: true,
         message: "Profile Updated!",
         user,
+        userProfileDetails: user,
     });
 });
 
@@ -429,22 +496,57 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
  */
 export const getUserPortfolioDetails = catchAsyncErrors(async (req, res, next) => {
     const username = req.params.username || req.query.username;
+
+    if (isDbConnected()) {
+        let user = null;
+        if (username) {
+            const cleanUser = String(username).toLowerCase().trim();
+            user = await User.findOne({
+                $or: [
+                    { email: cleanUser },
+                    { email: new RegExp(`^${cleanUser}@`, "i") },
+                    { fullName: new RegExp(`^${cleanUser}$`, "i") },
+                ],
+            });
+            if (!user && mongoose.isValidObjectId(cleanUser)) {
+                user = await User.findById(cleanUser);
+            }
+        }
+
+        if (!user) {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith("Bearer ")) {
+                const token = authHeader.split(" ")[1];
+                try {
+                    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY || "portfolio_dev_secret_key_2026");
+                    if (decoded && decoded.id && mongoose.isValidObjectId(decoded.id)) {
+                        user = await User.findById(decoded.id);
+                    }
+                } catch (_) {
+                    // Token invalid or expired, continue to fallback
+                }
+            }
+        }
+
+        if (!user) {
+            // Return the most recently updated active profile in MongoDB
+            user = await User.findOne().sort({ updatedAt: -1, _id: -1 });
+        }
+
+        if (user) {
+            return res.status(200).json({
+                success: true,
+                user,
+            });
+        }
+    }
+
     if (username) {
         const userByUsername = DataStore.getUserByUsername ? DataStore.getUserByUsername(username) : null;
         if (userByUsername) {
             return res.status(200).json({
                 success: true,
                 user: userByUsername,
-            });
-        }
-    }
-
-    if (isDbConnected()) {
-        const user = await User.findOne();
-        if (user) {
-            return res.status(200).json({
-                success: true,
-                user,
             });
         }
     }

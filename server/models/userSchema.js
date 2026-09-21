@@ -66,9 +66,25 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    services: [
+        {
+            title: {
+                type: String,
+                default: "",
+            },
+            content: {
+                type: String,
+                default: "",
+            },
+            imageSrc: {
+                type: String,
+                default: "",
+            },
+        },
+    ],
     resetPasswordToken: String,
     resetPasswordExpire: Date,
-});
+}, { timestamps: true });
 
 // for hashing the password
 userSchema.pre("save", async function (next) {

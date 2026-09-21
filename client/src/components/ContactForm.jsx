@@ -68,6 +68,8 @@ const ContactForm = () => {
     }
     mutation.mutate({
       senderName: formData.senderName,
+      senderEmail: formData.email,
+      email: formData.email,
       subject: formData.subject || `Inquiry from ${formData.senderName} (${formData.email || "No email"})`,
       message: formData.message,
     });

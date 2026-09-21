@@ -171,10 +171,10 @@ const Home = ({ toggleDarkMode }) => {
                   >
                     {servicesList.map((srv, idx) => (
                       <InfoCard
-                        key={srv.id || idx}
+                        key={srv.id || srv._id || idx}
                         title={srv.title || "Service"}
                         content={srv.content || ""}
-                        imageSrc={srv.imageSrc || frontendImage}
+                        imageSrc={srv.imageSrc || ""}
                       />
                     ))}
                   </Box>
