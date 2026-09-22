@@ -179,6 +179,25 @@ const ProfileCard = () => {
       <Box sx={{ textAlign: "center", mt: { xs: 7, sm: 8, md: 9.5 }, mb: 2 }}>
         {isLoading ? (
           <Skeleton variant="text" width="60%" sx={{ mx: "auto", height: 36 }} />
+        ) : !user ? (
+          <Box sx={{ py: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                fontSize: "1.1rem",
+                color: theme.palette.text.secondary,
+              }}
+            >
+              No Profile
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: theme.palette.text.secondary, display: "block", mt: 0.5 }}
+            >
+              Log in to the admin panel to update your profile.
+            </Typography>
+          </Box>
         ) : (
           <Typography
             variant="h5"

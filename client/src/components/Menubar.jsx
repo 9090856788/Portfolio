@@ -51,7 +51,7 @@ const Menubar = ({ toggleDarkMode }) => {
   // Client-facing public menu items
   const menuItems = [
     { icon: <HomeIcon fontSize="small" />, label: "Home", path: basePrefix || "/portfolio" },
-    { icon: <DescriptionIcon fontSize="small" />, label: "Resume", path: `${basePrefix}/resume` },
+    { icon: <DescriptionIcon fontSize="small" />, label: "Experience & Edu", path: `${basePrefix}/resume` },
     { icon: <WorkIcon fontSize="small" />, label: "Works", path: `${basePrefix}/project` },
     { icon: <ContactMailIcon fontSize="small" />, label: "Contact", path: `${basePrefix}/contact` },
   ];
@@ -205,30 +205,6 @@ const Menubar = ({ toggleDarkMode }) => {
       >
         {isDarkMode ? <Brightness7 fontSize="small" /> : <Brightness4 fontSize="small" />}
       </IconButton>
-
-      {/* MakeYourCV SaaS Portal link */}
-      <Box
-        id="btn-nav-makeyourcv"
-        onClick={() => navigate("/")}
-        sx={{
-          display: { xs: "none", md: "inline-flex" },
-          alignItems: "center",
-          gap: 0.8,
-          cursor: "pointer",
-          padding: "6px 14px",
-          ml: 1,
-          borderRadius: "10px",
-          background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
-          color: "#ffffff",
-          fontWeight: 700,
-          fontSize: "0.82rem",
-          boxShadow: "0 2px 10px rgba(99, 102, 241, 0.3)",
-          transition: "transform 0.15s ease",
-          "&:hover": { transform: "scale(1.02)" },
-        }}
-      >
-        MakeYourCV
-      </Box>
 
       {/* Mobile Drawer */}
       <Drawer

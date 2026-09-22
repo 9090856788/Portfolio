@@ -1,49 +1,6 @@
 {
-  "user": {
-    "_id": "admin-1789901362566",
-    "fullName": "Alex Morgan",
-    "email": "alex@example.com",
-    "phone": "+1234567890",
-    "aboutMe": "",
-    "role": "",
-    "location": "",
-    "avatar": {
-      "public_id": "",
-      "url": ""
-    },
-    "resume": {
-      "public_id": "",
-      "url": ""
-    },
-    "services": [],
-    "password": "password123",
-    "portfolioURL": "",
-    "githubURL": "",
-    "twitterURL": "",
-    "linkedInURL": "",
-    "username": "alex"
-  },
-  "admins": [
-    {
-      "_id": "admin-1789901362566",
-      "username": "alex",
-      "fullName": "Alex Morgan",
-      "email": "alex@example.com",
-      "phone": "+1234567890",
-      "password": "password123",
-      "role": "",
-      "location": "",
-      "aboutMe": "",
-      "avatar": {
-        "public_id": "",
-        "url": ""
-      },
-      "resume": {
-        "public_id": "",
-        "url": ""
-      }
-    }
-  ],
+  "user": null,
+  "admins": [],
   "projects": [],
   "skills": [],
   "software": [],

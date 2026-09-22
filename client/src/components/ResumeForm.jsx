@@ -42,22 +42,41 @@ const ResumeForm = () => {
   });
 
   // Separate education and experience
-  const educationList = timeline?.filter(
-    (t) =>
-      t.type === "education" ||
-      t.title?.toLowerCase().includes("bachelor") ||
-      t.title?.toLowerCase().includes("degree") ||
-      t.title?.toLowerCase().includes("school") ||
-      t.title?.toLowerCase().includes("college") ||
-      t.title?.toLowerCase().includes("education") ||
-      t.company?.toLowerCase().includes("university") ||
-      t.company?.toLowerCase().includes("school") ||
-      t.company?.toLowerCase().includes("college")
-  ) || [];
+  const educationList = React.useMemo(() => {
+    return (timeline || []).filter((t) => {
+      if (t.type === "education") return true;
+      if (t.type === "work" || t.type === "experience") return false;
+      const text = `${t.title || ""} ${t.company || ""} ${t.description || ""}`.toLowerCase();
+      return (
+        text.includes("education") ||
+        text.includes("bachelor") ||
+        text.includes("master") ||
+        text.includes("degree") ||
+        text.includes("school") ||
+        text.includes("college") ||
+        text.includes("university") ||
+        text.includes("institute") ||
+        text.includes("academy") ||
+        text.includes("mca") ||
+        text.includes("bca") ||
+        text.includes("btech") ||
+        text.includes("mtech") ||
+        text.includes("b.tech") ||
+        text.includes("m.tech") ||
+        text.includes("diploma") ||
+        text.includes("matric") ||
+        text.includes("10th") ||
+        text.includes("12th") ||
+        text.includes("phd")
+      );
+    });
+  }, [timeline]);
 
-  const experienceList = timeline?.filter(
-    (t) => !educationList.some((e) => e._id === t._id)
-  ) || [];
+  const experienceList = React.useMemo(() => {
+    return (timeline || []).filter(
+      (t) => !educationList.some((e) => (e._id || e.id) === (t._id || t.id))
+    );
+  }, [timeline, educationList]);
 
   const hasEducation = educationList.length > 0;
   const hasExperience = experienceList.length > 0;

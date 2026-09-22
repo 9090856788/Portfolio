@@ -1,23 +1,45 @@
 import mongoose from "mongoose";
 
 const timelineSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     title: {
         type: String,
         required: [true, "Title Required!"],
+    },
+    company: {
+        type: String,
+        default: "",
     },
     description: {
         type: String,
         required: [true, "Description Required!"],
     },
+    type: {
+        type: String,
+        enum: ["work", "education", "experience"],
+        default: "work",
+    },
+    period: {
+        type: String,
+        default: "",
+    },
+    tags: {
+        type: String,
+        default: "",
+    },
     timeline: {
         from: {
-            type: String || Number,
-            required: [true, "Timeline Starting Date is Required"]
+            type: String,
+            default: "",
         },
         to: {
-            type: String || Number,
+            type: String,
+            default: "",
         },
     },
-});
+}, { timestamps: true });
 
-export const Timeline = mongoose.model("Timeline", timelineSchema);
+export const Timeline = mongoose.models.Timeline || mongoose.model("Timeline", timelineSchema);

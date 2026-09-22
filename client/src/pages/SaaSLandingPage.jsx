@@ -124,7 +124,8 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
   };
 
   const handleCopyDemoLink = () => {
-    navigator.clipboard.writeText("https://makeyourcv.com/portfolio/demo");
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://portfolio.dev";
+    navigator.clipboard.writeText(`${origin}/portfolio`);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
@@ -241,7 +242,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                 WebkitTextFillColor: "transparent",
               }}
             >
-              MakeYourCV
+              Portfolio Studio
             </span>
           </Link>
 
@@ -578,7 +579,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
             </div>
             <div style={{ textAlign: "left" }}>
               <div style={{ fontSize: "0.88rem", fontWeight: 700, color: neu.textPrimary }}>
-                10,000+ professionals already using MakeYourCV
+                Thousands of professionals already using Portfolio Studio
               </div>
               <div style={{ display: "flex", gap: 3, color: "#f59e0b", fontSize: "0.8rem", marginTop: 2 }}>
                 {[...Array(5)].map((_, i) => (
@@ -656,7 +657,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                     gap: 6,
                   }}
                 >
-                  <FileText size={13} color="#6366f1" /> makeyourcv.com/studio/interactive-preview
+                  <FileText size={13} color="#6366f1" /> portfolio.dev/studio/interactive-preview
                 </div>
               </div>
 
@@ -944,7 +945,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                           </div>
                           <div style={{ background: "#f8fafc", padding: "10px 14px", borderRadius: 8, border: "1px solid #e2e8f0" }}>
                             <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>Portfolio Web</div>
-                            <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#1e293b" }}>makeyourcv.com/portfolio</div>
+                            <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#1e293b" }}>portfolio.dev/portfolio</div>
                           </div>
                         </div>
                       </div>
@@ -1046,7 +1047,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                         </div>
                         <div style={{ marginBottom: 10 }}>
                           <div style={{ fontSize: "0.84rem", fontWeight: 700 }}>
-                            MakeYourCV SaaS Platform
+                            Portfolio Studio Platform
                           </div>
                           <div style={{ fontSize: "0.76rem", color: "#64748b", margin: "2px 0 4px" }}>
                             React, TypeScript, Redux, Node.js, Neumorphic UI
@@ -1446,7 +1447,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                 WebkitTextFillColor: "transparent",
               }}
             >
-              MakeYourCV
+              Portfolio Studio
             </span>{" "}
             Works
           </h2>
@@ -1643,14 +1644,14 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
             Frequently Asked Questions
           </h2>
           <p style={{ fontSize: "1.02rem", color: neu.textSecondary, margin: 0 }}>
-            Everything you need to know about MakeYourCV and your portfolio workspace.
+            Everything you need to know about your portfolio workspace.
           </p>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {[
             {
-              q: "Is MakeYourCV really 100% free to start?",
+              q: "Is Portfolio Studio really 100% free to start?",
               a: "Yes! You can create your account, manage unlimited resumes, select from any of our 6 ATS-friendly templates, import your portfolio details, and download selectable A4 PDFs without any hidden fees or credit card requirements.",
             },
             {
@@ -1667,7 +1668,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
             },
             {
               q: "Can I share a live portfolio website with recruiters?",
-              a: "Yes! Every registered user receives a public portfolio link at makeyourcv.com/portfolio/{username}. You can copy and share this link on LinkedIn, job boards, or application forms.",
+              a: "Yes! Every registered user receives a public portfolio link at /portfolio/{username}. You can copy and share this link on LinkedIn, job boards, or application forms.",
             },
           ].map((faq, idx) => {
             const isOpen = !!faqOpen[idx];
@@ -1885,7 +1886,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                   Dream Jobs 🚀
                 </div>
                 <div style={{ fontSize: "0.85rem", color: "rgba(255, 255, 255, 0.8)", marginTop: 6 }}>
-                  Start with a bespoke tactile CV on MakeYourCV
+                  Start your journey on Portfolio Studio
                 </div>
               </motion.div>
             </div>
@@ -1934,7 +1935,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
             >
               <FileText size={20} />
             </div>
-            <span style={{ fontSize: "1.2rem", fontWeight: 800 }}>MakeYourCV</span>
+            <span style={{ fontSize: "1.2rem", fontWeight: 800 }}>Portfolio Studio</span>
           </div>
 
           {/* Links */}
@@ -1959,7 +1960,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
 
           {/* Domain & Slogan */}
           <div style={{ fontSize: "0.82rem", color: neu.textMuted, textAlign: "right" }}>
-            <div>© 2026 MakeYourCV (makeyourcv.com). All rights reserved.</div>
+            <div>© 2026 Portfolio Studio. All rights reserved.</div>
             <div style={{ marginTop: 4, fontWeight: 700, color: "#6366f1" }}>
               Create. Customize. Share. Get Hired.
             </div>
@@ -2024,7 +2025,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
                   >
                     <Sparkles size={20} />
                   </div>
-                  <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800 }}>MakeYourCV Interactive Demo</h3>
+                  <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800 }}>Portfolio Studio Interactive Demo</h3>
                 </div>
                 <button
                   onClick={() => setDemoModalOpen(false)}
@@ -2041,7 +2042,7 @@ export default function SaaSLandingPage({ toggleDarkMode, isDarkMode: externalDa
               </div>
 
               <p style={{ fontSize: "0.95rem", color: neu.textSecondary, lineHeight: 1.6, marginBottom: 20 }}>
-                MakeYourCV integrates your live developer portfolio with a custom ATS-friendly resume studio. You can instantly test the live builder or explore the existing developer portfolio:
+                Portfolio Studio integrates your live developer portfolio with career milestones and admin management. You can explore the portfolio workspace:
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>

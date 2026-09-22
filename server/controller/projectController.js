@@ -4,6 +4,7 @@ import { Project } from "../models/projectSchema.js";
 import { processUploadedFile } from "../utils/fileHandler.js";
 import { DataStore } from "../data/store.js";
 import mongoose from "mongoose";
+import { resolveTargetUserId } from "../utils/userResolver.js";
 
 const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
 
@@ -24,6 +25,8 @@ export const addNewProject = catchAsyncErrors(async (req, res, next) => {
         );
     }
 
+    const userId = req.user?._id || req.user?.id;
+
     let bannerData = {
         public_id: "default_banner_" + Date.now(),
         url: "/src/img/frontendImage.jpg",
@@ -41,6 +44,7 @@ export const addNewProject = catchAsyncErrors(async (req, res, next) => {
 
     if (isDbConnected()) {
         const project = await Project.create({
+            userId,
             title,
             description,
             gitRepoLink: gitRepoLink || "",
@@ -58,6 +62,7 @@ export const addNewProject = catchAsyncErrors(async (req, res, next) => {
     }
 
     const project = DataStore.addProject({
+        userId,
         title,
         description,
         gitRepoLink: gitRepoLink || "https://github.com",
@@ -76,15 +81,25 @@ export const addNewProject = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const getAllProjects = catchAsyncErrors(async (req, res, next) => {
+    const targetUserId = await resolveTargetUserId(req);
+
+    // If no target user resolved (unauthenticated visitor and no username in URL), return empty array
+    if (!targetUserId) {
+        return res.status(200).json({
+            success: true,
+            project: [],
+        });
+    }
+
     if (isDbConnected()) {
-        const project = await Project.find().sort({ createdAt: -1 });
+        const project = await Project.find({ userId: targetUserId }).sort({ createdAt: -1 });
         return res.status(200).json({
             success: true,
             project,
         });
     }
 
-    const project = DataStore.getProjects();
+    const project = DataStore.getProjects(targetUserId);
     res.status(200).json({
         success: true,
         project,

@@ -146,7 +146,7 @@ const AdminSidebar = () => {
                       letterSpacing: "-0.02em",
                     }}
                   >
-                    MakeYourCV
+                    Portfolio Studio
                   </div>
                   <div
                     style={{
@@ -155,7 +155,7 @@ const AdminSidebar = () => {
                       fontWeight: 600,
                     }}
                   >
-                    Resume & Studio
+                    Admin Workspace
                   </div>
                 </motion.div>
               )}
@@ -270,24 +270,6 @@ const AdminSidebar = () => {
               }}
             >
               <span>View Public Portfolio</span>
-              <ExternalLink size={14} />
-            </a>
-            <a
-              href="/"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
-                borderRadius: 10,
-                fontSize: "0.8rem",
-                fontWeight: 600,
-                color: "var(--admin-text-muted)",
-                textDecoration: "none",
-                background: "transparent",
-              }}
-            >
-              <span>MakeYourCV Home</span>
               <ExternalLink size={14} />
             </a>
           </div>

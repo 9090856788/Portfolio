@@ -373,7 +373,7 @@ const AdminAuth = () => {
               margin: 0,
             }}
           >
-            MakeYourCV Studio
+            Portfolio Admin Studio
           </h1>
           <p
             style={{
@@ -384,8 +384,8 @@ const AdminAuth = () => {
               lineHeight: 1.4,
             }}
           >
-            {mode === "login" && "Sign in to manage your resumes & portfolio"}
-            {mode === "register" && "Create your free MakeYourCV account in seconds"}
+            {mode === "login" && "Sign in to manage your portfolio & timeline"}
+            {mode === "register" && "Create your portfolio account in seconds"}
             {mode === "forgot" && "Reset your password via Mobile Number OTP"}
             {mode === "reset" && "Verify OTP code and create new password"}
           </p>

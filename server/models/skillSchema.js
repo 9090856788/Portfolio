@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const skillSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     title: {
         type: String,
         required: [true, "Title Required!"],
@@ -18,6 +22,6 @@ const skillSchema = new mongoose.Schema({
             required: true,
         },
     },
-});
+}, { timestamps: true });
 
-export const Skill = mongoose.model("Skill", skillSchema);
+export const Skill = mongoose.models.Skill || mongoose.model("Skill", skillSchema);

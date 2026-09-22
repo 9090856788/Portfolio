@@ -53,7 +53,7 @@ const ManageTimeline = () => {
     setCompany("");
     setPeriod("");
     setDescription("");
-    setType("work");
+    setType(activeFilter === "Education" ? "education" : "work");
     setTags("");
     setEditingItem(null);
   };
@@ -63,32 +63,54 @@ const ManageTimeline = () => {
     setModalOpen(true);
   };
 
+  const isEducationItem = (item) => {
+    if (item.type === "education") return true;
+    if (item.type === "work" || item.type === "experience") return false;
+    const text = `${item.title || ""} ${item.company || ""} ${item.description || ""}`.toLowerCase();
+    return (
+      text.includes("bachelor") ||
+      text.includes("master") ||
+      text.includes("degree") ||
+      text.includes("school") ||
+      text.includes("college") ||
+      text.includes("university") ||
+      text.includes("institute") ||
+      text.includes("academy") ||
+      text.includes("mca") ||
+      text.includes("bca") ||
+      text.includes("btech") ||
+      text.includes("mtech") ||
+      text.includes("b.tech") ||
+      text.includes("m.tech") ||
+      text.includes("diploma") ||
+      text.includes("10th") ||
+      text.includes("12th") ||
+      text.includes("phd") ||
+      text.includes("education")
+    );
+  };
+
   const openEditModal = (item) => {
     setEditingItem(item);
     setTitle(item.title || "");
     setCompany(item.company || "");
     setPeriod(item.period || "");
     setDescription(item.description || "");
-    const isEdu =
-      item.type === "education" ||
-      item.title?.toLowerCase().includes("bachelor") ||
-      item.title?.toLowerCase().includes("degree") ||
-      item.title?.toLowerCase().includes("school") ||
-      item.title?.toLowerCase().includes("college");
-    setType(isEdu ? "education" : "work");
+    setType(item.type === "education" || item.type === "work" ? item.type : (isEducationItem(item) ? "education" : "work"));
     setTags(item.tags || "");
     setModalOpen(true);
   };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      const cleanType = type === "education" ? "education" : "work";
       const payload = {
-        title,
-        company,
-        period: period || "2023 - Present",
-        description,
-        type,
-        tags,
+        title: title.trim(),
+        company: company.trim(),
+        period: period.trim() || "2023 - Present",
+        description: description.trim(),
+        type: cleanType,
+        tags: tags.trim(),
         from: period.split("-")[0]?.trim() || "2023",
         to: period.split("-")[1]?.trim() || "Present",
       };
@@ -128,25 +150,8 @@ const ManageTimeline = () => {
   });
 
   // Categorize
-  const workItems = timeline.filter((item) => {
-    const isEdu =
-      item.type === "education" ||
-      item.title?.toLowerCase().includes("bachelor") ||
-      item.title?.toLowerCase().includes("degree") ||
-      item.title?.toLowerCase().includes("school") ||
-      item.title?.toLowerCase().includes("college");
-    return !isEdu;
-  });
-
-  const eduItems = timeline.filter((item) => {
-    const isEdu =
-      item.type === "education" ||
-      item.title?.toLowerCase().includes("bachelor") ||
-      item.title?.toLowerCase().includes("degree") ||
-      item.title?.toLowerCase().includes("school") ||
-      item.title?.toLowerCase().includes("college");
-    return isEdu;
-  });
+  const workItems = timeline.filter((item) => !isEducationItem(item));
+  const eduItems = timeline.filter((item) => isEducationItem(item));
 
   const filteredItems = useMemo(() => {
     if (activeFilter === "Work") return workItems;

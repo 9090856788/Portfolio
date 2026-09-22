@@ -4,6 +4,7 @@ import { Skill } from "../models/skillSchema.js";
 import { processUploadedFile } from "../utils/fileHandler.js";
 import { DataStore } from "../data/store.js";
 import mongoose from "mongoose";
+import { resolveTargetUserId } from "../utils/userResolver.js";
 
 const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
 
@@ -12,6 +13,8 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
     if (!title || !proficiency) {
         return next(new ErrorHandler("Skill Title and Proficiency are required", 400));
     }
+
+    const userId = req.user?._id || req.user?.id;
 
     let svgData = {
         public_id: "default_skill_" + Date.now(),
@@ -25,6 +28,7 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
 
     if (isDbConnected()) {
         const skill = await Skill.create({
+            userId,
             title,
             proficiency: Number(proficiency),
             svg: svgData,
@@ -37,6 +41,7 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
     }
 
     const skill = DataStore.addSkill({
+        userId,
         title,
         proficiency: Number(proficiency),
         svg: svgData,
@@ -50,15 +55,24 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const getAllSkills = catchAsyncErrors(async (req, res, next) => {
+    const targetUserId = await resolveTargetUserId(req);
+
+    if (!targetUserId) {
+        return res.status(200).json({
+            success: true,
+            skill: [],
+        });
+    }
+
     if (isDbConnected()) {
-        const skill = await Skill.find();
+        const skill = await Skill.find({ userId: targetUserId });
         return res.status(200).json({
             success: true,
             skill,
         });
     }
 
-    const skill = DataStore.getSkills();
+    const skill = DataStore.getSkills(targetUserId);
     res.status(200).json({
         success: true,
         skill,

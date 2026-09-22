@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const softwareApplicationSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     name: String,
     svg: {
         public_id: {
@@ -12,9 +16,11 @@ const softwareApplicationSchema = new mongoose.Schema({
             required: true,
         },
     },
-});
+}, { timestamps: true });
 
-export const SoftwareApplication = mongoose.model(
-    "SoftwareApplication",
-    softwareApplicationSchema
-);
+export const SoftwareApplication =
+    mongoose.models.SoftwareApplication ||
+    mongoose.model(
+        "SoftwareApplication",
+        softwareApplicationSchema
+    );

@@ -6,7 +6,15 @@ import fs from 'fs'
 import http from 'http'
 import net from 'net'
 import { fileURLToPath } from 'url'
-import app from '../server/app.js'
+
+let serverAppInstance = null
+async function getServerApp() {
+  if (!serverAppInstance) {
+    const mod = await import('../server/app.js')
+    serverAppInstance = mod.default || mod.app
+  }
+  return serverAppInstance
+}
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -86,15 +94,17 @@ export default defineConfig({
                 proxyRes.pipe(res, { end: true })
               })
 
-              proxyReq.on('error', () => {
-                return app(req, res, next)
+              proxyReq.on('error', async () => {
+                const sApp = await getServerApp()
+                return sApp(req, res, next)
               })
 
               req.pipe(proxyReq, { end: true })
               return
             }
 
-            return app(req, res, next)
+            const sApp = await getServerApp()
+            return sApp(req, res, next)
           }
 
           // 2. Admin Route handling (/admin)

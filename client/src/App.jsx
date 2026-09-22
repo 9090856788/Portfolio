@@ -75,6 +75,11 @@ function MainLayout({ toggleDarkMode, darkMode }) {
           />
           <Route
             exact
+            path="/portfolio/experience"
+            element={<Resume toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
             path="/portfolio/project"
             element={<Project toggleDarkMode={toggleDarkMode} />}
           />
@@ -98,6 +103,11 @@ function MainLayout({ toggleDarkMode, darkMode }) {
           <Route
             exact
             path="/portfolio/:username/resume"
+            element={<Resume toggleDarkMode={toggleDarkMode} />}
+          />
+          <Route
+            exact
+            path="/portfolio/:username/experience"
             element={<Resume toggleDarkMode={toggleDarkMode} />}
           />
           <Route

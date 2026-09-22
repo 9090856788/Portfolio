@@ -262,6 +262,7 @@ export const verifyOtpAndResetPassword = catchAsyncErrors(async (req, res, next)
  * Logout admin
  */
 export const logout = catchAsyncErrors(async (req, res, next) => {
+    DataStore.clearActiveUser();
     res.clearCookie("token").status(200).json({
         success: true,
         message: "Logged out successfully",
@@ -430,15 +431,15 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
                 { new: true, runValidators: true, useFindAndModify: false }
             );
         }
-        if (!user) {
-            user = await User.findOneAndUpdate(
-                {},
-                newUserData,
-                { new: true, runValidators: true, useFindAndModify: false }
-            );
+        if (!user && (userId || userEmail)) {
+            user = await User.create({
+                ...newUserData,
+                ...(userId && mongoose.isValidObjectId(userId) ? { _id: userId } : {}),
+                ...(userEmail ? { email: userEmail } : {}),
+            });
         }
         if (user) {
-            DataStore.updateUser(newUserData);
+            DataStore.updateUser({ ...newUserData, _id: user._id, email: user.email });
             return res.status(200).json({
                 success: true,
                 message: "Profile Updated!",
@@ -448,7 +449,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         }
     }
 
-    const user = DataStore.updateUser(newUserData);
+    const user = DataStore.updateUser({ ...newUserData, _id: userId, email: userEmail });
     res.status(200).json({
         success: true,
         message: "Profile Updated!",
@@ -515,30 +516,29 @@ export const getUserPortfolioDetails = catchAsyncErrors(async (req, res, next) =
 
         if (!user) {
             const authHeader = req.headers.authorization;
-            if (authHeader && authHeader.startsWith("Bearer ")) {
-                const token = authHeader.split(" ")[1];
+            const cookieToken = req.cookies?.token;
+            const token = (authHeader && authHeader.startsWith("Bearer "))
+                ? authHeader.split(" ")[1]
+                : cookieToken;
+
+            if (token && token !== "demo_admin_jwt_token_2026") {
                 try {
                     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY || "portfolio_dev_secret_key_2026");
-                    if (decoded && decoded.id && mongoose.isValidObjectId(decoded.id)) {
-                        user = await User.findById(decoded.id);
+                    const uid = decoded?.id || decoded?._id;
+                    if (uid && mongoose.isValidObjectId(uid)) {
+                        user = await User.findById(uid);
                     }
                 } catch (_) {
-                    // Token invalid or expired, continue to fallback
+                    // Token invalid or expired
                 }
             }
         }
 
-        if (!user) {
-            // Return the most recently updated active profile in MongoDB
-            user = await User.findOne().sort({ updatedAt: -1, _id: -1 });
-        }
-
-        if (user) {
-            return res.status(200).json({
-                success: true,
-                user,
-            });
-        }
+        // If no username specified and no authenticated session, return empty user (null)
+        return res.status(200).json({
+            success: true,
+            user: user || null,
+        });
     }
 
     if (username) {
@@ -551,10 +551,28 @@ export const getUserPortfolioDetails = catchAsyncErrors(async (req, res, next) =
         }
     }
 
-    const user = DataStore.getUser();
+    const authHeader = req.headers.authorization;
+    const cookieToken = req.cookies?.token;
+    const token = (authHeader && authHeader.startsWith("Bearer ")) ? authHeader.split(" ")[1] : cookieToken;
+    let fallbackUser = null;
+    if (token && token !== "demo_admin_jwt_token_2026") {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY || "portfolio_dev_secret_key_2026");
+            const uid = decoded?.id || decoded?._id;
+            if (uid) {
+                fallbackUser = DataStore.getUserById(uid);
+            }
+            if (!fallbackUser && decoded && decoded.email) {
+                fallbackUser = DataStore.findAdminUser(decoded.email);
+            }
+        } catch (_) {
+            // Token invalid or expired
+        }
+    }
+
     res.status(200).json({
         success: true,
-        user,
+        user: fallbackUser || null,
     });
 });
 

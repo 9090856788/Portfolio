@@ -4,6 +4,7 @@ import { SoftwareApplication } from "../models/softwareApplicationSchema.js";
 import { processUploadedFile } from "../utils/fileHandler.js";
 import { DataStore } from "../data/store.js";
 import mongoose from "mongoose";
+import { resolveTargetUserId } from "../utils/userResolver.js";
 
 const isDbConnected = () => mongoose.connection && mongoose.connection.readyState === 1;
 
@@ -12,6 +13,8 @@ export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
     if (!name) {
         return next(new ErrorHandler("Software Application Name is Required!", 400));
     }
+
+    const userId = req.user?._id || req.user?.id;
 
     let svgData = {
         public_id: "software_" + Date.now(),
@@ -25,6 +28,7 @@ export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
 
     if (isDbConnected()) {
         const softwareApplication = await SoftwareApplication.create({
+            userId,
             name,
             svg: svgData,
         });
@@ -36,6 +40,7 @@ export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
     }
 
     const softwareApplication = DataStore.addSoftware({
+        userId,
         name,
         svg: svgData,
     });
@@ -48,15 +53,24 @@ export const addNewApplication = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const getAllApplications = catchAsyncErrors(async (req, res, next) => {
+    const targetUserId = await resolveTargetUserId(req);
+
+    if (!targetUserId) {
+        return res.status(200).json({
+            success: true,
+            softwareApplications: [],
+        });
+    }
+
     if (isDbConnected()) {
-        const softwareApplications = await SoftwareApplication.find();
+        const softwareApplications = await SoftwareApplication.find({ userId: targetUserId });
         return res.status(200).json({
             success: true,
             softwareApplications,
         });
     }
 
-    const softwareApplications = DataStore.getSoftware();
+    const softwareApplications = DataStore.getSoftware(targetUserId);
     res.status(200).json({
         success: true,
         softwareApplications,

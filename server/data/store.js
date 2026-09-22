@@ -41,15 +41,21 @@ export const DataStore = {
   // User / Profile
   getUser: () => {
     const d = loadData();
-    if (d.user && !d.user.username) {
-      d.user.username = (d.user.email || "admin").split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (!d.user || (!d.user._id && !d.user.email)) return null;
+    if (d.user && !d.user.username && d.user.email) {
+      d.user.username = d.user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
     }
     return d.user;
+  },
+  clearActiveUser: () => {
+    const d = loadData();
+    d.user = null;
+    saveData();
   },
   getUserByUsername: (username) => {
     const d = loadData();
     const clean = String(username || "").toLowerCase().trim();
-    if (!clean) return d.user;
+    if (!clean) return (d.user && (d.user._id || d.user.email)) ? d.user : null;
 
     const foundAdmin = (d.admins || []).find(
       (a) =>
@@ -70,13 +76,16 @@ export const DataStore = {
   },
   getUserById: (id) => {
     const d = loadData();
-    if (!id) return d.user;
+    if (!id) return (d.user && (d.user._id || d.user.email)) ? d.user : null;
     const found = (d.admins || []).find((a) => String(a._id) === String(id));
     if (found) return found;
-    return d.user && String(d.user._id) === String(id) ? d.user : d.user;
+    return d.user && String(d.user._id) === String(id) ? d.user : null;
   },
   updateUser: (updates) => {
     const d = loadData();
+    const targetId = updates._id || (d.user ? d.user._id : null);
+    const targetEmail = updates.email || (d.user ? d.user.email : null);
+
     d.user = {
       ...d.user,
       ...updates,
@@ -94,10 +103,8 @@ export const DataStore = {
     if (Array.isArray(d.admins)) {
       d.admins = d.admins.map((a) => {
         const isMatch =
-          (d.user._id && String(a._id) === String(d.user._id)) ||
-          (d.user.email && a.email && a.email.toLowerCase() === d.user.email.toLowerCase()) ||
-          a.username === "admin" ||
-          a.username === d.user.username;
+          (targetId && String(a._id) === String(targetId)) ||
+          (targetEmail && a.email && a.email.toLowerCase() === String(targetEmail).toLowerCase());
         if (isMatch) {
           return {
             ...a,
@@ -230,9 +237,11 @@ export const DataStore = {
   },
 
   // Projects
-  getProjects: () => {
+  getProjects: (userId) => {
     const d = loadData();
-    return d.projects || [];
+    const list = d.projects || [];
+    if (!userId) return [];
+    return list.filter((p) => String(p.userId) === String(userId));
   },
   getProjectById: (id) => {
     const d = loadData();
@@ -266,9 +275,11 @@ export const DataStore = {
   },
 
   // Skills
-  getSkills: () => {
+  getSkills: (userId) => {
     const d = loadData();
-    return d.skills || [];
+    const list = d.skills || [];
+    if (!userId) return [];
+    return list.filter((s) => String(s.userId) === String(userId));
   },
   addSkill: (skillData) => {
     const d = loadData();
@@ -297,9 +308,11 @@ export const DataStore = {
   },
 
   // Software Applications
-  getSoftware: () => {
+  getSoftware: (userId) => {
     const d = loadData();
-    return d.software || [];
+    const list = d.software || [];
+    if (!userId) return [];
+    return list.filter((s) => String(s.userId) === String(userId));
   },
   addSoftware: (softData) => {
     const d = loadData();
@@ -320,9 +333,11 @@ export const DataStore = {
   },
 
   // Timeline
-  getTimeline: () => {
+  getTimeline: (userId) => {
     const d = loadData();
-    return d.timeline || [];
+    const list = d.timeline || [];
+    if (!userId) return [];
+    return list.filter((t) => String(t.userId) === String(userId));
   },
   addTimeline: (item) => {
     const d = loadData();

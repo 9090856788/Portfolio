@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     title: String,
     description: String,
     gitRepoLink: String,
@@ -18,6 +22,6 @@ const projectSchema = new mongoose.Schema({
             required: true,
         },
     },
-});
+}, { timestamps: true });
 
-export const Project = mongoose.model("Project", projectSchema);
+export const Project = mongoose.models.Project || mongoose.model("Project", projectSchema);

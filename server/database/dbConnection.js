@@ -6,6 +6,9 @@ dotenv.config();
 const DEFAULT_MONGO_URI = "mongodb+srv://appseralabs_db_user:appseralabs@portfolio.ofiupum.mongodb.net/portfolio?retryWrites=true&w=majority";
 
 const dbConnection = () => {
+    if (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2) {
+        return;
+    }
     const mongoUri =
         process.env.MONGODB_URI ||
         process.env.MONGO_URI ||

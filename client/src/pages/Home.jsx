@@ -9,7 +9,6 @@ import InfoCard from "../components/InfoCard";
 import SectionHeader from "../components/SectionHeader";
 import SubHeading from "../components/SubHeading";
 import { fetchUserProfile } from "../api/portfolioApi";
-import frontendImage from "../img/frontendImage.jpg";
 
 /**
  * Home page view.

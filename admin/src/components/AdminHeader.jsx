@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { toggleThemeMode, logoutSuccess, setToast, setActiveTab } from "../redux/store";
@@ -40,6 +40,26 @@ const AdminHeader = ({ onToggleSidebar }) => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await adminLogout();
@@ -187,7 +207,7 @@ const AdminHeader = ({ onToggleSidebar }) => {
         </button>
 
         {/* Notifications Bell */}
-        <div style={{ position: "relative" }}>
+        <div ref={notificationsRef} style={{ position: "relative" }}>
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
             className="btn-neumorph"
@@ -248,7 +268,7 @@ const AdminHeader = ({ onToggleSidebar }) => {
         </div>
 
         {/* User Profile Avatar with Action Dropdown */}
-        <div style={{ position: "relative" }}>
+        <div ref={profileRef} style={{ position: "relative" }}>
           <div
             onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
             className="btn-neumorph"
@@ -293,20 +313,38 @@ const AdminHeader = ({ onToggleSidebar }) => {
           </div>
 
           {profileDropdownOpen && (
-            <div
-              className="neumorph-card"
-              style={{
-                position: "absolute",
-                top: "115%",
-                right: 0,
-                width: 220,
-                padding: 14,
-                zIndex: 60,
-                display: "flex",
-                flexDirection: "column",
-                gap: 6,
-              }}
-            >
+            <>
+              <div
+                id="profile-dropdown-backdrop"
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100vw",
+                  height: "100vh",
+                  zIndex: 55,
+                  cursor: "default",
+                  background: "transparent",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProfileDropdownOpen(false);
+                }}
+              />
+              <div
+                className="neumorph-card"
+                style={{
+                  position: "absolute",
+                  top: "115%",
+                  right: 0,
+                  width: 220,
+                  padding: 14,
+                  zIndex: 60,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                }}
+              >
               <div style={{ padding: "4px 6px 8px", borderBottom: "1px solid var(--admin-border-subtle)" }}>
                 <div style={{ fontSize: "0.88rem", fontWeight: 700 }}>
                   {displayName}
@@ -345,6 +383,7 @@ const AdminHeader = ({ onToggleSidebar }) => {
                 <span>Sign Out</span>
               </button>
             </div>
+            </>
           )}
         </div>
       </div>

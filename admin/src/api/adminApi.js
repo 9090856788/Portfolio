@@ -5,12 +5,9 @@
  */
 
 export function getAuthHeaders(isFormData = false) {
-  let token = localStorage.getItem("portfolio_admin_token") || "";
-  if (!token) {
-    token = "demo_admin_jwt_token_2026";
-  }
+  const token = localStorage.getItem("portfolio_admin_token") || "";
   const headers = {};
-  if (token) {
+  if (token && token !== "demo_admin_jwt_token_2026") {
     headers["Authorization"] = `Bearer ${token}`;
   }
   if (!isFormData) {
@@ -27,6 +24,14 @@ export function getAuthHeaders(isFormData = false) {
  * - Safely detects HTML responses to avoid "Unexpected token '<', '<!DOCTYPE...' is not valid JSON"
  */
 async function apiCall(endpoint, options = {}) {
+  const token = localStorage.getItem("portfolio_admin_token");
+  const mergedHeaders = { ...(options.headers || {}) };
+  if (token && token !== "demo_admin_jwt_token_2026" && !mergedHeaders["Authorization"] && !mergedHeaders["authorization"]) {
+    mergedHeaders["Authorization"] = `Bearer ${token}`;
+  }
+  options.headers = mergedHeaders;
+  options.credentials = "include";
+
   const candidateBases = [];
 
   if (typeof window !== "undefined") {
@@ -86,22 +91,6 @@ async function apiCall(endpoint, options = {}) {
       }
 
       if (!res.ok) {
-        // If the server rejected the token with 401, auto-heal locally by refreshing to active dev token and retrying
-        if (res.status === 401 && (data?.message?.includes("token") || data?.message?.includes("Authenticated"))) {
-          const authHeader = options.headers?.["Authorization"] || options.headers?.["authorization"];
-          if (authHeader && !authHeader.includes("demo_admin_jwt_token_2026")) {
-            localStorage.setItem("portfolio_admin_token", "demo_admin_jwt_token_2026");
-            const retryHeaders = { ...(options.headers || {}), Authorization: "Bearer demo_admin_jwt_token_2026" };
-            try {
-              const retryRes = await fetch(url, { ...options, headers: retryHeaders });
-              if (retryRes.ok) {
-                return await retryRes.json();
-              }
-            } catch {
-              // Retry failed, proceed to throwing original error
-            }
-          }
-        }
         throw new Error(data?.message || `Request failed with status ${res.status}`);
       }
 
