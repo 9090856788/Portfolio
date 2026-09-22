@@ -292,6 +292,15 @@ export async function addSoftware(payload) {
   });
 }
 
+export async function updateSoftware(id, payload) {
+  const isFormData = payload instanceof FormData;
+  return await apiCall(`/software/update/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(isFormData),
+    body: isFormData ? payload : JSON.stringify(payload),
+  });
+}
+
 export async function deleteSoftware(id) {
   return await apiCall(`/software/delete/${id}`, {
     method: "DELETE",

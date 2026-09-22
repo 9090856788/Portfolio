@@ -5,15 +5,38 @@ const softwareApplicationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    name: String,
+    name: {
+        type: String,
+        required: [true, "Name Required!"],
+    },
+    category: {
+        type: String,
+        default: "IDE",
+    },
+    categoryFullName: {
+        type: String,
+        default: "",
+    },
+    description: {
+        type: String,
+        default: "",
+    },
+    tags: {
+        type: String,
+        default: "",
+    },
+    toolUrl: {
+        type: String,
+        default: "",
+    },
     svg: {
         public_id: {
             type: String,
-            required: true,
+            default: "",
         },
         url: {
             type: String,
-            required: true,
+            default: "",
         },
     },
 }, { timestamps: true });

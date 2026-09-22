@@ -256,28 +256,53 @@ const ResumeForm = () => {
             <Box sx={{ width: "100%", mb: 1 }}>
               <SubHeading title="Tools & Technologies" sx={{ mt: 2, mb: 2 }} />
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.2 }}>
-                {software.map((tool) => (
-                  <Chip
-                    key={tool._id || tool.name}
-                    label={tool.name}
-                    sx={{
-                      bgcolor: theme.palette.background.default,
-                      color: theme.palette.text.primary,
-                      borderRadius: "8px",
-                      border: `1px solid ${theme.palette.divider}`,
-                      boxShadow: isDarkMode
-                        ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
-                        : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`,
-                      transition: "all 0.25s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                      },
-                      fontSize: "0.85rem",
-                      fontWeight: 600,
-                      padding: "8px 14px",
-                    }}
-                  />
-                ))}
+                {software.map((tool) => {
+                  const iconUrl = tool.svg?.url || tool.svgUrl;
+                  return (
+                    <Chip
+                      key={tool._id || tool.name}
+                      label={tool.name}
+                      avatar={
+                        iconUrl ? (
+                          <img
+                            src={iconUrl}
+                            alt=""
+                            style={{
+                              width: 18,
+                              height: 18,
+                              objectFit: "contain",
+                              borderRadius: "4px",
+                              marginLeft: 4,
+                            }}
+                          />
+                        ) : undefined
+                      }
+                      component={tool.toolUrl ? "a" : "div"}
+                      href={tool.toolUrl || undefined}
+                      target={tool.toolUrl ? "_blank" : undefined}
+                      rel={tool.toolUrl ? "noopener noreferrer" : undefined}
+                      clickable={Boolean(tool.toolUrl)}
+                      sx={{
+                        bgcolor: theme.palette.background.default,
+                        color: theme.palette.text.primary,
+                        borderRadius: "8px",
+                        border: `1px solid ${theme.palette.divider}`,
+                        boxShadow: isDarkMode
+                          ? `4px 4px 10px ${theme.palette.grey[900]}, -4px -4px 10px ${theme.palette.grey[800]}`
+                          : `4px 4px 10px ${theme.palette.grey[300]}, -4px -4px 10px ${theme.palette.grey[100]}`,
+                        transition: "all 0.25s ease",
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                          borderColor: theme.palette.primary.main,
+                        },
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        padding: "8px 12px",
+                        textDecoration: "none",
+                      }}
+                    />
+                  );
+                })}
               </Box>
             </Box>
           )}

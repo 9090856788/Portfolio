@@ -314,15 +314,32 @@ export const DataStore = {
     if (!userId) return [];
     return list.filter((s) => String(s.userId) === String(userId));
   },
+  getSoftwareById: (id) => {
+    const d = loadData();
+    return (d.software || []).find((s) => String(s._id) === String(id)) || null;
+  },
   addSoftware: (softData) => {
     const d = loadData();
     const newSoft = {
       _id: "sw-" + Date.now(),
+      category: "IDE",
+      categoryFullName: "",
+      description: "",
+      tags: "",
+      toolUrl: "",
       ...softData,
     };
     d.software.push(newSoft);
     saveData();
     return newSoft;
+  },
+  updateSoftware: (id, updates) => {
+    const d = loadData();
+    const index = (d.software || []).findIndex((s) => String(s._id) === String(id));
+    if (index === -1) return null;
+    d.software[index] = { ...d.software[index], ...updates };
+    saveData();
+    return d.software[index];
   },
   deleteSoftware: (id) => {
     const d = loadData();

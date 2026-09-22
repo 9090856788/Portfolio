@@ -9,7 +9,6 @@ import {
   Moon,
   Bell,
   ExternalLink,
-  FileCode2,
   Menu,
   LogOut,
   User,
@@ -166,24 +165,6 @@ const AdminHeader = ({ onToggleSidebar }) => {
         >
           <ExternalLink size={15} color="var(--admin-accent)" />
           <span style={{ fontWeight: 600 }}>Live Portfolio</span>
-        </a>
-
-        {/* Swagger API Quick Link */}
-        <a
-          href="/api/docs"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-neumorph"
-          style={{
-            textDecoration: "none",
-            fontSize: "0.82rem",
-            padding: "8px 14px",
-            borderRadius: 12,
-          }}
-          title="Open interactive Swagger REST API explorer"
-        >
-          <FileCode2 size={15} color="var(--admin-accent)" />
-          <span style={{ fontWeight: 600 }}>API Docs</span>
         </a>
 
         {/* Theme Mode Toggle (Sun/Moon) */}
