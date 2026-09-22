@@ -51,36 +51,26 @@ export const register = catchAsyncErrors(async (req, res, next) => {
 
     const cleanEmail = String(email || "").toLowerCase().trim();
 
-    // Register in persistent DataStore
-    const registeredStoreAdmin = DataStore.registerAdminUser({
-        fullName: fullName || "Admin",
-        email: cleanEmail,
-        phone: phone || "",
-        aboutMe: aboutMe || "",
-        password,
-        role: role || "",
-        location: location || "",
-        avatar: avatarData,
-        resume: resumeData,
-        portfolioURL: portfolioURL || "",
-        githubURL: githubURL || "",
-        instagramURL: instagramURL || "",
-        facebookURL: facebookURL || "",
-        twitterURL: twitterURL || "",
-        linkedInURL: linkedInURL || "",
-    });
-
+    // 1. Verify email uniqueness against MongoDB (if live)
     if (isDbConnected()) {
         try {
             const existingUser = await User.findOne({ email: cleanEmail });
             if (existingUser) {
-                existingUser.password = password;
-                if (fullName) existingUser.fullName = fullName;
-                if (phone) existingUser.phone = phone;
-                await existingUser.save();
-                return generateJwtToken(existingUser, "Admin Account Updated Successfully!", 200, res);
+                return next(new ErrorHandler("User already exists with this email address! Please sign in instead.", 400));
             }
+        } catch (dbErr) {
+            console.warn("MongoDB check error:", dbErr.message);
+        }
+    }
 
+    // 2. Verify email uniqueness against persistent DataStore
+    if (DataStore.userExists && DataStore.userExists(cleanEmail)) {
+        return next(new ErrorHandler("User already exists with this email address! Please sign in instead.", 400));
+    }
+
+    // 3. Register user in MongoDB if live
+    if (isDbConnected()) {
+        try {
             const user = await User.create({
                 fullName: fullName || "Portfolio Owner",
                 email: cleanEmail,
@@ -98,13 +88,64 @@ export const register = catchAsyncErrors(async (req, res, next) => {
                 avatar: avatarData,
                 resume: resumeData,
             });
+
+            // Keep DataStore in sync for fallback
+            try {
+                DataStore.registerAdminUser({
+                    _id: String(user._id),
+                    fullName: user.fullName,
+                    email: user.email,
+                    phone: user.phone,
+                    aboutMe: user.aboutMe,
+                    password,
+                    role: user.role,
+                    location: user.location,
+                    avatar: avatarData,
+                    resume: resumeData,
+                    portfolioURL: user.portfolioURL,
+                    githubURL: user.githubURL,
+                    instagramURL: user.instagramURL,
+                    facebookURL: user.facebookURL,
+                    twitterURL: user.twitterURL,
+                    linkedInURL: user.linkedInURL,
+                });
+            } catch (syncErr) {
+                console.warn("DataStore sync warning during mongo register:", syncErr.message);
+            }
+
             return generateJwtToken(user, "Admin Account Created Successfully!", 201, res);
         } catch (dbErr) {
+            if (dbErr.code === 11000) {
+                return next(new ErrorHandler("User already exists with this email address! Please sign in instead.", 400));
+            }
             console.warn("MongoDB register warning, using DataStore:", dbErr.message);
         }
     }
 
-    return generateJwtToken(registeredStoreAdmin, "Admin Account Created Successfully!", 201, res);
+    // 4. Register in persistent DataStore
+    try {
+        const registeredStoreAdmin = DataStore.registerAdminUser({
+            fullName: fullName || "Admin",
+            email: cleanEmail,
+            phone: phone || "",
+            aboutMe: aboutMe || "",
+            password,
+            role: role || "",
+            location: location || "",
+            avatar: avatarData,
+            resume: resumeData,
+            portfolioURL: portfolioURL || "",
+            githubURL: githubURL || "",
+            instagramURL: instagramURL || "",
+            facebookURL: facebookURL || "",
+            twitterURL: twitterURL || "",
+            linkedInURL: linkedInURL || "",
+        });
+
+        return generateJwtToken(registeredStoreAdmin, "Admin Account Created Successfully!", 201, res);
+    } catch (storeErr) {
+        return next(new ErrorHandler(storeErr.message || "User already exists with this email address! Please sign in instead.", 400));
+    }
 });
 
 /**

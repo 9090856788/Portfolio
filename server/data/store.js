@@ -154,7 +154,21 @@ export const DataStore = {
 
     return null;
   },
-  // Register or update an admin in the admin store
+  // Check if a registered user or admin already exists with this email address
+  userExists: (email) => {
+    const d = loadData();
+    const cleanEmail = String(email || "").toLowerCase().trim();
+    if (!cleanEmail) return false;
+    const inAdmins = (d.admins || []).some(
+      (a) => (a.email || "").toLowerCase().trim() === cleanEmail
+    );
+    if (inAdmins) return true;
+    if (d.user && d.user.email && d.user.email.toLowerCase().trim() === cleanEmail && (d.user._id || d.user.password)) {
+      return true;
+    }
+    return false;
+  },
+  // Register an admin in the admin store (guarantees email uniqueness)
   registerAdminUser: (userData) => {
     const d = loadData();
     if (!d.admins || !Array.isArray(d.admins)) {
@@ -162,10 +176,22 @@ export const DataStore = {
     }
     const cleanEmail = String(userData.email || "").toLowerCase().trim();
     const existingIndex = d.admins.findIndex((a) => (a.email || "").toLowerCase() === cleanEmail);
+    if (existingIndex >= 0) {
+      const err = new Error("User already exists with this email address!");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (d.user && d.user.email && d.user.email.toLowerCase().trim() === cleanEmail && (d.user._id || d.user.password)) {
+      const err = new Error("User already exists with this email address!");
+      err.statusCode = 400;
+      throw err;
+    }
+
     const generatedUsername = userData.username || cleanEmail.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
 
     const newAdmin = {
-      _id: existingIndex >= 0 ? d.admins[existingIndex]._id : "admin-" + Date.now(),
+      _id: userData._id || "admin-" + Date.now(),
       username: generatedUsername,
       fullName: userData.fullName || "Admin",
       email: cleanEmail,
@@ -178,23 +204,22 @@ export const DataStore = {
       resume: userData.resume || { public_id: "", url: "" },
     };
 
-    if (existingIndex >= 0) {
-      d.admins[existingIndex] = { ...d.admins[existingIndex], ...newAdmin };
-    } else {
-      d.admins.push(newAdmin);
-    }
+    d.admins.push(newAdmin);
 
-    if (d.user && (!d.user.email || d.user.email === cleanEmail)) {
-      d.user._id = newAdmin._id;
-      d.user.username = newAdmin.username;
-      d.user.fullName = newAdmin.fullName;
-      d.user.email = newAdmin.email;
-      d.user.phone = newAdmin.phone;
-      d.user.role = newAdmin.role;
-      d.user.location = newAdmin.location;
-      d.user.aboutMe = newAdmin.aboutMe;
-      d.user.password = userData.password;
-      if (newAdmin.avatar) d.user.avatar = newAdmin.avatar;
+    if (!d.user || !d.user.email) {
+      d.user = {
+        _id: newAdmin._id,
+        username: newAdmin.username,
+        fullName: newAdmin.fullName,
+        email: newAdmin.email,
+        phone: newAdmin.phone,
+        role: newAdmin.role,
+        location: newAdmin.location,
+        aboutMe: newAdmin.aboutMe,
+        password: userData.password,
+        avatar: newAdmin.avatar,
+        resume: newAdmin.resume,
+      };
     }
 
     saveData();
